@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>FR&R Generator</title>
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    .layout {
+      display: flex;
+      gap: 40px;
+      margin: 20px;
+    }
+
+    .left-section {
+      display: flex;
+      flex-direction: column;
+      width: 500px;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .radio-list {
+      margin-bottom: 20px;
+    }
+
+    .question-area {
+      border: 1px solid #aaa;
+      padding: 10px;
+      min-height: 120px;
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+
+    .answer-area {
+      border: 1px solid #aaa;
+      padding: 10px;
+      min-height: 10px;
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+
+    #wheel-container {
+      position: relative;
+      width: 500px;
+      height: 500px;
+      background-color: #eee;
+    }
+
+    #wheel-container img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      transform-origin: center center;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    
+    <!-- LEFT SIDE: Buttons, Radios, Question Area -->
+    <div class="left-section">
+      <div class="button-row">
+        <button id="generateBtn">Generate</button>
+        <button id="solveBtn">Solve</button>
+        <button id="visualizeBtn" style="display: none;">Visualize</button>
+        <button id="compassBtn" style="display: none;">Compass</button>
+      </div>
+    <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 10px;">
+    <div class="radio-list">
+        <label><input type="radio" name="questionType" value="vfr" checked> VFR Cruising Altitude</label><br>
+        <label><input type="radio" name="questionType" value="runway"> Runway Indicators</label>
+    </div>
+
+    <div id="complexOptions" style="display: none;">
+        <label><input type="checkbox" id="complexCheckbox"> Complex Question</label>
+    </div>
+    </div>
+
+      <div class="question-area" id="questionText">
+      </div>
+
+      <div class="answer-area" id="answerText">
+      </div>
+      <div id="runwayAnswers" style="display: none; margin-bottom: 10px;">
+        <form id="runwayAnswerForm"></form>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDE: Visual Aid Area -->
+    <div id="wheel-container">
+    </div>
+  </div>
+
+  <script src="frr.js"></script>
+</body>
+</html>

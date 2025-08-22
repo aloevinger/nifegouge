@@ -1,5 +1,7 @@
 document.getElementById("generateBtn").addEventListener("click", generate);
 document.getElementById("solveBtn").addEventListener("click", solve);
+document.getElementById("visualizeBtn").addEventListener("click", visualizeRunway);
+document.getElementById("compassBtn").addEventListener("click", insertCompass);
 let trigger = "vfr"
 let directionG = null; 
 let toG = null; 
@@ -22,13 +24,18 @@ const answers = document.getElementById("answerText");
 radioButtons.forEach(radio => {
   radio.addEventListener("change", () => {
     const container = document.getElementById("questionText");
+    const container2 = document.getElementById("wheel-container");
+    const answerArea = document.getElementById("answerText");
     container.innerHTML = "";
+    answerArea.innerHTML = "";
+    container2.innerHTML = "";
     if (radio.value === "runway" && radio.checked) {
       visualizeBtn.style.display = "inline-block";
       compassBtn.style.display = "inline-block";
       complexOptions.style.display = "block";
       runwayAnswers.style.display = "block";
       answers.style.display = "none";
+      trigger = "runway"
       renderRunwayOptions();
     } else {
       visualizeBtn.style.display = "none";
@@ -120,6 +127,21 @@ function generateVfr(){
     heading = heading%360
     course = course%360
     if(course<0){course+=360}
+
+    let ceilingAltitude = 1000000;
+    for (let line of cloudLayers) {
+      if ((line.includes("BKN") || line.includes("OVC"))) {
+        const altMatch = line.match(/(\d{1,3}(?:,\d{3})*)/);  // Look for 3+ digit number
+        if (altMatch) {
+          altitude = parseInt(altMatch[0].replace(/,/g, ""), 10);
+          if(altitude < ceilingAltitude){
+              ceilingAltitude = altitude;
+          }
+        }
+      }
+    }
+    if(ceilingAltitude>10400 && vis <5){ vis=5;}
+
     const questionArea = document.getElementById("questionText");
     if (questionArea) {
         let output = `Class ${airClass} Airspace<br>`;
@@ -137,6 +159,10 @@ function generateRunway(){
         input.parentElement.style.backgroundColor = "";
         input.checked = false;
     });
+    const container = document.getElementById("wheel-container");
+    container.innerHTML = "";
+    const existingVis = container.querySelectorAll(".vis-img");
+    existingVis.forEach(el => el.remove());
     const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
     const direction = randBetween(0,7)
     const dirRand = Math.random();
@@ -286,12 +312,15 @@ function solveVfr(){
   answerArea.innerHTML = result;
 }
 
-function solveRunway(){
+function solveRunway(visualize = true){
     const runways = ["Runway 18", "Runway 23", "Runway 27", "Runway 32", "Runway 36", "Runway 05", "Runway 09", "Runway 14"];
     let runwayAnswer = "";
     let runwayindex = null;
     let direction = directionG;
     let randPosiAve = 2*randPosiG;
+    if(toG){
+        direction = (direction+4)%8;
+    }
     if(randPosi2G != null){
         randPosiAve = randPosiG+randPosi2G;
     }
@@ -302,9 +331,6 @@ function solveRunway(){
             runwayindex = flagDirectionG;
         }
     }else{
-        if(toG){
-            direction = (direction+4)%8;
-        }
         runwayindex = (direction +randPosiAve)%8;
         if(indicatorG == 0){
             runwayindex = (runwayindex+4)%8;
@@ -314,6 +340,10 @@ function solveRunway(){
         }
     }
     runwayAnswer = runways[runwayindex];
+    let rotation = -45*(direction - runwayindex);
+    if(indicatorG == 1){rotation = (rotation+180)%360}
+    if(!visualize){return rotation}
+
     let selectedInput = null;
     document.querySelectorAll('input[name="runwayAnswer"]').forEach(input => {
         if (input.checked) selectedInput = input;
@@ -374,3 +404,56 @@ function insertAltitudeLine(ceiling, lineAlt, text = "", textAlt = null) {
     container.appendChild(textLabel);
   }
 }
+
+function visualizeRunway() {
+  const container = document.getElementById("wheel-container");
+  if(toG === null) {return;}
+  const rotation = solveRunway(false);
+
+  // Bottom centered arrow
+  const arrow = document.createElement("img");
+  arrow.src = "arrow.png";
+  arrow.alt = "Aircraft Arrow";
+  arrow.className = "vis-img";
+  arrow.style.position = "absolute";
+  arrow.style.bottom = "100%";
+  arrow.style.left = "50%";
+  arrow.style.transform = "translate(-50%,150%)";
+  arrow.style.width = "60px"; // Adjust size if needed
+  container.appendChild(arrow);
+
+  // Top-left corner indicator (sock or tetra)
+  const indicator = document.createElement("img");
+  indicator.src = indicatorG === 0 ? "tetra.png" : "sock.png";
+  indicator.alt = indicatorG === 0 ? "Tetrahedron" : "Windsock";
+  indicator.className = "vis-img";
+  indicator.style.position = "absolute";
+  indicator.style.top = "10%";
+  indicator.style.left = "20%";
+  indicator.style.transform = `rotate(${rotation}deg)`;
+  indicator.style.width = "60px"; // Adjust size if needed
+  container.appendChild(indicator);
+}
+
+function insertCompass() {
+  const container = document.getElementById("wheel-container");
+  if(toG === null) {return;}
+  let direction = directionG;
+  if(toG){
+     direction = (direction+4)%8;
+  }
+  const rotation = -45*(direction-4)
+
+  // Top-left corner indicator (sock or tetra)
+  const compass = document.createElement("img");
+  compass.src = "heading.png";
+  compass.alt = "compass";
+  compass.className = "vis-img";
+  compass.style.position = "absolute";
+  compass.style.top = "50%";
+  compass.style.left = "50%";
+  compass.style.transform = `translate(-50%, -50%) rotate(${rotation}deg)`;
+  compass.style.width = "250px"; // Adjust size if needed
+  container.appendChild(compass);
+}
+

@@ -428,8 +428,8 @@ function visualizeRunway() {
   indicator.alt = indicatorG === 0 ? "Tetrahedron" : "Windsock";
   indicator.className = "vis-img";
   indicator.style.position = "absolute";
-  indicator.style.top = "10%";
-  indicator.style.left = "20%";
+  indicator.style.top = "5%";
+  indicator.style.left = "10%";
   indicator.style.transform = `rotate(${rotation}deg)`;
   indicator.style.width = "60px"; // Adjust size if needed
   container.appendChild(indicator);

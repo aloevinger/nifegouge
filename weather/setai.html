@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SETAI Generator</title>
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    .layout {
+      display: flex;
+      align-items: flex-start;
+      gap: 40px;
+    }
+    .page-center {
+      display: flex;
+      justify-content: center; 
+      align-items: flex-start;
+      padding: 0px;
+    }
+    .form-section {
+      display: flex;
+      flex-direction: column;
+      width: 400px;
+      min-height: 700px;
+      box-sizing: border-box;  
+    }
+    .form-section input {
+        width: 70px; /* or whatever width you prefer */
+    }
+    .buttons {
+      margin-top: 20px;
+    }
+    #wheel-container {
+      position: relative;
+      width: 500px;
+      height: 500px;
+    }
+    #wheel-container img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      transform-origin: center center;
+      transition: transform 0.5s ease-in-out;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-center">
+    <h1>SETAI Problem Generator</h1>
+  </div>
+
+  <div class="page-center">
+    <div class="layout">
+      <!-- Left Side: Table and Buttons in Column -->
+      <div class="form-section">
+        <table>
+            <thead>
+                <tr>
+                <th>Variable</th>
+                <th>Value</th>
+                <th>Units</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                <td>Departure Pressure</td>
+                <td id="depPressCell" style="text-align: center;"></td>
+                <td>inHg</td>
+                </tr>
+                <tr>
+                <td>Assigned Altitude</td>
+                <td id="assignedAltCell" style="text-align: center;"></td>
+                <td>ft</td>
+                </tr>
+                <tr>
+                <td>Arrival Field Elevation</td>
+                <td id="arrivalElevCell" style="text-align: center;"></td>
+                <td>ft</td>
+                </tr>
+                <tr>
+                <td>Arrival Pressure</td>
+                <td id="arrivalPressCell" style="text-align: center;"></td>
+                <td>inHg</td>
+                </tr>
+                <tr>
+                <td><b>S</b>ituation</td>
+                <td id="situationCell" style="text-align: center;"></td>
+                <td>-</td>
+                </tr>
+                <tr>
+                <td><b>E</b>rror</td>
+                <td><input id="errorInput" value=""></td>
+                <td>ft</td>
+                </tr>
+                <tr>
+                <td><b>T</b>rue Altitude</td>
+                <td><input id="trueAltInput" value=""></td>
+                <td>ft</td>
+                </tr>
+                <tr>
+                <td><b>A</b>bsolute Altitude</td>
+                <td><input id="absAltInput" value=""></td>
+                <td>ft</td>
+                </tr>
+                <tr>
+                <td><b>I</b>ndicated Altitude</td>
+                <td><input id="indAltInput" value=""></td>
+                <td>ft</td>
+                </tr>
+            </tbody>
+            </table>
+
+
+        <div class="buttons">
+          <button class="button" id="generateBtn">Generate</button>
+          <button class="button" id="checkBtn">Check</button>
+          <button class="button" id="solveBtn">Solve</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Side: Wheel Images -->
+    <div id="wheel-container"></div>
+  </div>
+
+  <script src="setai.js"></script>
+</body>
+</html>

@@ -19,43 +19,12 @@
 
     .button-row {
       display: flex;
-      gap: 10px;
+      gap: 5px;
       margin-bottom: 20px;
     }
 
     .radio-list {
       margin-bottom: 20px;
-    }
-
-    .question-area {
-      border: 1px solid #aaa;
-      padding: 10px;
-      min-height: 120px;
-      font-family: monospace;
-      white-space: pre-wrap;
-    }
-
-    .answer-area {
-      border: 1px solid #aaa;
-      padding: 10px;
-      min-height: 10px;
-      font-family: monospace;
-      white-space: pre-wrap;
-    }
-
-    #wheel-container {
-      position: relative;
-      width: 500px;
-      height: 500px;
-      background-color: #eee;
-    }
-
-    #wheel-container img {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      transform-origin: center center;
     }
   </style>
 </head>
@@ -65,10 +34,10 @@
     <!-- LEFT SIDE: Buttons, Radios, Question Area -->
     <div class="left-section">
       <div class="button-row">
-        <button id="generateBtn">Generate</button>
-        <button id="solveBtn">Solve</button>
-        <button id="visualizeBtn" style="display: none;">Visualize</button>
-        <button id="compassBtn" style="display: none;">Compass</button>
+        <button class="button" id="generateBtn">Generate</button>
+        <button class="button" id="solveBtn">Check/Solve</button>
+        <button class="button" id="visualizeBtn" style="display: none;">Visualize</button>
+        <button class="button" id="compassBtn" style="display: none;">Compass</button>
       </div>
     <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 10px;">
     <div class="radio-list">
@@ -92,7 +61,7 @@
     </div>
 
     <!-- RIGHT SIDE: Visual Aid Area -->
-    <div id="wheel-container">
+    <div class="Wheel-Container" id="wheel-container">
     </div>
   </div>
 

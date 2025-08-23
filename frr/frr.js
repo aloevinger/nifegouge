@@ -10,6 +10,7 @@ let randPosiG = 0;
 let randPosi2G = null; 
 let indicatorG = null; 
 let flagDirectionG = null; 
+let vfrIndicator = false;
 
 function getSelectedQuestionType() {
   const radios = document.getElementsByName("questionType");
@@ -43,6 +44,7 @@ radioButtons.forEach(radio => {
       complexOptions.style.display = "none";
       runwayAnswers.style.display = "none";
       answers.style.display = "block";
+      let vfrIndicator = false;
     }
   });
 });
@@ -87,6 +89,7 @@ function generate() {
 }
 
 function generateVfr(){
+    vfrIndicator = true;
     const container = document.getElementById("wheel-container");
     const answerArea = document.getElementById("answerText");
     answerArea.innerHTML = "";
@@ -235,6 +238,7 @@ function solveVfr(){
   const questionArea = document.getElementById("questionText");
   const answerArea = document.getElementById("answerText");
   const lines = questionArea.innerHTML.split("<br>").map(line => line.trim());
+  if(!vfrIndicator) return;
 
   let airClass = "";
   let visibility = null;

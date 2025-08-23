@@ -13,7 +13,7 @@ function generate() {
 
 function generateSetai(){
     document.querySelectorAll("input").forEach(input => {
-        input.style.backgroundColor = "";
+        input.classList.remove("bg-green", "bg-yellow", "bg-red");
         input.value = "";
     });
     document.getElementById("situationCell").innerText = "";
@@ -34,7 +34,7 @@ function solve() {
 
 function solveSetai(visualize = true){
     document.querySelectorAll("input").forEach(input => {
-        input.style.backgroundColor = "";
+        input.classList.remove("bg-green", "bg-yellow", "bg-red");
     });
     let depPres = document.getElementById("depPressCell").innerText;
     let assAlt = document.getElementById("assignedAltCell").innerText;
@@ -66,14 +66,13 @@ function checkWork(){
 
     for(i=0; i<4; i++){
         let pError = Math.abs(100*(userAnswers[i]-correctAnswers[i])/correctAnswers[i]);
-        const input =document.getElementById(ids[i]);
-        console.log(pError);
-        if(pError < 2){
-            input.style.backgroundColor = "green";
-        }else if(pError < 5){
-            input.style.backgroundColor = "yellow";
-        }else{
-            input.style.backgroundColor = "red";
+        const input = document.getElementById(ids[i]);
+        if (pError < 2) {
+            input.classList.add("bg-green");
+        } else if (pError < 5) {
+            input.classList.add("bg-yellow");
+        } else {
+            input.classList.add("bg-red");
         }
     }
 }

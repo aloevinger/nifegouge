@@ -34,19 +34,7 @@
         gap: 0px; /* spacing between buttons */
         justify-content: flex-start; /* or center/space-between if preferred */
     }
-    .jetbtn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-
-        margin: 1px;
-        font-weight: bold;
-        font-size: 0.85em;
-        height: 40px;
-        width: auto;
-        box-sizing: border-box;
-    }
+    
     input {
       width: 100%;
       box-sizing: border-box;
@@ -69,7 +57,6 @@
         transform-origin: center;
         pointer-events: none; /* allows clicks to pass through */
     }
-
     td.xcell::before {
         transform: rotate(30deg);
     }
@@ -96,14 +83,14 @@
 <body>
   <h1>Jet Log</h1>
   <div class="button-container">
-    <button class="jetbtn" id="resetBtn">Reset</button>
-    <button class="jetbtn" id="toggleXModeBtn">Enter <br> X-Mode</button>
-    <button class="jetbtn" id="autoGougeBtn">Auto-Gouge <br> Jet Log</button>
-    <button class="jetbtn" id="checkBtn">Check</button>
-    <button class="jetbtn" id="hintBtn">Hint</button>
-    <button class="jetbtn" id="solveNextBtn">Solve Next<br> Box</button>
-    <button class="jetbtn" id="solveRowBtn">Solve Next<br> Row</button>
-    <button class="jetbtn" id="solveAllBtn">Solve All</button>
+    <button class="button" id="resetBtn">Reset</button>
+    <button class="button" id="toggleXModeBtn">Enter <br> X-Mode</button>
+    <button class="button" id="autoGougeBtn">Auto-Gouge <br> Jet Log</button>
+    <button class="button" id="checkBtn">Check</button>
+    <button class="button" id="hintBtn">Hint</button>
+    <button class="button" id="solveNextBtn">Solve Next<br> Box</button>
+    <button class="button" id="solveRowBtn">Solve Next<br> Row</button>
+    <button class="button" id="solveAllBtn">Solve All</button>
   </div>
     <table cellspacing="0" cellpadding="1px">
     <thead>

@@ -1,20 +1,26 @@
-
 body {
   font-family: sans-serif;
   padding: 0;
   background-color: #f4f4f4;
   color: #333;
 }
-button {
-  padding: 0.5em 1em;
-  font-size: 1em;
-  margin-bottom: 1em;
-}
-#question-area {
-  background: #fff;
-  padding: 1em;
+
+.question-area {
+  padding: 10px;
   border-radius: 0.5em;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  border: 1px solid #aaa;
+  min-height: 120px;
+  font-family: monospace;
+  white-space: pre-wrap;
+}
+
+.answer-area {
+  border: 1px solid #aaa;
+  padding: 10px;
+  min-height: 10px;
+  font-family: monospace;
+  white-space: pre-wrap;
 }
 
 .explanation-cell {
@@ -23,8 +29,34 @@ button {
   padding: 4px 8px;
   background-color: #f9f9f9;
   border-left: 2px solid #ddd;
+  word-wrap: break-word;
+  white-space: pre-wrap;
 }
 
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin: 1px;
+  font-weight: bold;
+  font-size: 0.85em;
+  height: 40px;
+  width: auto;
+  box-sizing: border-box;
+  margin-bottom: 1em;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  width: 600px;
+  min-height: 700px;
+  box-sizing: border-box;  
+}
+.form-section input {
+  width: 70px;
+}
 
 .navbar, .sub-navbar {
   display: flex;
@@ -55,4 +87,31 @@ iframe {
   border: none;
   width: 100%;
   height: 100vh;
+
+}
+.Wheel-Container {
+  position: relative;
+  width: 500px;
+  height: 500px;
+}
+
+.Wheel-Container img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transform-origin: center center;
+  transition: transform 0.5s ease-in-out;
+}
+
+.bg-green {
+  background-color: green;
+}
+
+.bg-yellow {
+  background-color: yellow;
+}
+
+.bg-red {
+  background-color: red;
 }

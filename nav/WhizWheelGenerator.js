@@ -1,5 +1,6 @@
 document.getElementById("generateBtn").addEventListener("click", generate);
 document.getElementById("solveBtn").addEventListener("click", solve);
+document.getElementById("checkBtn").addEventListener("click", checkWork);
 let trigger = "Distance"
 
 function getSelectedQuestionType() {
@@ -17,7 +18,8 @@ function clearInputFields() {
     const valueCell = row.cells[2];
     const valueInput = valueCell?.querySelector("input");
     const unitCell = row.cells[3];
-
+    valueInput?.classList.remove("bg-green", "bg-yellow", "bg-red");
+    
     if (variableCell) variableCell.textContent = "";
     if (valueInput) {
       valueInput.value = "";
@@ -497,55 +499,59 @@ function generateTime() {
   rows[indices[2]].cells[2].querySelector("input").value = "";
 }
 
-function solve() {
+function solve(visualize = true) {
+  let solutions = null;
   switch (trigger) {
     case "Distance":
-      solveGenericDST();
+      solutions = solveGenericDST(visualize);
       break;
     case "Speed":
-      solveGenericDST();
+      solutions = solveGenericDST(visualize);
       break;
     case "Time":
-      solveGenericDST();
+      solutions = solveGenericDST(visualize);
       break;
     case "Fuel Consumption":
-      solveFConsume();
+      solutions = solveFConsume(visualize);
       break;
     case "Fuel Conversions":
-      solveFConvert();
+      solutions = solveFConvert(visualize);
       break;
     case "Airspeed":
-      solveAirspeed();
+      solutions = solveAirspeed(visualize);
       break;
     case "Preflight Winds":
-      solvePreflight();
+      solutions = solvePreflight(visualize);
       break;
     case "In Flight Winds":
-      solveInflight();
+      solutions = solveInflight(visualize);
       break;
     case "Lollipop":
-      solveLollipop();
+      solutions = solveLollipop(visualize);
       break;
     case "Time Conversion":
-      solveTime();
+      solutions = solveTime(visualize);
       break;
     default:
       alert("You don fucked up A A ron");
   }
+  return solutions;
 }
 
-function solveGenericDST(){
+function solveGenericDST(visualize = true){
+  let solutions = null;
   const rows = document.querySelectorAll("tbody tr");
   if(rows[0].cells[2].querySelector("input").value==""){
-    solveDST();
+    solutions = solveDST(visualize);
   }else if(rows[1].cells[2].querySelector("input").value==""){
-    solveSTD();
+    solutions = solveSTD(visualize);
   }else if(rows[2].cells[2].querySelector("input").value==""){
-    solveTDS();
+    solutions = solveTDS(visualize);
   }
+  return solutions;
 }
 
-function solveDST() {
+function solveDST(visualize = true) {
   const rows = document.querySelectorAll("tbody tr");
 
   const speed = parseFloat(rows[1].cells[2].querySelector("input").value);
@@ -570,6 +576,7 @@ function solveDST() {
 
   let dist = speed * time;
   dist = Number(dist.toFixed(1));
+  if(!visualize){return [[dist, 0]]}
   rows[0].cells[2].querySelector("input").value = dist;
   rows[0].cells[3].textContent = "nm";
   
@@ -587,7 +594,7 @@ function solveDST() {
   }
 }
 
-function solveSTD() {
+function solveSTD(visualize = true) {
   const rows = document.querySelectorAll("tbody tr");
 
   const dist = parseFloat(rows[0].cells[2].querySelector("input").value);
@@ -615,6 +622,8 @@ function solveSTD() {
 
   let speed = dist / time;
   speed = Number(speed.toFixed(1));
+  
+  if(!visualize){return [[speed, 1]]}
   rows[1].cells[2].querySelector("input").value = speed;
   rows[1].cells[3].textContent = "kts";
 
@@ -632,7 +641,7 @@ function solveSTD() {
   }
 }
 
-function solveTDS() {
+function solveTDS(visualize = true) {
   const rows = document.querySelectorAll("tbody tr");
 
   const dist = parseFloat(rows[0].cells[2].querySelector("input").value);
@@ -658,6 +667,7 @@ function solveTDS() {
     units = "secs";
     explanationCell.textContent = "Distance is much smaller than speed, so use the 36 under speed and secs";
   }
+  if(!visualize){return [[time, 2]]}
 
   explanationRow.style.display = "table-row";
 
@@ -683,7 +693,7 @@ function solveTDS() {
   }
 }
 
-function solveFConsume() {
+function solveFConsume(visualize = true) {
   const rows = document.querySelectorAll("tbody tr");
   const explanationRow = document.querySelectorAll(".explanation-row")[0]; 
   const explanationCell = explanationRow.querySelector(".explanation-cell");
@@ -720,6 +730,7 @@ function solveFConsume() {
     }
 
     const fflow = Number((fquan / time).toFixed(1));
+    if(!visualize){return [[fflow, 0]]}
     rows[0].cells[2].querySelector("input").value = fflow;
     rows[0].cells[3].textContent = "lbs per hour";
 
@@ -749,6 +760,7 @@ function solveFConsume() {
       unit = "secs";
       explanationCell.textContent = "Quantity is much smaller than flow, so use the 36 under flow and secs";
     }
+    if(!visualize){return [[time, 1]]}
 
     rows[1].cells[2].querySelector("input").value = time;
     rows[1].cells[3].textContent = unit;
@@ -772,6 +784,7 @@ function solveFConsume() {
     }
 
     const fquan = Number((fflow * time).toFixed(1));
+    if(!visualize){return [[fquan, 1]]}
     rows[2].cells[2].querySelector("input").value = fquan;
   rows[2].cells[3].innerHTML = `
     <select class="unit-select">
@@ -799,7 +812,7 @@ function solveFConsume() {
   }
 }
 
-function solveFConvert() {
+function solveFConvert(visualize = true) {
   const rows = document.querySelectorAll("tbody tr");
   const explanationRow = document.querySelectorAll(".explanation-row")[0]; 
   const explanationCell = explanationRow.querySelector(".explanation-cell");
@@ -818,6 +831,7 @@ function solveFConvert() {
   if (qnum === 1) {
     const fgal = parseFloat(rows[2].cells[2].querySelector("input").value);
     const flbs = Number((fgal * fweight).toFixed(1));
+    if(!visualize){return [[flbs, 1]]}
 
     rows[1].cells[2].querySelector("input").value = flbs;
     rows[1].cells[3].textContent = "lbs";
@@ -827,6 +841,7 @@ function solveFConvert() {
   } else if (qnum === 2) {
     const flbs = parseFloat(rows[1].cells[2].querySelector("input").value);
     const fgal = Number((flbs / fweight).toFixed(1));
+    if(!visualize){return [[fgal, 2]]}
 
     rows[2].cells[2].querySelector("input").value = fgal;
     rows[2].cells[3].textContent = "gal";
@@ -851,7 +866,7 @@ function solveFConvert() {
   }
 }
 
-function solveAirspeed() {
+function solveAirspeed(visualize = true) {
   const rows = document.querySelectorAll("tbody tr");
 
   // Adjusted for HTML layout: 3rd row is explanation row, so use rows[0], [1], [2], [3], [4], [5], [6]
@@ -881,6 +896,7 @@ function solveAirspeed() {
     const tas = parseFloat(tasInput.value);
     let cas = casFromTas(temp, palt, tas);
     cas = Math.round(cas);
+    if(!visualize){return [[palt, 4], [cas, 5]]}
 
     paltInput.value = Math.round(palt);
     casInput.value = cas;
@@ -896,6 +912,7 @@ function solveAirspeed() {
     const cas = parseFloat(casInput.value);
     let tas = tasFromCas(temp, palt, cas);
     tas = Math.round(tas);
+    if(!visualize){return [[palt, 4], [tas, 5]]}
 
     paltInput.value = Math.round(palt);
     tasInput.value = tas;
@@ -924,7 +941,7 @@ function solveAirspeed() {
   }
 }
 
-function solvePreflight() {
+function solvePreflight(visualize = true) {
   removeDots();
   const rows = document.querySelectorAll("tbody tr");
 
@@ -961,6 +978,7 @@ function solvePreflight() {
   else if (hwtw > 0) hwtwText = hwtw + " T";
   else hwtwText = "0";
 
+  if(!visualize){return [[xw, 5], [ca, 6], [th, 7], [hwtw, 8], [gs, 9]]}
   // Write output to rows 5–9 (skip row 3 explanation)
   rows[5].cells[2].querySelector("input").value = xwText;
   rows[6].cells[2].querySelector("input").value = caText;
@@ -1012,7 +1030,7 @@ function solvePreflight() {
   }
 }
 
-function solveInflight() {
+function solveInflight(visualize = true) {
   removeDots();
   const rows = document.querySelectorAll("tbody tr");
 
@@ -1054,6 +1072,7 @@ function solveInflight() {
   let hwtwText = Math.round(hwtw);
   hwtwText = hwtwText < 0 ? `${-hwtwText} H` : hwtwText > 0 ? `${hwtwText} T` : "0";
 
+  if(!visualize){return [[da, 5], [xw, 6], [hwtw, 7], [dir, 8], [vel, 9]]}
   // Output to rows[5]–[9]
   rows[5].cells[2].querySelector("input").value = daText;
   rows[6].cells[2].querySelector("input").value = xwText;
@@ -1101,7 +1120,7 @@ function solveInflight() {
   }
 }
 
-function solveLollipop() {
+function solveLollipop(visualize = true) {
   removeArrows();
   const rows = document.querySelectorAll("tbody tr");
 
@@ -1131,6 +1150,8 @@ function solveLollipop() {
 
   let innerDeg = 360 - t3;
 
+  
+  if(!visualize){return [[t3, 5], [r3, 6]]}
   // Output
   rows[5].cells[2].querySelector("input").value = t3;
   rows[6].cells[2].querySelector("input").value = r3;
@@ -1147,7 +1168,7 @@ function solveLollipop() {
   insertDot(r1, t1, t3, "Dot", scale);
 }
 
-function solveTime() {
+function solveTime(visualize = true) {
   const rows = document.querySelectorAll("tbody tr");
   let duration = rows[0].cells[2].querySelector("input").value;
   const [hours, minutes] = duration.split("+").map(Number);
@@ -1199,6 +1220,7 @@ function solveTime() {
     time1 = zuluLocal(zulutime, -zd);
   }
 
+  if(!visualize){return [[time1, 9], [zulutime, 5], [time2, 6], [zulutime2, 7]]}
   rows[4].cells[2].querySelector("input").value = time1.toString().padStart(4, "0");
   rows[5].cells[2].querySelector("input").value = zulutime.toString().padStart(4, "0");
   rows[7].cells[2].querySelector("input").value = time2.toString().padStart(4, "0");
@@ -1211,6 +1233,37 @@ function solveTime() {
   document.getElementById("depZulu").textContent = rows[5].cells[2].querySelector("input").value+ " " + rows[5].cells[3].textContent;
   document.getElementById("destLocal").textContent = rows[7].cells[2].querySelector("input").value+ " " + rows[5].cells[3].textContent;
   document.getElementById("destZulu").textContent = rows[6].cells[2].querySelector("input").value+ " " + rows[6].cells[3].textContent;
+}
+
+function checkWork(){
+    const rows = document.querySelectorAll("tbody tr");
+    let solutions = solve(false);
+    console.log(solutions)
+    if(solutions === null){return}
+    for(i=0; i<solutions.length; i++){
+        let solution = solutions[i][0]
+        let row = solutions[i][1]
+        console.log(solution)
+        console.log(row)
+        const input = rows[row].cells[2].querySelector("input");
+        let uSolution = parseFloat(input.value);
+        console.log(uSolution)
+        if (isNaN(uSolution)) continue;
+        let pError;
+        if (solution === 0) {
+            pError = Math.abs(uSolution) < 0.01 ? 0 : 100; 
+        } else {
+            pError = Math.abs(100 * (uSolution - solution) / solution);
+        }
+        input.classList.remove("bg-green", "bg-yellow", "bg-red");
+        if (pError < 2) {
+            input.classList.add("bg-green");
+        } else if (pError < 5) {
+            input.classList.add("bg-yellow");
+        } else {
+            input.classList.add("bg-red");
+        }
+    }
 }
 
 function tasFromCas(temp, palt, cas){

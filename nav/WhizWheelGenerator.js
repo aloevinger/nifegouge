@@ -1,6 +1,6 @@
 document.getElementById("generateBtn").addEventListener("click", generate);
 document.getElementById("solveBtn").addEventListener("click", solve);
-document.getElementById("checkBtn").addEventListener("click", checkWork);
+//document.getElementById("checkBtn").addEventListener("click", checkWork);
 let trigger = "Distance"
 
 function getSelectedQuestionType() {

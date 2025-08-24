@@ -960,7 +960,7 @@ function solveAirspeed(visualize = true) {
     qnum = 5;
   } else if (tasInput && tasInput.dataset.solved =="0") {
     qnum = 6;
-  }else{return}
+  }
 
   let palt = 0;
   if (isNaN(calt)) {
@@ -968,6 +968,7 @@ function solveAirspeed(visualize = true) {
   } else {
     palt = (29.92 - altim) * 1000 + calt;
   }
+  if(qnum === -1 && !visualize){return [[palt, 4, palt]];}
 
   if (qnum === 5) {
     const tas = parseFloat(tasInput.value);
@@ -1006,6 +1007,7 @@ function solveAirspeed(visualize = true) {
     outerDeg = turnToDegrees(outnum);
     innerDeg = turnToDegrees(inNum);
   } else {
+    if(!visualize){return}
     outerDeg = 0;
     innerDeg = 0;
   }

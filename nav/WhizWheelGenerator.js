@@ -1,7 +1,19 @@
 document.getElementById("generateBtn").addEventListener("click", generate);
 document.getElementById("solveBtn").addEventListener("click", solve);
-//document.getElementById("checkBtn").addEventListener("click", checkWork);
+document.getElementById("checkBtn").addEventListener("click", checkWork);
 let trigger = "Distance"
+window.addEventListener("DOMContentLoaded", () => {attachEditListeners();});
+
+function attachEditListeners() {
+  const inputs = document.querySelectorAll("td input");
+  
+  inputs.forEach(input => {
+    input.addEventListener("input", () => {
+      input.dataset.solved = "0";
+      resetBackground() 
+    });
+  });
+}
 
 function getSelectedQuestionType() {
   const radios = document.getElementsByName("questionType");
@@ -24,6 +36,7 @@ function clearInputFields() {
     if (valueInput) {
       valueInput.value = "";
       valueInput.style.display = "none";
+      valueInput.dataset.solved = "0";
     }
     if (unitCell) unitCell.textContent = "";
   });
@@ -33,13 +46,22 @@ function clearInputFields() {
   });
 }
 
+function resetBackground() {
+  const rows = document.querySelectorAll("tbody tr");
+  rows.forEach(row => {
+    const valueCell = row.cells[2];
+    const valueInput = valueCell?.querySelector("input");
+    valueInput?.classList.remove("bg-green", "bg-yellow", "bg-red");
+  });
+}
+
 function randBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 function generate() {
   clearInputFields();
-
+  const rows = document.querySelectorAll("tbody tr");
   const selectedType = getSelectedQuestionType();
   if (!selectedType) {
     alert("Please select a question type first.");
@@ -138,6 +160,9 @@ function generateDST(selectedType) {
   rows[0].cells[2].querySelector("input").value = dist;
   rows[1].cells[2].querySelector("input").value = speed;
   rows[2].cells[2].querySelector("input").value = time;
+  rows[0].cells[2].querySelector("input").dataset.solved = "1";
+  rows[1].cells[2].querySelector("input").dataset.solved = "1";
+  rows[2].cells[2].querySelector("input").dataset.solved = "1";
 
   rows[0].cells[3].textContent = "nm";
   rows[1].cells[3].textContent = "kts";
@@ -151,12 +176,15 @@ function generateDST(selectedType) {
   // Clear answer cell (simulate Apps Script behavior)
   if (selectedType === "Distance") {
     rows[0].cells[2].querySelector("input").value = "";
+    rows[0].cells[2].querySelector("input").dataset.solved = "0";
     rows[0].cells[3].textContent = "";
   } else if (selectedType === "Speed") {
     rows[1].cells[2].querySelector("input").value = "";
+    rows[1].cells[2].querySelector("input").dataset.solved = "0";
     rows[1].cells[3].textContent = "";
   } else if (selectedType === "Time") {
     rows[2].cells[2].querySelector("input").value = "";
+    rows[2].cells[2].querySelector("input").dataset.solved = "0";
     rows[2].cells[3].textContent = "";
   }
 }
@@ -233,6 +261,9 @@ function generateFConsume() {
   rows[0].cells[2].querySelector("input").value = fflow;
   rows[1].cells[2].querySelector("input").value = time;
   rows[2].cells[2].querySelector("input").value = quan;
+  rows[0].cells[2].querySelector("input").dataset.solved = "1";
+  rows[1].cells[2].querySelector("input").dataset.solved = "1";
+  rows[2].cells[2].querySelector("input").dataset.solved = "1";
 
   rows[0].cells[3].textContent = "lbs per hour";
   rows[1].cells[3].textContent = units;
@@ -243,6 +274,7 @@ function generateFConsume() {
     </select>`;
   rows[vrand - 1].cells[2].querySelector("input").value = "";
   rows[vrand - 1].cells[3].textContent = "";
+  rows[vrand - 1].cells[2].querySelector("input").dataset.solved = "0";
   if (vrand === 3){
     explanationRow.style.display = "none";
   }
@@ -283,10 +315,15 @@ function generateFConvert() {
   rows[0].cells[2].querySelector("input").value = fweight;
   rows[1].cells[2].querySelector("input").value = flbs;
   rows[2].cells[2].querySelector("input").value = fgal;
+  rows[0].cells[2].querySelector("input").dataset.solved = "1";
+  rows[1].cells[2].querySelector("input").dataset.solved = "1";
+  rows[2].cells[2].querySelector("input").dataset.solved = "1";
 
   // Clear the randomly selected answer field
   const ansInput = rows[vrand].cells[2].querySelector("input");
-  if (ansInput) ansInput.value = "";
+  if (ansInput){
+    ansInput.dataset.solved = "0";
+    ansInput.value = ""};
 }
 
 function generateAirspeed() {
@@ -321,12 +358,17 @@ function generateAirspeed() {
   for (let i = 0; i < values.length+1; i++) {
     if (i === 3||i === 4) continue;
     const input = rows[i].cells[2].querySelector("input");
-    if (input) input.value = values[i];
+    if (input){
+      input.dataset.solved = "1";
+      input.value = values[i]};
   }
 
   // Clear answer field
   const ansInput = rows[hiddenIndex].cells[2].querySelector("input");
-  if (ansInput) ansInput.value = "";
+  if (ansInput){
+    ansInput.dataset.solved = "0";
+    ansInput.value = "";
+  } 
 }
 
 function generatePreflight() {
@@ -355,6 +397,10 @@ function generatePreflight() {
   rows[1].cells[2].querySelector("input").value = tas;
   rows[2].cells[2].querySelector("input").value = dir;
   rows[4].cells[2].querySelector("input").value = kts;
+  rows[0].cells[2].querySelector("input").dataset.solved = "1";
+  rows[1].cells[2].querySelector("input").dataset.solved = "1";
+  rows[2].cells[2].querySelector("input").dataset.solved = "1";
+  rows[4].cells[2].querySelector("input").dataset.solved = "1";
 } 
 
 function generateInflight() {
@@ -397,7 +443,9 @@ function generateInflight() {
   for (let i = 0; i < values.length; i++) {
     if (i === 3) continue;
     const input = rows[i].cells[2].querySelector("input");
-    if (input) input.value = values[i];
+    if (input) {
+      input.dataset.solved = "1"
+      input.value = values[i];}
   }
 }
 
@@ -442,7 +490,9 @@ function generateLollipop() {
   for (let i = 0; i < values.length; i++) {
     if (i === 3) continue;
     const input = rows[i].cells[2].querySelector("input");
-    if (input) input.value = values[i];
+    if (input){
+      input.dataset.solved = "1";
+      input.value = values[i];}
   }
 }
 
@@ -483,8 +533,15 @@ function generateTime() {
   rows[2].cells[2].querySelector("input").value = zd2;
   rows[4].cells[2].querySelector("input").value = time1.toString().padStart(4, "0");
   rows[5].cells[2].querySelector("input").value = zulutime.toString().padStart(4, "0");
-  rows[7].cells[2].querySelector("input").value = time2.toString().padStart(4, "0");
   rows[6].cells[2].querySelector("input").value = zulutime2.toString().padStart(4, "0");
+  rows[7].cells[2].querySelector("input").value = time2.toString().padStart(4, "0");
+  rows[0].cells[2].querySelector("input").dataset.solved = "1";
+  rows[1].cells[2].querySelector("input").dataset.solved = "1";
+  rows[2].cells[2].querySelector("input").dataset.solved = "1";
+  rows[4].cells[2].querySelector("input").dataset.solved = "1";
+  rows[5].cells[2].querySelector("input").dataset.solved = "1";
+  rows[6].cells[2].querySelector("input").dataset.solved = "1";
+  rows[7].cells[2].querySelector("input").dataset.solved = "1";
 
   rows[4].cells[3].textContent = "LT";
   rows[5].cells[3].textContent = "UTC";
@@ -497,9 +554,13 @@ function generateTime() {
   rows[indices[0]].cells[2].querySelector("input").value = "";
   rows[indices[1]].cells[2].querySelector("input").value = "";
   rows[indices[2]].cells[2].querySelector("input").value = "";
+  rows[indices[0]].cells[2].querySelector("input").dataset.solved = "0";
+  rows[indices[1]].cells[2].querySelector("input").dataset.solved = "0";
+  rows[indices[2]].cells[2].querySelector("input").dataset.solved = "0";
 }
 
 function solve(visualize = true) {
+  resetBackground() 
   let solutions = null;
   switch (trigger) {
     case "Distance":
@@ -541,11 +602,11 @@ function solve(visualize = true) {
 function solveGenericDST(visualize = true){
   let solutions = null;
   const rows = document.querySelectorAll("tbody tr");
-  if(rows[0].cells[2].querySelector("input").value==""){
+  if(rows[0].cells[2].querySelector("input").dataset.solved=="0"){
     solutions = solveDST(visualize);
-  }else if(rows[1].cells[2].querySelector("input").value==""){
+  }else if(rows[1].cells[2].querySelector("input").dataset.solved=="0"){
     solutions = solveSTD(visualize);
-  }else if(rows[2].cells[2].querySelector("input").value==""){
+  }else if(rows[2].cells[2].querySelector("input").dataset.solved=="0"){
     solutions = solveTDS(visualize);
   }
   return solutions;
@@ -561,23 +622,25 @@ function solveDST(visualize = true) {
 
   const explanationRow = document.querySelectorAll(".explanation-row")[0]; 
   const explanationCell = explanationRow.querySelector(".explanation-cell");
+  let explainTxt = ""
   if (unit === "secs") {
     time = time1/3600;
-    explanationCell.textContent = "Secs so use the high speed scale 36 under speed";
-    explanationRow.style.display = "table-row";
+    explainTxt = "Secs so use the high speed scale 36 under speed";
   } else if (unit === "mins") {
     time = time1 / 60;
-    explanationCell.textContent = "Mins so use the standard scale 60 under speed";
-    explanationRow.style.display = "table-row";
+    explainTxt = "Mins so use the standard scale 60 under speed";
   } else {
-    explanationCell.textContent = "Hrs so use the 10 under speed";
-    explanationRow.style.display = "table-row";
+    explainTxt = "Hrs so use the 10 under speed";
   }
 
   let dist = speed * time;
   dist = Number(dist.toFixed(1));
-  if(!visualize){return [[dist, 0]]}
+  if(!visualize){return [[dist, 0, dist]]}
+  
+  explanationRow.style.display = "table-row";
+  explanationCell.textContent = explainTxt;
   rows[0].cells[2].querySelector("input").value = dist;
+  rows[0].cells[2].querySelector("input").dataset.solved = "1";
   rows[0].cells[3].textContent = "nm";
   
   outerDeg = turnToDegrees(dist);
@@ -605,26 +668,28 @@ function solveSTD(visualize = true) {
 
   const explanationRow = document.querySelectorAll(".explanation-row")[0]; 
   const explanationCell = explanationRow.querySelector(".explanation-cell");
+  let explainTxt = "";
   if (unit === "secs") {
     time = time1 / 3600;
     inner = 36;
-    explanationCell.textContent = "Secs so use the high speed scale 36 under speed";
-    explanationRow.style.display = "table-row";
+    explainTxt = "Secs so use the high speed scale 36 under speed";
   } else if (unit === "mins") {
     time = time1 / 60;
     inner = 60;
-    explanationCell.textContent = "Mins so use the standard scale 60 under speed";
-    explanationRow.style.display = "table-row";
+    explainTxt = "Mins so use the standard scale 60 under speed";
   } else {
-    explanationCell.textContent = "Hrs so use the 10 under speed";
-    explanationRow.style.display = "table-row";
+    explainTxt = "Hrs so use the 10 under speed";
   }
 
   let speed = dist / time;
   speed = Number(speed.toFixed(1));
   
-  if(!visualize){return [[speed, 1]]}
+  if(!visualize){return [[speed, 1, speed]]}
+
+  explanationRow.style.display = "table-row";
+  explanationCell.textContent = explainTxt;
   rows[1].cells[2].querySelector("input").value = speed;
+  rows[1].cells[2].querySelector("input").dataset.solved = "1";
   rows[1].cells[3].textContent = "kts";
 
   outerDeg = turnToDegrees(speed);
@@ -651,27 +716,30 @@ function solveTDS(visualize = true) {
 
   const explanationRow = document.querySelectorAll(".explanation-row")[0]; 
   const explanationCell = explanationRow.querySelector(".explanation-cell");
+  let explainTxt = ""
 
   if (time > 1.66) {
     time = Number(time.toFixed(1));
     units = "hrs";
-    explanationCell.textContent = "Distance is much greater than speed, so use the 10 under speed and hrs";
+    explainTxt = "Distance is much greater than speed, so use the 10 under speed and hrs";
   } else if (time > 0.027) {
     time *= 60;
     time = Number(time.toFixed(1));
     units = "mins";
-    explanationCell.textContent = "Distance is not too small or large, so use the 60 under speed and mins";
+    explainTxt = "Distance is not too small or large, so use the 60 under speed and mins";
   } else {
     time *= 3600;
     time = Number(time.toFixed(1));
     units = "secs";
-    explanationCell.textContent = "Distance is much smaller than speed, so use the 36 under speed and secs";
+    explainTxt = "Distance is much smaller than speed, so use the 36 under speed and secs";
   }
-  if(!visualize){return [[time, 2]]}
+  if(!visualize){return [[time, 2, time]]}
 
   explanationRow.style.display = "table-row";
+  explanationCell.textContent = explainTxt;
 
   rows[2].cells[2].querySelector("input").value = time;
+  rows[2].cells[2].querySelector("input").dataset.solved = "1";
   rows[2].cells[3].innerHTML = `
     <select class="unit-select">
       <option value="hrs" ${units === 'hrs' ? 'selected' : ''}>hrs</option>
@@ -697,12 +765,12 @@ function solveFConsume(visualize = true) {
   const rows = document.querySelectorAll("tbody tr");
   const explanationRow = document.querySelectorAll(".explanation-row")[0]; 
   const explanationCell = explanationRow.querySelector(".explanation-cell");
-  explanationRow.style.display = "table-row";
+  let explainTxt = "";
 
   let qnum = -1;
   for (let i of [0, 1, 2]) {
     const input = rows[i].cells[2].querySelector("input");
-    if (input && input.value.trim() === "") {
+    if (input && input.dataset.solved=="0") {
       qnum = i;
       break;
     }
@@ -720,18 +788,19 @@ function solveFConsume(visualize = true) {
     if (unit === "secs") {
       time = time / 3600;
       inner = 36;
-      explanationCell.textContent = "Secs so use the high speed scale 36 under flow rate";
+      explainTxt = "Secs so use the high speed scale 36 under flow rate";
     } else if (unit === "mins") {
       time = time / 60;
       inner = 60;
-      explanationCell.textContent = "Mins so use the standard scale 60 under flow rate";
+      explainTxt = "Mins so use the standard scale 60 under flow rate";
     } else {
-      explanationCell.textContent = "Hrs so use the 10 under flow rate";
+      explainTxt = "Hrs so use the 10 under flow rate";
     }
 
     const fflow = Number((fquan / time).toFixed(1));
-    if(!visualize){return [[fflow, 0]]}
+    if(!visualize){return [[fflow, 0, fflow]]}
     rows[0].cells[2].querySelector("input").value = fflow;
+    rows[0].cells[2].querySelector("input").dataset.solved = "1";
     rows[0].cells[3].textContent = "lbs per hour";
 
     outerDeg = turnToDegrees(fflow);
@@ -748,21 +817,22 @@ function solveFConsume(visualize = true) {
     if (time > 1.66) {
       time = Number(time.toFixed(1));
       unit = "hrs";
-      explanationCell.textContent = "Quantity is much greater than flow, so use the 10 under flow and hrs";
+      explainTxt = "Quantity is much greater than flow, so use the 10 under flow and hrs";
     } else if (time > 0.027) {
       time *= 60;
       time = Number(time.toFixed(1));
       unit = "mins";
-      explanationCell.textContent = "Quantity is not too small or large, so use the 60 under flow and mins";
+      explainTxt = "Quantity is not too small or large, so use the 60 under flow and mins";
     } else {
       time *= 3600;
       time = Number(time.toFixed(1));
       unit = "secs";
-      explanationCell.textContent = "Quantity is much smaller than flow, so use the 36 under flow and secs";
+      explainTxt = "Quantity is much smaller than flow, so use the 36 under flow and secs";
     }
-    if(!visualize){return [[time, 1]]}
+    if(!visualize){return [[time, 1, time]]}
 
     rows[1].cells[2].querySelector("input").value = time;
+    rows[1].cells[2].querySelector("input").dataset.solved = "1";
     rows[1].cells[3].textContent = unit;
 
     outerDeg = turnToDegrees(fquan);
@@ -775,31 +845,35 @@ function solveFConsume(visualize = true) {
 
     if (unit === "secs") {
       time = time1 / 3600;
-      explanationCell.textContent = "Secs so use the high speed scale 36 under flow rate";
+      explainTxt = "Secs so use the high speed scale 36 under flow rate";
     } else if (unit === "mins") {
       time = time1 / 60;
-      explanationCell.textContent = "Mins so use the standard scale 60 under flow rate";
+      explainTxt = "Mins so use the standard scale 60 under flow rate";
     } else {
-      explanationCell.textContent = "Hrs so use the 10 under flow rate";
+      explainTxt = "Hrs so use the 10 under flow rate";
     }
 
     const fquan = Number((fflow * time).toFixed(1));
-    if(!visualize){return [[fquan, 1]]}
+    if(!visualize){return [[fquan, 2, fquan]]}
     rows[2].cells[2].querySelector("input").value = fquan;
-  rows[2].cells[3].innerHTML = `
-    <select class="unit-select">
-      <option value="lbs" selected>lbs</option>
-      <option value="gal">gal</option>
-    </select>`;
+    rows[2].cells[2].querySelector("input").dataset.solved = "1";
+    rows[2].cells[3].innerHTML = `
+      <select class="unit-select">
+        <option value="lbs" selected>lbs</option>
+        <option value="gal">gal</option>
+      </select>`;
 
     outerDeg = turnToDegrees(fquan);
     innerDeg = turnToDegrees(time1);
   }else {
-    explanationCell.textContent = "Nothing's blank, nothing to solve";
     outerDeg = 0;
     innerDeg = 0;
+    if(!visualize){return}
+    explainTxt = "Nothing's blank, nothing to solve";
   }
   
+  explanationRow.style.display = "table-row";
+  explanationCell.textContent = explainTxt;
   const frontImg = Array.from(document.getElementById("wheel-container").children)
     .find(img => img.alt === "Front Wheel");
   if (frontImg) {
@@ -820,7 +894,7 @@ function solveFConvert(visualize = true) {
   let qnum = -1;
   for (let i of [1, 2]) {
     const input = rows[i].cells[2].querySelector("input");
-    if (input && input.value.trim() === "") {
+    if (input && input.dataset.solved=="0") {
       qnum = i;
       break;
     }
@@ -831,9 +905,10 @@ function solveFConvert(visualize = true) {
   if (qnum === 1) {
     const fgal = parseFloat(rows[2].cells[2].querySelector("input").value);
     const flbs = Number((fgal * fweight).toFixed(1));
-    if(!visualize){return [[flbs, 1]]}
+    if(!visualize){return [[flbs, 1, flbs]]}
 
     rows[1].cells[2].querySelector("input").value = flbs;
+    rows[1].cells[2].querySelector("input").dataset.solved = "1";
     rows[1].cells[3].textContent = "lbs";
     
     outerDeg = turnToDegrees(flbs);
@@ -841,18 +916,20 @@ function solveFConvert(visualize = true) {
   } else if (qnum === 2) {
     const flbs = parseFloat(rows[1].cells[2].querySelector("input").value);
     const fgal = Number((flbs / fweight).toFixed(1));
-    if(!visualize){return [[fgal, 2]]}
+    if(!visualize){return [[fgal, 2, fgal]]}
 
     rows[2].cells[2].querySelector("input").value = fgal;
+    rows[2].cells[2].querySelector("input").dataset.solved = "1";
     rows[2].cells[3].textContent = "gal";
     
     outerDeg = turnToDegrees(flbs);
     innerDeg = turnToDegrees(fgal);
   } else {
-    explanationRow.style.display = "table-row";
-    explanationCell.textContent = "Nothing's blank, nothing to solve.";
     outerDeg = 0;
     innerDeg = 0;
+    if(!visualize){return}
+    explanationRow.style.display = "table-row";
+    explanationCell.textContent = "Nothing's blank, nothing to solve.";
   }
   const frontImg = Array.from(document.getElementById("wheel-container").children)
     .find(img => img.alt === "Front Wheel");
@@ -879,11 +956,11 @@ function solveAirspeed(visualize = true) {
   const tasInput = rows[6].cells[2].querySelector("input");
 
   let qnum = -1;
-  if (casInput && casInput.value.trim() === "") {
+  if (casInput && casInput.dataset.solved =="0") {
     qnum = 5;
-  } else if (tasInput && tasInput.value.trim() === "") {
+  } else if (tasInput && tasInput.dataset.solved =="0") {
     qnum = 6;
-  }
+  }else{return}
 
   let palt = 0;
   if (isNaN(calt)) {
@@ -896,10 +973,12 @@ function solveAirspeed(visualize = true) {
     const tas = parseFloat(tasInput.value);
     let cas = casFromTas(temp, palt, tas);
     cas = Math.round(cas);
-    if(!visualize){return [[palt, 4], [cas, 5]]}
+    if(!visualize){return [[palt, 4, palt], [cas, 5, cas]]}
 
     paltInput.value = Math.round(palt);
+    paltInput.dataset.solved ="1";
     casInput.value = cas;
+    casInput.dataset.solved ="1";
 
     const palt_k = palt / 1000;
     const inNum = 0.00510393 * Math.pow(palt_k, 2) - 1.13231 * palt_k + 75.00346;
@@ -912,10 +991,12 @@ function solveAirspeed(visualize = true) {
     const cas = parseFloat(casInput.value);
     let tas = tasFromCas(temp, palt, cas);
     tas = Math.round(tas);
-    if(!visualize){return [[palt, 4], [tas, 5]]}
+    if(!visualize){return [[palt, 4, palt], [tas, 6, tas]]}
 
     paltInput.value = Math.round(palt);
+    paltInput.dataset.solved ="1";
     tasInput.value = tas;
+    tasInput.dataset.solved ="1";
 
     const palt_k = palt / 1000;
     const inNum = 0.00510393 * Math.pow(palt_k, 2) - 1.13231 * palt_k + 75.00346;
@@ -950,11 +1031,6 @@ function solvePreflight(visualize = true) {
   const dir = parseFloat(rows[2].cells[2].querySelector("input").value);
   let kts = parseFloat(rows[4].cells[2].querySelector("input").value);
 
-  // Flag if wind speed exceeds 60
-  if (kts > 60) {
-    rows[4].cells[3].textContent = "kts| Use 2x numbers";
-  }
-
   const xw = kts * Math.sin((dir - tc) * Math.PI / 180);
   const rawCaDeg = 180 / Math.PI * Math.asin(xw / tas);
   const ca = Math.round(rawCaDeg * Math.sign(rawCaDeg) * Math.sign(xw));
@@ -978,13 +1054,23 @@ function solvePreflight(visualize = true) {
   else if (hwtw > 0) hwtwText = hwtw + " T";
   else hwtwText = "0";
 
-  if(!visualize){return [[xw, 5], [ca, 6], [th, 7], [hwtw, 8], [gs, 9]]}
+  if(!visualize){return [[xw, 5, 100], [ca, 6, 100], [th, 7, 100], [hwtw, 8, 150], [gs, 9, 200]]}
+  
+  // Flag if wind speed exceeds 60
+  if (kts > 60) {
+    rows[4].cells[3].textContent = "kts| Use 2x numbers";
+  }
   // Write output to rows 5–9 (skip row 3 explanation)
   rows[5].cells[2].querySelector("input").value = xwText;
   rows[6].cells[2].querySelector("input").value = caText;
   rows[7].cells[2].querySelector("input").value = Math.round(th);
   rows[8].cells[2].querySelector("input").value = hwtwText;
   rows[9].cells[2].querySelector("input").value = gs;
+  rows[5].cells[2].querySelector("input").dataset.solved = "1";
+  rows[6].cells[2].querySelector("input").dataset.solved = "1";
+  rows[7].cells[2].querySelector("input").dataset.solved = "1";
+  rows[8].cells[2].querySelector("input").dataset.solved = "1";
+  rows[9].cells[2].querySelector("input").dataset.solved = "1";
 
   // Rotated image display
   let arrowDeg = dir - tc;
@@ -1059,10 +1145,6 @@ function solveInflight(visualize = true) {
   let xw1 = xw;
   let hwtw1 = hwtw;
 
-  if (Math.abs(xw) > 60) rows[6].cells[3].textContent = "kts| Use 2x numbers";
-
-  if (Math.abs(hwtw) > 60) rows[7].cells[3].textContent = "kts| Use 2x numbers";
-
   let xwText = Math.round(xw) < 0 ? `${Math.round(-xw)} L` :
                Math.round(xw) > 0 ? `${Math.round(xw)} R` : "0";
 
@@ -1072,13 +1154,21 @@ function solveInflight(visualize = true) {
   let hwtwText = Math.round(hwtw);
   hwtwText = hwtwText < 0 ? `${-hwtwText} H` : hwtwText > 0 ? `${hwtwText} T` : "0";
 
-  if(!visualize){return [[da, 5], [xw, 6], [hwtw, 7], [dir, 8], [vel, 9]]}
+  if(!visualize){return [[da, 5, 100], [xw, 6, 100], [hwtw, 7, 150], [dir, 8, 100], [vel, 9, 200]]}
+  if (Math.abs(xw) > 60) rows[6].cells[3].textContent = "kts| Use 2x numbers";
+
+  if (Math.abs(hwtw) > 60) rows[7].cells[3].textContent = "kts| Use 2x numbers";
   // Output to rows[5]–[9]
   rows[5].cells[2].querySelector("input").value = daText;
   rows[6].cells[2].querySelector("input").value = xwText;
   rows[7].cells[2].querySelector("input").value = hwtwText;
   rows[8].cells[2].querySelector("input").value = dir;
   rows[9].cells[2].querySelector("input").value = vel;
+  rows[5].cells[2].querySelector("input").dataset.solved = "1";
+  rows[6].cells[2].querySelector("input").dataset.solved = "1";
+  rows[7].cells[2].querySelector("input").dataset.solved = "1";
+  rows[8].cells[2].querySelector("input").dataset.solved = "1";
+  rows[9].cells[2].querySelector("input").dataset.solved = "1";
 
   // Rotation logic
   const innerDeg = 360 - trk;
@@ -1151,10 +1241,12 @@ function solveLollipop(visualize = true) {
   let innerDeg = 360 - t3;
 
   
-  if(!visualize){return [[t3, 5], [r3, 6]]}
+  if(!visualize){return [[t3, 5, 100], [r3, 6, 50]]}
   // Output
   rows[5].cells[2].querySelector("input").value = t3;
   rows[6].cells[2].querySelector("input").value = r3;
+  rows[5].cells[2].querySelector("input").dataset.solved = "1";
+  rows[6].cells[2].querySelector("input").dataset.solved = "1";
 
   // Scale and rotation logic
   let scale = (r1 > 70 || r2 > 70) ? 0.5 : 1;
@@ -1220,11 +1312,15 @@ function solveTime(visualize = true) {
     time1 = zuluLocal(zulutime, -zd);
   }
 
-  if(!visualize){return [[time1, 9], [zulutime, 5], [time2, 6], [zulutime2, 7]]}
+  if(!visualize){return [[time1, 4, 50], [zulutime, 5, 50], [zulutime2, 6, 50], [time2, 7, 50]]}
   rows[4].cells[2].querySelector("input").value = time1.toString().padStart(4, "0");
   rows[5].cells[2].querySelector("input").value = zulutime.toString().padStart(4, "0");
-  rows[7].cells[2].querySelector("input").value = time2.toString().padStart(4, "0");
   rows[6].cells[2].querySelector("input").value = zulutime2.toString().padStart(4, "0");
+  rows[7].cells[2].querySelector("input").value = time2.toString().padStart(4, "0");
+  rows[4].cells[2].querySelector("input").dataset.solved = "1";
+  rows[5].cells[2].querySelector("input").dataset.solved = "1";
+  rows[6].cells[2].querySelector("input").dataset.solved = "1";
+  rows[7].cells[2].querySelector("input").dataset.solved = "1";
 
   document.getElementById("depZD").textContent = "("+rows[1].cells[2].querySelector("input").value+")";
   document.getElementById("ete").textContent = rows[0].cells[2].querySelector("input").value;
@@ -1239,21 +1335,26 @@ function checkWork(){
     const rows = document.querySelectorAll("tbody tr");
     let solutions = solve(false);
     console.log(solutions)
-    if(solutions === null){return}
+    if(solutions === null || !solutions){return}
     for(i=0; i<solutions.length; i++){
         let solution = solutions[i][0]
         let row = solutions[i][1]
+        let denom = solutions[i][2]
         console.log(solution)
         console.log(row)
         const input = rows[row].cells[2].querySelector("input");
+        if(input.dataset.solved == "1"){continue}
         let uSolution = parseFloat(input.value);
+        if (/[lLhH]/.test(input.value)) {
+            uSolution *= -1;
+        }
         console.log(uSolution)
         if (isNaN(uSolution)) continue;
         let pError;
         if (solution === 0) {
             pError = Math.abs(uSolution) < 0.01 ? 0 : 100; 
         } else {
-            pError = Math.abs(100 * (uSolution - solution) / solution);
+            pError = Math.abs(100 * (uSolution - solution) / denom);
         }
         input.classList.remove("bg-green", "bg-yellow", "bg-red");
         if (pError < 2) {

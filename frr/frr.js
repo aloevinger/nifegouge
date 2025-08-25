@@ -2,6 +2,7 @@ document.getElementById("generateBtn").addEventListener("click", generate);
 document.getElementById("solveBtn").addEventListener("click", solve);
 document.getElementById("visualizeBtn").addEventListener("click", visualizeRunway);
 document.getElementById("compassBtn").addEventListener("click", insertCompass);
+window.addEventListener("DOMContentLoaded", () => {generate();});
 let trigger = "vfr"
 let directionG = null; 
 let toG = null; 
@@ -24,27 +25,35 @@ const radioButtons = document.getElementsByName("questionType");
 const answers = document.getElementById("answerText");
 radioButtons.forEach(radio => {
   radio.addEventListener("change", () => {
-    const container = document.getElementById("questionText");
+    document.querySelectorAll('.radio-list label').forEach(label => {
+      label.classList.remove('softSelected');
+    });
+    if (radio.checked) {
+      radio.parentElement.classList.add('softSelected');
+    }
     const container2 = document.getElementById("wheel-container");
     const answerArea = document.getElementById("answerText");
-    container.innerHTML = "";
     answerArea.innerHTML = "";
     container2.innerHTML = "";
     if (radio.value === "runway" && radio.checked) {
+      solveBtn.style.display = "none";
       visualizeBtn.style.display = "inline-block";
       compassBtn.style.display = "inline-block";
       complexOptions.style.display = "block";
-      runwayAnswers.style.display = "block";
+      answerChoices.style.display = "block";
       answers.style.display = "none";
       trigger = "runway"
       renderRunwayOptions();
+      generate();
     } else {
+      solveBtn.style.display = "inline-block";
       visualizeBtn.style.display = "none";
       compassBtn.style.display = "none";
       complexOptions.style.display = "none";
-      runwayAnswers.style.display = "none";
+      answerChoices.style.display = "none";
       answers.style.display = "block";
-      let vfrIndicator = false;
+      vfrIndicator = false;
+      generate();
     }
   });
 });
@@ -59,9 +68,41 @@ function renderRunwayOptions() {
     ? ["Runway 18", "Runway 23", "Runway 27", "Runway 32", "Runway 36", "Runway 05", "Runway 09", "Runway 14"]
     : ["Runway 23", "Runway 32", "Runway 05", "Runway 14"];
 
-  runwayAnswerForm.innerHTML = options.map((opt, i) => `
-    <label><input type="radio" name="runwayAnswer" value="${opt}"> ${opt}</label><br>
+  renderAnswerOptions(options);
+}
+
+function renderAnswerOptions(options, containerId = "answerForm", name = "answerChoice") {
+  const form = document.getElementById(containerId);
+  if (!form) return;
+
+  form.innerHTML = options.map(opt => `
+    <label>
+      <input type="radio" name="${name}" value="${opt}"> ${opt}
+    </label>
   `).join("");
+
+  // Add selection handling
+  const labels = form.querySelectorAll("label");
+  labels.forEach(label => {
+    label.addEventListener("click", () => {
+      labels.forEach(l => l.classList.remove("selected"));
+      label.classList.add("selected");
+    });
+  });
+
+  // Show the container if it was hidden
+  document.getElementById("answerChoices").style.display = "block";
+
+  // Append the submit button
+  const submitBtn = document.createElement("button");
+  submitBtn.type = "submit";
+  submitBtn.className = "submitBtn";
+  submitBtn.textContent = "Submit";
+  submitBtn.addEventListener("click", (e) => {
+    e.preventDefault();  // Prevent form from submitting traditionally
+    solve();
+  });
+  form.appendChild(submitBtn);
 }
 
 function randBetween(min, max) {
@@ -158,9 +199,8 @@ function generateVfr(){
 }
 
 function generateRunway(){
-    document.querySelectorAll('input[name="runwayAnswer"]').forEach(input => {
-        input.parentElement.style.backgroundColor = "";
-        input.checked = false;
+    document.querySelectorAll('input[name="answerChoice"]').forEach(input => {
+      input.checked = false;
     });
     const container = document.getElementById("wheel-container");
     container.innerHTML = "";
@@ -209,14 +249,10 @@ function generateRunway(){
     }
     if(!complex && direction%2 == 0){
         const options = ["Runway 18", "Runway 27", "Runway 36", "Runway 09"];
-        runwayAnswerForm.innerHTML = options.map((opt, i) => `
-            <label><input type="radio" name="runwayAnswer" value="${opt}"> ${opt}</label><br>
-        `).join("");
+        renderAnswerOptions(options);
     } else if(!complex){
         const options = ["Runway 23", "Runway 32", "Runway 05", "Runway 14"];
-        runwayAnswerForm.innerHTML = options.map((opt, i) => `
-            <label><input type="radio" name="runwayAnswer" value="${opt}"> ${opt}</label><br>
-        `).join("");
+        renderAnswerOptions(options);
     }
     return [direction, to, relative, randPosi, randPosi2, indicator, flagDirection];
 }
@@ -348,21 +384,24 @@ function solveRunway(visualize = true){
     if(indicatorG == 1){rotation = (rotation+180)%360}
     if(!visualize){return rotation}
 
-    let selectedInput = null;
-    document.querySelectorAll('input[name="runwayAnswer"]').forEach(input => {
-        if (input.checked) selectedInput = input;
-    });
-    document.querySelectorAll('input[name="runwayAnswer"]').forEach(input => {
+ let selectedInput = null;
+
+  document.querySelectorAll('input[name="answerChoice"]').forEach(input => {
+    if (input.checked) selectedInput = input;
+  });
+
+  // Determine correct answer and apply styles
+  document.querySelectorAll('input[name="answerChoice"]').forEach(input => {
     const label = input.parentElement;
+    label.classList.remove("correct", "wrong", "selected");
+
     if (input.value === runwayAnswer) {
-        input.checked = true;
-        label.style.backgroundColor = "#c8f7c5"; // green
-    } else if (input === selectedInput ) {
-        label.style.backgroundColor = "#f7c5c5"; // red
-    } else {
-        label.style.backgroundColor = ""; // reset others
-    }
-    });
+      input.checked = true;
+      label.classList.add("correct");
+    } else if (input === selectedInput) {
+      label.classList.add("wrong");
+    }    
+  });
 }
 
 function insertAltitudeLine(ceiling, lineAlt, text = "", textAlt = null) {

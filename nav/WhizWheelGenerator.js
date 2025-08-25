@@ -1342,15 +1342,12 @@ function checkWork(){
         let solution = solutions[i][0]
         let row = solutions[i][1]
         let denom = solutions[i][2]
-        console.log(solution)
-        console.log(row)
         const input = rows[row].cells[2].querySelector("input");
         if(input.dataset.solved == "1"){continue}
         let uSolution = parseFloat(input.value);
         if (/[lLhH]/.test(input.value)) {
             uSolution *= -1;
         }
-        console.log(uSolution)
         if (isNaN(uSolution)) continue;
         let pError;
         if (solution === 0) {

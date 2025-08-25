@@ -20,11 +20,7 @@
     .button-row {
       display: flex;
       gap: 5px;
-      margin-bottom: 20px;
-    }
-
-    .radio-list {
-      margin-bottom: 20px;
+      margin-bottom: 0px;
     }
   </style>
 </head>
@@ -35,28 +31,27 @@
     <div class="left-section">
       <div class="button-row">
         <button class="button" id="generateBtn">Generate</button>
-        <button class="button" id="solveBtn">Check/Solve</button>
+        <button class="button" id="solveBtn">Solve</button>
         <button class="button" id="visualizeBtn" style="display: none;">Visualize</button>
         <button class="button" id="compassBtn" style="display: none;">Compass</button>
       </div>
-    <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 10px;">
-    <div class="radio-list">
-        <label><input type="radio" name="questionType" value="vfr" checked> VFR Cruising Altitude</label><br>
-        <label><input type="radio" name="questionType" value="runway"> Runway Indicators</label>
-    </div>
+      <div style="display: flex; align-items: center; line-height: 1; margin-bottom: 0px; padding: 0px;">
+        <div class="radio-list">
+            <label  class="softSelected"><input type="radio" name="questionType" value="vfr" checked> VFR Cruising Altitude</label>
+            <label><input type="radio" name="questionType" value="runway"> Runway Indicators</label>
+        </div>
 
-    <div id="complexOptions" style="display: none;">
-        <label><input type="checkbox" id="complexCheckbox"> Complex Question</label>
-    </div>
-    </div>
-
-      <div class="question-area" id="questionText">
+        <div id="complexOptions" style="display: none;">
+            <label><input type="checkbox" id="complexCheckbox"> Complex Question</label>
+        </div>
       </div>
-
-      <div class="answer-area" id="answerText">
-      </div>
-      <div id="runwayAnswers" style="display: none; margin-bottom: 10px;">
-        <form id="runwayAnswerForm"></form>
+    
+      <div class="qa-container">
+        <div class="qa-box question-area" id="questionText"></div>
+        <div class="qa-box answer-area" id="answerText"></div>
+        <div class="qa-box" id="answerChoices" style="display: none;">
+          <form id="answerForm" class="radio-list"></form>
+        </div>
       </div>
     </div>
 

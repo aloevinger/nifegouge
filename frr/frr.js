@@ -200,6 +200,8 @@ function generateVfr(){
 
 function generateRunway(){
     document.querySelectorAll('input[name="answerChoice"]').forEach(input => {
+      const label = input.parentElement;
+      label.classList.remove("correct", "wrong", "selected");
       input.checked = false;
     });
     const container = document.getElementById("wheel-container");

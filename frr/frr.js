@@ -135,7 +135,7 @@ function generateVfr(){
     const answerArea = document.getElementById("answerText");
     answerArea.innerHTML = "";
     container.innerHTML = "";
-    let vis = randBetween(2,10)
+    let vis = randBetween(2,8)
     let rand = Math.random()
     let airClass = rand < 0.1 ? "A" : "E";
 
@@ -215,7 +215,7 @@ function generateRunway(){
     if(dirRand>0.5) to = false;
     const relRand = Math.random();
     let relative = true
-    if(relRand>0.7) relative = false;
+    if(relRand>0.75) relative = false;
     const complex = complexCheckbox.checked;
     let relPositions = ["towards", "to the left of", "away from", "to the right of"]
     const randPosi = randBetween(0,3);

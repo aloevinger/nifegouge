@@ -360,8 +360,10 @@ function showReviewScreen() {
   const container = document.getElementById("reviewScreen");
   container.innerHTML = ""; // clear
 
+  const topicDropdown = document.getElementById("topic");
+  const selectedTopicText = topicDropdown.options[topicDropdown.selectedIndex].text;
   const title = document.createElement("h2");
-  title.textContent = "Review";
+  title.textContent = `${selectedTopicText} Review`;
   container.appendChild(title);
 
   // ---Score ---

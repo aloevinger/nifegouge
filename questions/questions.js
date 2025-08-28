@@ -174,7 +174,7 @@ function resetModal() {
   title.style.fontSize = "1.25rem";
 
   // Reset submit button text
-  document.getElementById("modalSubmit").textContent = "Submit New Question";
+  document.getElementById("modalSubmit").textContent = "Submit New Question (expect short delay)";
 
   // Hide red "bad question" button
   document.getElementById("badQuestionBtn").style.display = "none";
@@ -254,6 +254,7 @@ function submitModalQuestion() {
       const data = JSON.parse(text);
       if (data.success) {
         alert("Submitted!");
+        closeModal();
       }
     })
     .catch(err => {

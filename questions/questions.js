@@ -87,7 +87,7 @@ function generateQuestions(topic, lecture, n = 10000) {
     return topicMatch && lectureMatch;
   });
   const total = filteredQuestions.length;
-  if(parseFloat(n) > total || n === "All"){n=total;}
+  if(parseFloat(n) > total || n === "All"|| isNaN(n)){n=total;}
   console.log(filteredQuestions)
   console.log(total)
   let indices = [];
@@ -206,7 +206,6 @@ function openModal() {
   document.getElementById("submitModal").style.display = "block";
 }
 
-
 function closeModal() {
   document.getElementById("submitModal").style.display = "none";
 }
@@ -240,13 +239,14 @@ function submitModalQuestion() {
   };
 
   console.log(JSON.stringify(submission))
-  fetch("https://script.google.com/macros/s/AKfycbxNUaNcX-PLWEFkGegYJGyETKY-RrDrXlCDRmOUMwhu5CEC32A4MJRsKnzBC_MLZqko/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbxZYDa0GlMHQtpE6zhvFuPZWCu5JzsDDhg7mEd3cRCqsFlg84g81_yoyj24Nrkuc072/exec", {
   //fetch("https://cors-anywhere.herokuapp.com/https://script.google.com/macros/s/AKfycbzSRfplvV9lQmswXqYmh_OfNc5tBiddv-cMtO3P15Rzz7tSpoBjcMVhA7LaIQJ1gxM9/exec", {
+    redirect: "follow",
     method: "POST",
+    body: JSON.stringify(submission),
     headers: {
       "Content-Type": "application/json"
-    },
-    body: JSON.stringify(submission)
+    }
   })
     .then(res => res.text()) // Use text() to see what's coming back
     .then(text => {

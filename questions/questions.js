@@ -245,7 +245,7 @@ function submitModalQuestion() {
     method: "POST",
     body: JSON.stringify(submission),
     headers: {
-      "Content-Type": "application/json"
+        "Content-Type": "text/plain;charset=utf-8",
     }
   })
     .then(res => res.text()) // Use text() to see what's coming back

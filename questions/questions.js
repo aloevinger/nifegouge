@@ -1,10 +1,10 @@
 let allQuestions = [];
 let currentIndex = -1;
 let currentQuestion = null;
-//let topic = "Weather";
 let selectedQuestionIndices = [];
 let filteredQuestions = [];
 let mode = ""
+let attempts = [];
 
 document.getElementById("topic").addEventListener("change", () => {
   generateQuestions(document.getElementById("topic").value, document.getElementById("nLecture").value, parseInt(document.getElementById("nQuestions").value));
@@ -47,10 +47,14 @@ function loadExcelFile() {
 }
 
 function loadNextQuestion() {
-  if (currentIndex >= selectedQuestionIndices.length) {return}
+  if (currentIndex >= selectedQuestionIndices.length) {
+    showReviewScreen();
+    return
+  }
   const qData = filteredQuestions[selectedQuestionIndices[currentIndex]];
   currentIndex++;
   currentQuestion = qData;
+  setQNumberBadge(currentIndex, selectedQuestionIndices.length);
 
   const questionText = qData[2];
   const correct = qData[3];
@@ -60,6 +64,14 @@ function loadNextQuestion() {
   document.getElementById("questionText").textContent = questionText;
   renderAnswerOptions(allAnswers);
 }
+
+function setQNumberBadge(n, total) {
+  const badge = document.getElementById("qNumberBadge");
+  if (badge) {
+    badge.textContent = `Q ${n}/${total}`;
+  }
+}
+
 
 //Shuffles the answers with special attention for "of the above" options
 function prepareAnswerOptions(answers) {
@@ -139,12 +151,19 @@ function renderAnswerOptions(options, containerId = "answerForm", name = "answer
 
 function handleSubmit(button) {
   const correctAnswer = currentQuestion[3];
-
   const labels = document.querySelector('form[name="primaryAnswers"]').querySelectorAll("label");
-  console.log(labels)
+  
+
+  let chosenValue = null;
   labels.forEach(label => {
     const input = label.querySelector("input");
-    console.log(input)
+    if (input && input.checked) {
+      chosenValue = input.value;
+    }
+  });
+
+  labels.forEach(label => {
+    const input = label.querySelector("input");
     label.classList.remove("selected");
 
     if (input.value === correctAnswer) {
@@ -154,17 +173,35 @@ function handleSubmit(button) {
     }
   });
   
+  // Record attempt
+  attempts.push({
+    question: currentQuestion[2],
+    chosen: chosenValue,
+    correct: correctAnswer
+  });
+
   labels.forEach(label => {
     label.addEventListener("click", () => {
       labels.forEach(l => l.classList.remove("selected"));
     });
   });
-  button.textContent = "Next Question";
-  button.removeEventListener("click", handleSubmit);
-  button.addEventListener("click", (e) => {
+
+  // Turn button into Next Question (or Review if last)
+  const isLast = currentIndex >= selectedQuestionIndices.length;
+  button.textContent = isLast ? "Review" : "Next Question";
+
+  const nextHandler = (e) => {
     e.preventDefault();
-    loadNextQuestion();
-  });
+    if (isLast) {
+      showReviewScreen();
+    } else {
+      loadNextQuestion();
+    }
+  };
+  // Remove previous click handlers by cloning or removeEventListener reference (simplest: clone)
+  const newBtn = button.cloneNode(true);
+  newBtn.addEventListener("click", nextHandler);
+  button.replaceWith(newBtn);
 }
 
 function resetModal() {
@@ -311,4 +348,66 @@ document.getElementById("thumbsDownBtn").addEventListener("click", () => {
 
 function autoResize(textarea) {
   textarea.style.height = textarea.scrollHeight + "px"; // Adjust to new content
+}
+
+function showReviewScreen() {
+  // Hide the Q&A and feedback
+  document.querySelector(".qa-container").style.display = "none";
+  const feedbackRow = document.querySelector(".feedback-row");
+  if (feedbackRow) feedbackRow.style.display = "none";
+
+  // Build review
+  const container = document.getElementById("reviewScreen");
+  container.innerHTML = ""; // clear
+
+  const title = document.createElement("h2");
+  title.textContent = "Review";
+  container.appendChild(title);
+
+  // ---Score ---
+  const total = attempts.length;
+  const correctCount = attempts.filter(a => a.chosen === a.correct).length;
+  const scoreEl = document.createElement("div");
+  scoreEl.style.marginBottom = "16px";
+  scoreEl.style.fontWeight = "600";
+  scoreEl.textContent = `Score: ${correctCount} / ${total}`;
+  container.appendChild(scoreEl);
+
+  attempts.forEach((a, idx) => {
+    const wrap = document.createElement("div");
+    wrap.className = "review-item";
+
+    const q = document.createElement("div");
+    q.className = "review-q";
+    q.textContent = `Q${idx + 1}. ${a.question}`;
+    wrap.appendChild(q);
+
+    const yourA = document.createElement("div");
+    yourA.className = "review-a";
+    yourA.textContent = `Your answer: ${a.chosen ?? "(no selection)"}`;
+    wrap.appendChild(yourA);
+
+    if (a.chosen !== a.correct) {
+      yourA.classList.add("wrong");
+      const corr = document.createElement("div");
+      corr.className = "review-correct";
+      corr.textContent = `Correct: ${a.correct}`;
+      wrap.appendChild(corr);
+    }
+
+    container.appendChild(wrap);
+  });
+
+  // Reset button
+  const reset = document.createElement("button");
+  reset.className = "review-reset";
+  reset.textContent = "Reset";
+  reset.addEventListener("click", () => {
+    // simplest “reset page”
+    window.location.reload();
+  });
+  container.appendChild(reset);
+
+  // Show review
+  container.style.display = "block";
 }

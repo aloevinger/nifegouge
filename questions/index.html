@@ -79,6 +79,69 @@
       line-height: 1.2em;
       text-align: center;
     }
+
+    .q-badge {
+      position: absolute;
+      transform: translateY(-50%);
+      top: -8px;
+      left: -8px;
+      background: #222;
+      color: #fff;
+      font-size: 0.8rem;
+      padding: 4px 8px;
+      border-radius: 999px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .qa-container {
+      position: relative; /* so the badge can anchor */
+    }
+
+    .review-screen {
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      margin-top: 16px;
+    }
+
+    .review-item {
+      border-bottom: 1px solid #eee;
+      padding: 12px 0;
+    }
+
+    .review-item:last-child {
+      border-bottom: none;
+    }
+
+    .review-q {
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .review-a, .review-correct {
+      margin: 2px 0;
+    }
+
+    .review-a.wrong {
+      color: #c0392b;
+    }
+
+    .review-correct {
+      color: #2c7a7b;
+      font-weight: 600;
+    }
+
+    .review-reset {
+      margin-top: 16px;
+      width: 100%;
+      padding: 10px 14px;
+      border: none;
+      border-radius: 8px;
+      background: #222;
+      color: #fff;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -122,12 +185,15 @@
     </div>
 
    <div class="qa-container">
+        <span id="qNumberBadge" class="q-badge" aria-label="Question number"></span>
         <div class="qa-box question-area" id="questionText"></div>
         <div class="qa-box" id="answerChoices" style="display: none;">
           <form id="answerForm" class="radio-list" name="primaryAnswers"></form>
         </div>
     </div>
 
+    <!-- Review Screen -->
+    <div id="reviewScreen" class="review-screen" style="display:none;"></div>
     <!-- Thumbs Feedback -->
     <div class="feedback-row">
       <button class="thumb-btn up" id="thumbsUpBtn"><img src="thumb.png"></button>

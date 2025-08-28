@@ -240,7 +240,7 @@ function submitModalQuestion() {
   };
 
   console.log(JSON.stringify(submission))
-  fetch("https://script.google.com/macros/s/AKfycbzSRfplvV9lQmswXqYmh_OfNc5tBiddv-cMtO3P15Rzz7tSpoBjcMVhA7LaIQJ1gxM9/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbxNUaNcX-PLWEFkGegYJGyETKY-RrDrXlCDRmOUMwhu5CEC32A4MJRsKnzBC_MLZqko/exec", {
   //fetch("https://cors-anywhere.herokuapp.com/https://script.google.com/macros/s/AKfycbzSRfplvV9lQmswXqYmh_OfNc5tBiddv-cMtO3P15Rzz7tSpoBjcMVhA7LaIQJ1gxM9/exec", {
     method: "POST",
     headers: {

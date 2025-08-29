@@ -1243,7 +1243,7 @@ function solveLollipop(visualize = true) {
   let innerDeg = 360 - t3;
 
   
-  if(!visualize){return [[t3, 5, 100], [r3, 6, 50]]}
+  if(!visualize){return [[t3, 5, 100], [r3, 6, 100]]}
   // Output
   rows[5].cells[2].querySelector("input").value = t3;
   rows[6].cells[2].querySelector("input").value = r3;
@@ -1356,9 +1356,9 @@ function checkWork(){
             pError = Math.abs(100 * (uSolution - solution) / denom);
         }
         input.classList.remove("bg-green", "bg-yellow", "bg-red");
-        if (pError < 2) {
+        if (pError <= 2) {
             input.classList.add("bg-green");
-        } else if (pError < 5) {
+        } else if (pError <= 5) {
             input.classList.add("bg-yellow");
         } else {
             input.classList.add("bg-red");

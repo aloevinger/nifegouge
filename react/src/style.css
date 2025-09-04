@@ -14,13 +14,20 @@ body {
 .jetlog-container,
 .whiz-container {
   max-width: 800px;
-  margin: 40px auto;
+  margin: 20px auto;
   padding: 0 20px;
 }
 
 .whiz-container,
 .jetlog-container {
   max-width: 1200px;
+}
+
+.whiz-container {
+  max-width: none;  /* Remove max-width constraint */
+  width: 100%;
+  overflow-x: auto;  /* Enable horizontal scrolling */
+  padding: 0 20px;
 }
 
 .setai-container,
@@ -35,7 +42,7 @@ body {
 .jetlog-container h1,
 .whiz-container h1 {
   text-align: center;
-  color: #004080;
+  color: #01202C;
   margin-bottom: 1em;
 }
 
@@ -49,30 +56,37 @@ body {
 .navbar,
 .sub-navbar {
   display: flex;
-  background-color: #004080;
+  background-color: #01202C;
   padding: 10px 20px;
   gap: 20px;
   justify-content: flex-end;
 }
 
 .sub-navbar {
-  background-color: #0055aa;
+  background-color: #003B4F;
   margin-bottom: 20px;
 }
 
 .navbar a,
-.sub-navbar a,
-.sub-navbar span.active {
-  color: white;
+.sub-navbar span{
+  color: #ffffff;
   padding: 8px 12px;
   font-weight: bold;
   text-decoration: none;
+  transition: all 0.2s ease;
 }
 
+/* Navbar hover/active - lighter blue */
 .navbar a:hover,
-.sub-navbar a:hover,
 .navbar a.active {
-  background-color: #0066cc;
+  background-color: #003B4F;
+  border-radius: 4px;
+}
+
+/* Sub-navbar hover - inverse (white bg, blue text) */
+.sub-navbar span:hover,
+.sub-navbar span.active{
+  background-color: #01202C;
   border-radius: 4px;
 }
 
@@ -84,7 +98,7 @@ button,
 .button-container button,
 .setai-container .button-row button {
   padding: 8px 16px;
-  background-color: #003366;
+  background-color: #01202C;
   color: white;
   border: none;
   border-radius: 4px;
@@ -95,22 +109,18 @@ button,
 button:hover,
 .button-row button:hover,
 .button-container button:hover,
-.setai-container .button-row button:hover {
-  background-color: #004080;
+.setai-container .button-row button:hover, 
+.submitBtn:hover {
+  background-color: #003B4F;
 }
 
 .submitBtn {
   margin-top: 0.2em;
   padding: 10px 20px;
-  border: 2px solid #003366;
+  border: 2px solid #01202C;
   border-radius: 8px;
   width: 100%;
   transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.submitBtn:hover {
-  background-color: #ffffff;
-  color: #003366;
 }
 
 .button {
@@ -214,6 +224,7 @@ input,
 }
 
 .jetlog-table input {
+  text-align: left;
   font-size: 0.65em;
 }
 
@@ -323,6 +334,59 @@ input,
   display: inline;
   margin-right: 5px;
 }
+.frr-radio-list label:not(.checkbox-label) {
+  padding: 3px 8px !important;  /* Reduced from 5px 10px */
+  margin: 0.2em !important;
+  min-width: fit-content !important;
+  width: 175px!important;
+}
+
+.checkbox-label {
+  display: inline-flex !important;
+  align-items: center;
+  width: auto !important;
+  min-width: fit-content;
+  padding: 5px 10px !important;
+  margin-left: 20px;
+  border: 2px solid #ccc;
+  background-color: #f9f9f9;
+}
+
+.checkbox-label input[type="checkbox"] {
+  display: inline-block;
+  margin-right: 8px;
+  width: auto;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.checkbox-label:hover {
+  background-color: #e0e0e0;
+  border-color: #999;
+}
+
+/* Container for runway option and checkbox */
+.runway-option-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+/* Adjust the runway radio label to not take full width */
+.runway-option-container > label:first-child {
+  flex: 0 0 auto;  /* Don't grow, just fit content */
+  margin: 0.15em !important;
+}
+
+/* Style the inline checkbox */
+.checkbox-label.inline-checkbox {
+  margin-left: 0 !important;  /* Remove the left margin */
+  padding: 2px 8px !important;  /* Smaller padding */
+  font-size: 0.85em;
+  border: 1px solid #ccc;  /* Thinner border */
+  min-height: auto;
+}
 
 #answerForm {
   display: flex;
@@ -343,6 +407,7 @@ input,
 }
 
 .qa-box {
+  box-sizing: border-box;
   background-color: #f9f9f9;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
@@ -356,14 +421,22 @@ input,
 }
 
 .qa-box textarea {
+  display: flex;
+  background: none;
+  border: none;
+  outline: none;
+  font: inherit;
+  resize: none;
   width: 100%;
-  min-height: 60px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  resize: vertical;
-  font-family: inherit;
-  margin-bottom: 10px;
+  padding: 5px 0;
+  box-sizing: border-box;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  overflow: hidden; /* Hide scrollbar */
+  height: 1.5em; 
+  min-height: 1.2em;
+  line-height: 1.2em;
+  text-align: center;
 }
 
 .q-badge {
@@ -445,6 +518,7 @@ select:hover {
 .dropdown-row {
   display: flex;
   gap: 10px;
+  margin-bottom: 30px;
 }
 
 /* Modal */
@@ -584,6 +658,7 @@ td.xcell::after {
   flex-direction: column;
   width: 600px;
   min-height: 700px;
+  flex-shrink: 0;
   box-sizing: border-box;
 }
 
@@ -592,6 +667,7 @@ td.xcell::after {
   gap: 40px;
   justify-content: center;
   align-items: flex-start;
+  flex-wrap: nowrap;
 }
 
 .buttons {
@@ -681,8 +757,13 @@ td.xcell::after {
 
 .Wheel-Container {
   position: relative;
-  width: 500px;
-  height: 500px;
+  width: 600px;
+  height: 600px;
+  flex-shrink: 0; 
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .Wheel-Container img {
@@ -698,4 +779,20 @@ iframe {
   border: none;
   width: 100%;
   height: 100vh;
+}
+
+@media (max-width: 1200px) {
+  .whiz-layout {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .form-section {
+    width: 100%;
+    max-width: 600px;
+  }
+  
+  .Wheel-Container {
+    margin-top: 20px;  /* Add space between table and wheel on small screens */
+  }
 }

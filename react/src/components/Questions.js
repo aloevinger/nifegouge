@@ -35,10 +35,10 @@ function Questions() {
   const prepareAnswerOptions = useCallback((answers) => {
     const specialOptions = ['all of the above', 'none of the above'];
     const lastOptions = answers.filter(opt =>
-      specialOptions.some(special => opt?.toLowerCase().includes(special))
+      specialOptions.some(special => opt?.toString().toLowerCase().includes(special))
     );
     const otherOptions = answers.filter(opt =>
-      !specialOptions.some(special => opt?.toLowerCase().includes(special))
+      !specialOptions.some(special => opt?.toString().toLowerCase().includes(special))
     );
     
     return [...shuffle(otherOptions), ...lastOptions];
@@ -70,7 +70,7 @@ function Questions() {
 
   const generateQuestions = useCallback((topicVal, lectureVal, n, questionsArray = allQuestions) => {
     const filtered = questionsArray.filter(q => {
-      const topicMatch = q[0]?.toLowerCase() === topicVal;
+      const topicMatch = q[0]?.toString().toLowerCase() === topicVal;
       const lectureMatch = lectureVal === 'All' || String(q[1]) === lectureVal;
       return topicMatch && lectureMatch;
     });
@@ -119,7 +119,7 @@ function Questions() {
           questions
             .map(row => row[0])
             .filter(topic => typeof topic === 'string' && topic.trim() !== '')
-            .map(topic => topic.toLowerCase())
+            .map(topic => topic.toString().toLowerCase())
         )];
         
         if (topics.length > 0) {
@@ -157,13 +157,21 @@ function Questions() {
     generateQuestions(topic, lecture, numQuestions || allQuestions.length);
   };
 
+  const handleTextareaChange = (e, field) => {
+    // Auto-resize textarea
+    e.target.style.height = e.target.scrollHeight + 'px';
+    
+    // Update modal data
+    setModalData({...modalData, [field]: e.target.value});
+  };
+
   const openSubmitModal = (mode = 'new') => {
     setModalMode(mode);
     
     if (mode === 'edit' && currentQuestion) {
       // Pre-fill with current question data
       setModalData({
-        topic: currentQuestion[0]?.toLowerCase() || topic,
+        topic: currentQuestion[0]?.toString().toLowerCase() || topic,
         lecture: currentQuestion[1] || '',
         question: questionText,
         correctAnswer: currentQuestion[3] || '',
@@ -185,6 +193,14 @@ function Questions() {
     }
     
     setShowModal(true);
+  
+    // Resize textareas after modal opens
+    setTimeout(() => {
+      const textareas = document.querySelectorAll('.modal textarea');
+      textareas.forEach(textarea => {
+        textarea.style.height = textarea.scrollHeight + 'px';
+      });
+    }, 0);
   };
 
   const submitModalQuestion = () => {
@@ -405,37 +421,64 @@ function Questions() {
               />
             </div>
             
-            <div className="qa-box">
-              <textarea 
-                placeholder="Enter your question here..."
-                value={modalData.question}
-                onChange={(e) => setModalData({...modalData, question: e.target.value})}
-              />
+            <div className="qa-box question-area">
+              <label>
+                <textarea 
+                  placeholder="Enter your question here..."
+                  value={modalData.question}
+                    onChange={(e) => handleTextareaChange(e, 'question')}
+                />
+              </label>
             </div>
             
             <div className="qa-box">
-              <textarea 
-                placeholder="Correct Answer"
-                value={modalData.correctAnswer}
-                onChange={(e) => setModalData({...modalData, correctAnswer: e.target.value})}
-              />
-              <textarea 
-                placeholder="Incorrect Answer 1"
-                value={modalData.incorrectAnswer1}
-                onChange={(e) => setModalData({...modalData, incorrectAnswer1: e.target.value})}
-              />
-              <textarea 
-                placeholder="Incorrect Answer 2"
-                value={modalData.incorrectAnswer2}
-                onChange={(e) => setModalData({...modalData, incorrectAnswer2: e.target.value})}
-              />
-              <textarea 
-                placeholder="Incorrect Answer 3"
-                value={modalData.incorrectAnswer3}
-                onChange={(e) => setModalData({...modalData, incorrectAnswer3: e.target.value})}
-              />
+              <form id="submitAnswerForm" className="radio-list">
+                <label>
+                  <textarea 
+                    placeholder="Correct Answer"
+                    value={modalData.correctAnswer}
+                    onChange={(e) => handleTextareaChange(e, 'correctAnswer')}
+                  />
+                </label>
+                <label>
+                  <textarea 
+                    placeholder="Incorrect Answer 1"
+                    value={modalData.incorrectAnswer1}
+                    onChange={(e) => handleTextareaChange(e, 'incorrectAnswer1')}
+                  />
+                </label>
+                <label>
+                  <textarea 
+                    placeholder="Incorrect Answer 2"
+                    value={modalData.incorrectAnswer2}
+                    onChange={(e) => handleTextareaChange(e, 'incorrectAnswer2')}
+                  />
+                </label>
+                <label>
+                  <textarea 
+                    placeholder="Incorrect Answer 3"
+                    value={modalData.incorrectAnswer3}
+                    onChange={(e) => handleTextareaChange(e, 'incorrectAnswer3')}
+                  />
+                </label>
+              </form>
             </div>
             
+            <button 
+              id="badQuestionBtn" 
+              style={{
+                display: 'none', 
+                backgroundColor: '#e74c3c',  // camelCase and string value
+                color: 'white', 
+                padding: '10px', 
+                border: 'none', 
+                borderRadius: '5px',  // camelCase
+                marginBottom: '10px',  // camelCase
+                cursor: 'pointer'
+              }}
+            >
+              It’s just a bad question
+            </button>
             <button className="submitBtn" onClick={submitModalQuestion}>
               Submit
             </button>

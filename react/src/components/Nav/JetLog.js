@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from 'react';
 function JetLog() {
   const [xMode, setXMode] = useState(false);
   const [hintStage, setHintStage] = useState(0);
-  const [currentId, setCurrentId] = useState('r0c8');
   const [cellGraph, setCellGraph] = useState({});
   const [xedCells, setXedCells] = useState(new Set());
   const [inputValues, setInputValues] = useState({});
@@ -60,6 +59,7 @@ function JetLog() {
       "r8c7": {dependsOn: ["r7c4", "r8c6"], solver: ([afr, fuel]) => efrF(afr, fuel), next: null, solved: false, denominator: 200}
     };
     setCellGraph(graph);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Helper functions
@@ -70,7 +70,7 @@ function JetLog() {
 
   const getInputValue = (cellId) => {
     const value = inputValues[cellId] || "";
-    const match = value.match(/\d+(\.\d+)?[\dA-Za-z\s:\/\-]*/);
+    const match = value.match(/\d+(\.\d+)?[\dA-Za-z\s:/-]*/);
     return match ? match[0].trim() : "";
   };
 
@@ -179,6 +179,9 @@ function JetLog() {
 
   const caF = (tas, xw) => {
     tas = parseFloat(tas.match(/-?\d+(\.\d+)?/)?.[0] ?? 0);
+    if (xw === "0" || xw === 0) {
+      return "0";
+    }
     const match = xw.match(/(-?\d+)(?:\s*\w+)?\s*([LR])/i);
     if (!match) {
       alert("Invalid XW input! Must be 'kts L' or 'kts R' format");
@@ -195,6 +198,10 @@ function JetLog() {
   };
 
   const thF = (course, ca) => {
+    const tc = parseFloat(course.match(/-?\d+(\.\d+)?/)?.[0] ?? 0);
+    if (ca === "0" || ca === 0) {
+      return tc + "T";
+    }
     const match = ca.match(/(-?\d+)(?:\s*\w+)?\s*([LR])/i);
     if (!match) {
       alert("Invalid CA input! Must be 'deg L' or 'deg R' format");
@@ -203,7 +210,6 @@ function JetLog() {
     const value = parseFloat(match[1]);
     const direction = match[2].toUpperCase();
     ca = direction === "L" ? -Math.abs(value) : Math.abs(value);
-    const tc = parseFloat(course.match(/-?\d+(\.\d+)?/)?.[0] ?? 0);
     let th = (tc + ca) % 360;
     if (th < 0) th += 360;
     return th + "T";
@@ -278,6 +284,9 @@ function JetLog() {
   };
 
   const iXwF = (tas, da) => {
+    if (da === "0" || da === 0) {
+      return "0";
+    }
     tas = parseFloat(tas.match(/-?\d+(\.\d+)?/)?.[0] ?? 0);
     const match = da.match(/(-?\d+)(?:\s*\w+)?\s*([LR])/i);
     if (!match) {
@@ -303,15 +312,19 @@ function JetLog() {
   };
 
   const inflightF = (xw, hwtw) => {
-    const match = xw.match(/(-?\d+)(?:\s*\w+)?\s*([LR])/i);
-    if (!match) {
-      alert("Invalid XW input! Must be 'kts L' or 'kts R' format");
-      return null;
+    if (xw === "0" || xw === 0) {
+      xw = 0;
+    }else{
+        const match = xw.match(/(-?\d+)(?:\s*\w+)?\s*([LR])/i);
+        if (!match) {
+        alert("Invalid XW input! Must be 'kts L' or 'kts R' format");
+        return null;
+        }
+        const value = parseFloat(match[1]);
+        const direction = match[2].toUpperCase();
+        xw = direction === "L" ? -Math.abs(value) : Math.abs(value);
     }
-    const value = parseFloat(match[1]);
-    const direction = match[2].toUpperCase();
-    xw = direction === "L" ? -Math.abs(value) : Math.abs(value);
-    
+
     const matchh = hwtw.match(/(-?\d+)(?:\s*\w+)?\s*([HT])/i);
     if (!matchh) {
       alert("Invalid HWTW input! Must be 'kts T' or 'kts H' format");
@@ -363,7 +376,6 @@ function JetLog() {
     const newGraph = { ...cellGraph };
     newGraph[nextId].solved = true;
     setCellGraph(newGraph);
-    setCurrentId(nextId);
     
     return { solved: nextId, next: cell.next };
   };

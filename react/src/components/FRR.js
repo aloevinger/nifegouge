@@ -453,7 +453,7 @@ const solveVfr = () => {
                 )}
             </div>
 
-            <div className="radio-list">
+            <div className="radio-list frr-radio-list">
                 <label className={questionType === 'vfr' ? 'softSelected' : ''}>
                 <input
                     type="radio"
@@ -464,26 +464,30 @@ const solveVfr = () => {
                 />
                 VFR Cruising Altitude
                 </label>
-                <label className={questionType === 'runway' ? 'softSelected' : ''}>
-                <input
-                    type="radio"
-                    name="questionType"
-                    value="runway"
-                    checked={questionType === 'runway'}
-                    onChange={(e) => setQuestionType(e.target.value)}
-                />
-                Runway Indicators
-                </label>
-                {questionType === 'runway' && (
-                <label style={{ marginLeft: '20px' }}>
+
+                <div className="runway-option-container">
+                  <label className={questionType === 'runway' ? 'softSelected' : ''}>
                     <input
-                    type="checkbox"
-                    checked={complexMode}
-                    onChange={(e) => setComplexMode(e.target.checked)}
+                      type="radio"
+                      name="questionType"
+                      value="runway"
+                      checked={questionType === 'runway'}
+                      onChange={(e) => setQuestionType(e.target.value)}
                     />
-                    Complex Question
-                </label>
-                )}
+                    Runway Indicators
+                  </label>
+                  
+                  {questionType === 'runway' && (
+                    <label className="checkbox-label inline-checkbox">
+                      <input
+                        type="checkbox"
+                        checked={complexMode}
+                        onChange={(e) => setComplexMode(e.target.checked)}
+                      />
+                      Complex
+                    </label>
+                  )}
+                </div>
             </div>
 
             <div className="qa-container">

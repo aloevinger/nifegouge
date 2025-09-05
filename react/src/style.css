@@ -20,7 +20,7 @@ body {
 
 .whiz-container,
 .jetlog-container {
-  max-width: 1200px;
+  max-width: 800px;
 }
 
 .whiz-container {
@@ -782,17 +782,21 @@ iframe {
 }
 
 @media (max-width: 1200px) {
+  .whiz-container {
+    overflow-x: auto;
+    padding: 0 20px;
+  }
+  
   .whiz-layout {
-    flex-direction: column;
-    align-items: center;
+    min-width: 1240px; /* Ensure minimum width to prevent wrapping */
+    flex-wrap: nowrap;
   }
   
   .form-section {
-    width: 100%;
-    max-width: 600px;
+    flex-shrink: 0; /* Prevent table from shrinking */
   }
   
   .Wheel-Container {
-    margin-top: 20px;  /* Add space between table and wheel on small screens */
+    flex-shrink: 0; /* Prevent wheel from shrinking */
   }
 }

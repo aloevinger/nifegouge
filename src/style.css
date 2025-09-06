@@ -850,35 +850,35 @@ iframe {
 
 /* Emergency Procedures Styles */
 .eps-container {
-  max-width: 1200px;
+  max-width: 700px;
   margin: 0 auto;
 }
 
 .eps-two-column {
   display: flex;
-  gap: 20px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
 .eps-column {
   flex: 1;
-  min-width: 400px;
+  min-width: 300px;
 }
 
 .ep-section {
-  margin-bottom: 20px;
+  margin-bottom: 6px;
   border: 1px solid #ddd;
-  border-radius: 8px;
+  border-radius: 6px;
   overflow: hidden;
   background-color: #f9f9f9;
 }
 
 .ep-section h3 {
   margin: 0;
-  padding: 8px 12px;
+  padding: 6px 8px;
   background-color: #f8d0d0;
   color: #01202C;
-  font-size: 0.95em;
+  font-size: 0.75em;
   text-align: center;
   font-weight: bold;
   border-bottom: 1px solid #ddd;
@@ -887,24 +887,24 @@ iframe {
 .ep-steps {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 10px;
+  gap: 4px;
+  padding: 4px;
 }
 
 /* Emergency Procedures Uniform Input Styles */
 .ep-step {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.9em;
+  gap: 4px;
+  font-size: 0.7em;
   width: 100%;
 }
 
 .ep-step input[type="text"] {
-  padding: 2px 6px;
+  padding: 1px 4px;
   border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 0.9em;
+  border-radius: 3px;
+  font-size: 0.8em;
   background-color: white;
 }
 
@@ -934,13 +934,14 @@ iframe {
 /* Decision points and notes */
 .ep-step.decision-point {
   font-weight: bold;
-  padding-left: 20px;
+  padding-left: 15px;
+  font-size: 0.75em;
 }
 
 .ep-step.note-text {
   font-style: italic;
-  padding-left: 20px;
-  font-size: 0.85em;
+  padding-left: 15px;
+  font-size: 0.7em;
 }
 
 /* Answer validation colors */

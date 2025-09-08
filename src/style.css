@@ -793,7 +793,16 @@ iframe {
 .told-card-container h1 {
   text-align: center;
   color: #01202C;
+  margin-bottom: 10px;
+}
+
+.limits-eps-container .page-subtitle {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  font-size: 0.9em;
   margin-bottom: 20px;
+  margin-top: 0;
 }
 
 /* Limits Table Styles */
@@ -975,6 +984,691 @@ input.incorrect-answer {
 }
 
 .limits-eps-container button:hover {
+  background-color: #003B4F;
+}
+
+/* EP Controls Panel Styles */
+.eps-with-controls {
+  display: flex;
+  gap: 15px;
+  max-width: 1600px;
+  margin: 0 auto;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.eps-main-content {
+  flex: 1;
+  min-width: 700px;
+}
+
+.left-controls, .right-controls {
+  width: 300px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 10px;
+  background-color: #2c2c2c;
+  border-radius: 8px;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
+}
+
+.control-section {
+  background-color: #1a1a1a;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #444;
+}
+
+.control-section h4 {
+  color: #fff;
+  font-size: 0.8em;
+  margin: 0 0 10px 0;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Fuel Selector Dial */
+.fuel-selector {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto;
+}
+
+.dial-base {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle, #666, #333);
+  border: 3px solid #222;
+  position: relative;
+  cursor: pointer;
+}
+
+.dial-pointer {
+  position: absolute;
+  width: 4px;
+  height: 50px;
+  background: #ff0000;
+  left: calc(50% - 2px);
+  top: 0px;
+  transform-origin: 2px 50px;
+  transform: rotate(var(--rotation, 0deg));
+  transition: transform 0.3s ease;
+  pointer-events: all;
+  cursor: grab;
+}
+
+.dial-pointer:active,
+.mags-dial.dragging .dial-pointer {
+  transition: none;
+  cursor: grabbing;
+}
+
+.dial-label {
+  position: absolute;
+  color: #fff;
+  font-size: 0.7em;
+  font-weight: bold;
+}
+
+.dial-label.off { bottom: -5px; left: 50%; transform: translateX(-50%); }
+.dial-label.left { left: -25px; top: 50%; transform: translateY(-50%); }
+.dial-label.both { top: -5px; left: 50%; transform: translateX(-50%); }
+.dial-label.right { right: -30px; top: 50%; transform: translateY(-50%); }
+
+/* Circular Buttons */
+.circular-buttons {
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+}
+
+.circular-button {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #555, #222);
+  border: 2px solid #111;
+  color: #fff;
+  font-size: 0.65em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.circular-button:hover {
+  background: radial-gradient(circle, #666, #333);
+  transform: scale(1.05);
+}
+
+.circular-button:active {
+  transform: scale(0.95);
+  background: radial-gradient(circle, #444, #111);
+}
+
+.button-with-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.button-state-text {
+  color: #fff;
+  font-size: 0.5em;
+  margin-top: 5px;
+  text-align: center;
+  min-height: 12px;
+}
+
+/* Throttle button states */
+.throttle-state-0 {
+  background: radial-gradient(circle, #666, #333) !important;
+}
+
+.throttle-state-1 {
+  background: radial-gradient(circle, #ff8c00, #cc6600) !important;
+}
+
+.throttle-state-2 {
+  background: radial-gradient(circle, #ff4444, #cc2222) !important;
+}
+
+/* Mixture button states */
+.mixture-state-0 {
+  background: radial-gradient(circle, #888, #444) !important;
+}
+
+.mixture-state-1 {
+  background: radial-gradient(circle, #ff4444, #cc2222) !important;
+}
+
+/* Vertical Flaps Control */
+.flaps-vertical-control {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: 15px;
+}
+
+.flaps-vertical-slider {
+  width: 20px;
+  height: 80px;
+  background: #333;
+  border: 2px solid #555;
+  border-radius: 10px;
+  position: relative;
+  cursor: pointer;
+}
+
+.flaps-vertical-track {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, #666, #444);
+  border-radius: 8px;
+}
+
+.flaps-vertical-handle {
+  width: 24px;
+  height: 12px;
+  background: radial-gradient(circle, #aaa, #777);
+  border: 1px solid #333;
+  border-radius: 6px;
+  position: absolute;
+  left: -2px;
+  cursor: grab;
+  transition: top 0.1s ease;
+}
+
+.flaps-vertical-handle:active {
+  cursor: grabbing;
+  background: radial-gradient(circle, #ccc, #999);
+}
+
+.flaps-vertical-label {
+  color: #fff;
+  font-size: 0.6em;
+  margin-top: 5px;
+  text-align: center;
+}
+
+/* Flaps Slider */
+.flaps-control {
+  margin: 15px 0;
+}
+
+.flaps-slider {
+  position: relative;
+  height: 40px;
+  background: linear-gradient(to right, #222, #444);
+  border-radius: 20px;
+  border: 2px solid #111;
+}
+
+.flaps-track {
+  position: absolute;
+  width: calc(100% - 20px);
+  height: 2px;
+  background: #666;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+}
+
+.flaps-handle {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background: radial-gradient(circle, #888, #444);
+  border: 2px solid #222;
+  border-radius: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: grab;
+  transition: left 0.3s ease;
+}
+
+.flaps-handle:active {
+  cursor: grabbing;
+}
+
+.flaps-marks {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+  margin-top: 5px;
+}
+
+.flaps-mark {
+  color: #aaa;
+  font-size: 0.7em;
+  font-weight: bold;
+}
+
+/* Engine Controls Layout */
+.engine-controls-layout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  min-height: 100px;
+}
+
+.engine-left {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+}
+
+.engine-center {
+  flex: 1 0 auto;
+  display: flex;
+  justify-content: center;
+}
+
+.engine-right {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+}
+
+/* Horizontal Switches Container */
+.horizontal-switches {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+/* Vertical Switches Container */
+.vertical-switches {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Toggle Switches */
+.switch-row {
+  display: flex;
+  gap: 10px;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.toggle-switch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.toggle-switch.vertical {
+  align-items: center;
+  gap: 3px;
+}
+
+.switch-label {
+  color: #ccc;
+  font-size: 0.6em;
+  text-align: center;
+  max-width: 80px;
+}
+
+.switch-body {
+  width: 40px;
+  height: 20px;
+  background: #333;
+  border-radius: 10px;
+  position: relative;
+  cursor: pointer;
+  border: 1px solid #222;
+}
+
+.switch-body.vertical {
+  width: 20px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+.switch-toggle {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  background: radial-gradient(circle, #888, #444);
+  border-radius: 50%;
+  top: 1px;
+  transition: left 0.3s ease;
+  left: 1px;
+}
+
+.switch-body.vertical .switch-toggle {
+  width: 18px;
+  height: 18px;
+  transition: top 0.3s ease;
+  left: 1px;
+  top: 21px; /* Start at bottom for vertical switches */
+}
+
+.switch-body.on .switch-toggle {
+  left: 21px;
+  background: radial-gradient(circle, #4CAF50, #2E7D32);
+}
+
+.switch-body.vertical.on .switch-toggle {
+  top: 1px; /* Move to top when ON for vertical switches */
+  left: 1px;
+  background: radial-gradient(circle, #4CAF50, #2E7D32);
+}
+
+/* Mags Dial */
+.mags-dial {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+}
+
+.mags-dial .dial-base {
+  background: radial-gradient(circle, #555, #222);
+}
+
+.mags-positions {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.mag-label {
+  position: absolute;
+  color: #fff;
+  font-size: 0.6em;
+  font-weight: bold;
+}
+
+.mag-label.mag-off { left: 5px; top: 50%; transform: translateY(-50%); }     /* W - Left side */
+.mag-label.mag-left { left: 15px; top: 15px; }                              /* NW - Top-left */
+.mag-label.mag-right { left: 50%; top: 0px; transform: translateX(-50%); }   /* N - Top */
+.mag-label.mag-both { right: 15px; top: 15px; }                             /* NE - Top-right */
+.mag-label.mag-start { right: 5px; top: 50%; transform: translateY(-50%); } /* E - Right side */
+
+/* Primer Button */
+.primer-button {
+  width: 50px;
+  height: 50px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: radial-gradient(circle, #666, #333);
+  border: 3px solid #222;
+  color: #fff;
+  font-size: 0.7em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.primer-button:active {
+  transform: scale(0.9);
+  background: radial-gradient(circle, #444, #222);
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.action-button {
+  padding: 8px 5px;
+  background: linear-gradient(135deg, #555, #333);
+  border: 1px solid #222;
+  color: #fff;
+  font-size: 0.65em;
+  cursor: pointer;
+  border-radius: 4px;
+  text-align: center;
+  transition: all 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.action-button:hover {
+  background: linear-gradient(135deg, #666, #444);
+  transform: translateY(-1px);
+}
+
+.action-button:active {
+  transform: translateY(1px);
+  background: linear-gradient(135deg, #444, #222);
+}
+
+/* Special styling for specific buttons */
+.action-button.emergency {
+  background: linear-gradient(135deg, #8B0000, #4B0000);
+  border-color: #600000;
+}
+
+.action-button.emergency:hover {
+  background: linear-gradient(135deg, #A52A2A, #8B0000);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .eps-with-controls {
+    flex-direction: column;
+  }
+  
+  .controls-panel {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+}
+
+/* Game Mode Styles */
+.title-with-game {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.title-with-game h1 {
+  margin: 0;
+}
+
+.game-mode-button {
+  position: absolute;
+  right: 0;
+  padding: 8px 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.game-mode-button:hover {
+  background-color: #45a049;
+}
+
+.game-timer {
+  position: absolute;
+  right: 0;
+  padding: 8px 16px;
+  background-color: #01202C;
+  color: white;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.timer-label {
+  font-weight: bold;
+  font-size: 0.9em;
+}
+
+.timer-display {
+  font-family: monospace;
+  font-size: 1.1em;
+  min-width: 80px;
+}
+
+/* Game Modal */
+.game-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.game-modal {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  width: 400px;
+  max-width: 90%;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.game-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  padding: 5px 10px;
+}
+
+.game-modal-close:hover {
+  color: #000;
+}
+
+.game-modal h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #01202C;
+}
+
+.game-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.game-modal-content label {
+  font-weight: bold;
+  color: #333;
+}
+
+.game-mode-select {
+  padding: 10px;
+  border: 2px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  background: white;
+  cursor: pointer;
+}
+
+.game-mode-select:focus {
+  outline: none;
+  border-color: #4CAF50;
+}
+
+.game-button-primary {
+  padding: 12px 24px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.game-button-primary:hover {
+  background-color: #45a049;
+}
+
+.game-button-secondary {
+  padding: 10px 20px;
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.game-button-secondary:hover {
+  background-color: #e0e0e0;
+}
+
+/* Game Score Display */
+.game-score-display {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  z-index: 1001;
+  text-align: center;
+  min-width: 300px;
+}
+
+.game-score-display h2 {
+  margin-top: 0;
+  color: #4CAF50;
+  font-size: 24px;
+}
+
+.game-score-display p {
+  font-size: 18px;
+  margin: 10px 0;
+  color: #333;
+}
+
+.game-score-display button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #01202C;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.game-score-display button:hover {
   background-color: #003B4F;
 }
 

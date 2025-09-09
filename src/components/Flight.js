@@ -13,7 +13,7 @@ function Flight() {
           onClick={() => setActiveTab('limits')}
           style={{ cursor: 'pointer' }}
         >
-          Limits/EPs/Maneuvers
+          Limits/EPs
         </span>
         <span 
           className={activeTab === 'told' ? 'active' : ''}

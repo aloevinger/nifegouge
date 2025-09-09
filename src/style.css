@@ -1133,11 +1133,11 @@ input.incorrect-answer {
 }
 
 .throttle-state-1 {
-  background: radial-gradient(circle, #ff8c00, #cc6600) !important;
+  background: radial-gradient(circle, #E8B00F, #806208) !important;
 }
 
 .throttle-state-2 {
-  background: radial-gradient(circle, #ff4444, #cc2222) !important;
+  background: radial-gradient(circle, #B30003, #921818) !important;
 }
 
 /* Mixture button states */
@@ -1146,7 +1146,7 @@ input.incorrect-answer {
 }
 
 .mixture-state-1 {
-  background: radial-gradient(circle, #ff4444, #cc2222) !important;
+  background: radial-gradient(circle, #B30003, #921818) !important;
 }
 
 /* Vertical Flaps Control */
@@ -1545,7 +1545,8 @@ input.incorrect-answer {
   background: white;
   border-radius: 12px;
   padding: 30px;
-  width: 400px;
+  width: auto;
+  min-width: 400px;
   max-width: 90%;
   position: relative;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
@@ -1670,6 +1671,133 @@ input.incorrect-answer {
 
 .game-score-display button:hover {
   background-color: #003B4F;
+}
+
+/* TOLD Card Styles */
+.told-card-container {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 20px;
+}
+
+.told-card-container h1 {
+  text-align: center;
+  color: #01202C;
+  margin-bottom: 20px;
+}
+
+.told-header {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.told-header-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.told-header-item label {
+  font-weight: bold;
+}
+
+.told-header-item select {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.told-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.told-table th,
+.told-table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
+}
+
+.told-table th {
+  background-color: #01202C;
+  color: white;
+  font-weight: bold;
+}
+
+.told-table td:first-child {
+  width: 5%;
+  font-weight: bold;
+}
+
+.told-table td:nth-child(2) {
+  width: 25%;
+  text-align: left;
+  padding-left: 12px;
+}
+
+.told-table input {
+  width: 100%;
+  border: none;
+  text-align: center;
+  padding: 4px;
+  background: transparent;
+  font-size: 14px;
+}
+
+.told-table input:focus {
+  outline: 2px solid #4CAF50;
+  background: white;
+}
+
+.told-table input::placeholder {
+  color: #999;
+  font-style: italic;
+  font-size: 12px;
+}
+
+.told-table input.calculated-field {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.told-table input.calculated-field:focus {
+  outline: none;
+  background-color: #f5f5f5;
+}
+
+.told-summary-row {
+  background-color: #f0f0f0;
+  font-weight: bold;
+}
+
+.told-notes {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #f0f8ff;
+  border-radius: 8px;
+  border: 1px solid #d0e8ff;
+}
+
+.told-notes h3 {
+  margin-top: 0;
+  color: #01202C;
+}
+
+.told-notes ul {
+  margin: 10px 0;
+  padding-left: 25px;
+}
+
+.told-notes li {
+  margin: 8px 0;
+  line-height: 1.4;
+  color: #333;
 }
 
 @media (max-width: 1200px) {

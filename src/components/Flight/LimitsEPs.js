@@ -7,7 +7,7 @@ function LimitsEPs() {
   const [checkResults, setCheckResults] = useState({});
   const [flapsPosition, setFlapsPosition] = useState(30);
   const [fuelSelector, setFuelSelector] = useState('BOTH');
-  const [magsPosition, setMagsPosition] = useState('BOTH');
+  const [magsPosition, setMagsPosition] = useState('BOTH (Start if prop stopped)');
   const [switches, setSwitches] = useState({
     master: true,
     avionics: true,
@@ -28,6 +28,8 @@ function LimitsEPs() {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [gameScore, setGameScore] = useState(null);
   const [completedLimits, setCompletedLimits] = useState(false);
+  const [limitsTime, setLimitsTime] = useState(0);
+  const [epsTime, setEpsTime] = useState(0);
   const timerInterval = useRef(null);
 
   //Leaderboard Variables
@@ -35,12 +37,16 @@ function LimitsEPs() {
     const [leaderboardData, setLeaderboardData] = useState([]);
     const [showSubmitForm, setShowSubmitForm] = useState(false);
     const [submitFormData, setSubmitFormData] = useState({
-    playerName: '',
-    country: '',
-    branch: '',
-    nifeClass: ''
+        playerName: '',
+        country: '',
+        branch: '',
+        designator: '',
+        nifeClass: ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [customCountry, setCustomCountry] = useState('');
+    const [customBranch, setCustomBranch] = useState('');
+    const [customDesignator, setCustomDesignator] = useState('');
 
     // Replace these with your actual API endpoints
     const API_BASE_URL = 'https://ms8qwr3ond.execute-api.us-east-2.amazonaws.com/prod';
@@ -204,7 +210,6 @@ function LimitsEPs() {
       }
       if(key === "oilQuantMin"||key === "oilQuantMax"){continue;}
       if (!data[key] || data[key].trim().length < 2) {
-        console.log("FALSE")
         return false;
       }
     }
@@ -257,6 +262,10 @@ function LimitsEPs() {
     setElapsedTime(0);
     setGameScore(null);
     setCompletedLimits(false);
+  
+    // Reset time tracking
+    setLimitsTime(0);
+    setEpsTime(0);
     
     // Reset data
     setLimitsData({});
@@ -276,8 +285,29 @@ function LimitsEPs() {
     setIsGameActive(false);
     checkAnswers();
     const score = calculateScore();
-    const time = formatTime(elapsedTime);
-    setGameScore({ score, time, elapsedTime });
+    
+    let gameData;
+    if (gameMode === 'EPs and Limits') {
+        gameData = {
+        score,
+        elapsedTime,
+        limitsTime: limitsTime,
+        epsTime: epsTime || (elapsedTime - limitsTime),
+        totalTime: formatTime(elapsedTime),
+        limitsTimeFormatted: formatTime(limitsTime),
+        epsTimeFormatted: formatTime(epsTime || (elapsedTime - limitsTime)),
+        gameMode
+        };
+    } else {
+        gameData = {
+        score,
+        elapsedTime,
+        totalTime: formatTime(elapsedTime),
+        gameMode
+        };
+    }
+    
+    setGameScore(gameData);
   };
 
   // Format time display
@@ -294,17 +324,27 @@ function LimitsEPs() {
     if (isGameActive && checkIfComplete()) {
       if (gameMode === 'EPs and Limits') {
         if (!showEPs && !completedLimits) {
-          // Just completed Limits, move to EPs
+          // Just completed Limits, record time and move to EPs
+          const limitsEnd = Date.now();
+          setLimitsTime(limitsEnd - gameStartTime);
           setCompletedLimits(true);
           setShowEPs(true);
         } else if (showEPs) {
           // Completed EPs (and already did Limits)
+          const totalTime = Date.now() - gameStartTime;
+          const epsTimeTaken = totalTime - limitsTime;
+          setEpsTime(epsTimeTaken);
           endGame();
         }
-      } else {
-        // Single mode completed
+      } else if (gameMode === 'Limits') {
+        const limitsEnd = Date.now();
+        setLimitsTime(limitsEnd - gameStartTime);
         endGame();
-      }
+        } else if (gameMode === 'EPs') {
+        const epsEnd = Date.now();
+        setEpsTime(epsEnd - gameStartTime);
+        endGame();
+        }
     }
   }, [limitsData, epsData, isGameActive, showEPs, gameMode, completedLimits]);
 
@@ -483,7 +523,7 @@ function LimitsEPs() {
       setEpsData({});
       setFlapsPosition(30);
       setFuelSelector('BOTH');
-      setMagsPosition('BOTH');
+      setMagsPosition('BOTH (Start if prop stopped)');
       setSwitches({
         master: true,
         avionics: true,
@@ -668,57 +708,73 @@ function LimitsEPs() {
     document.addEventListener('mouseup', handleMouseUp);
   };
 
-  const submitToLeaderboard = async () => {
-    if (!submitFormData.playerName || !submitFormData.country || 
-        !submitFormData.branch || !submitFormData.nifeClass) {
-        alert('Please fill in all fields');
-        return;
-    }
-    
-    setIsSubmitting(true);
-    console.log(gameScore)
-    try {
-        const response = await fetch(`${API_BASE_URL}/submit-score`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            testType: gameMode.replace(' ', '_'),
-            elapsedTime: gameScore.elapsedTime,
-            playerName: submitFormData.playerName,
-            country: submitFormData.country,
-            branch: submitFormData.branch,
-            nifeClass: submitFormData.nifeClass,
-            score: 100
-        })
-        });
+    const submitToLeaderboard = async () => {
+        // Get final values (use custom if "OTHER" was selected)
+        const finalCountry = submitFormData.country === 'OTHER' ? customCountry : submitFormData.country;
+        const finalBranch = submitFormData.branch === 'OTHER' ? customBranch : submitFormData.branch;
+        const finalDesignator = submitFormData.designator === 'OTHER' ? customDesignator : submitFormData.designator;
         
-        const data = await response.json();
-        
-        if (response.ok) {
-        alert('Score submitted successfully!');
-        setShowSubmitForm(false);
-        setGameScore(null);
-        setIsGameActive(false);
-        setSubmitFormData({ playerName: '', country: '', branch: '', nifeClass: '' });
-        // Optionally show the leaderboard
-        viewLeaderboard();
-        } else {
-        alert('Failed to submit score: ' + data.error);
+        if (!submitFormData.playerName || !finalCountry || 
+            !finalBranch || !finalDesignator || !submitFormData.nifeClass) {
+            alert('Please fill in all fields');
+            return;
         }
-    } catch (error) {
-        setIsSubmitting(false);
-        console.error('Error submitting score:', error);
-        alert('Failed to submit score. Please try again.');
-    } finally {
-        setIsSubmitting(false);
-    }
-  };
+        
+        // Validate NIFE class format
+        if (!/^\d{2}-\d{2}$/.test(submitFormData.nifeClass)) {
+            alert('NIFE Class must be in format ##-## (e.g., 25-01)');
+            return;
+        }
+        
+        setIsSubmitting(true);
+        
+        try {
+            const payload = {
+                testType: gameMode.replace(/ /g, '_'),
+                elapsedTime: gameScore.elapsedTime,
+                limitsTime: gameScore.limitsTime || null,
+                epsTime: gameScore.epsTime || null,
+                playerName: submitFormData.playerName,
+                country: finalCountry,
+                branch: finalBranch,
+                designator: finalDesignator,
+                nifeClass: submitFormData.nifeClass,
+                score: 100
+            };
+            
+            console.log('Submitting:', payload);
+            
+            const response = await fetch(`${API_BASE_URL}/submit-score`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                alert('Score submitted successfully!');
+                setShowSubmitForm(false);
+                setGameScore(null);
+                setIsGameActive(false);
+                setSubmitFormData({ playerName: '', country: '', branch: '', designator: '', nifeClass: '' });
+                viewLeaderboard();
+            } else {
+                alert('Failed to submit score: ' + data.error);
+            }
+        } catch (error) {
+            console.error('Error submitting score:', error);
+            alert('Failed to submit score. Please try again.');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     const viewLeaderboard = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/leaderboard?testType=${gameMode.replace(' ', '_')}`);
+            const response = await fetch(`${API_BASE_URL}/leaderboard?testType=${gameMode.replace(/ /g, '_')}`);
             const data = await response.json();
             
             if (response.ok) {
@@ -752,9 +808,23 @@ function LimitsEPs() {
       
       {gameScore && !showSubmitForm && (
         <div className="game-score-display">
-            <h2>Game Complete!</h2>
-            <p>Time: {gameScore.time}</p>
-            <p>Score: {gameScore.score}%</p>
+            <h2 style={{ 
+            color: gameScore.score === 100 ? '#FFD700' : 
+                    gameScore.score >= 90 ? '#4CAF50' : 
+                    '#d32f2f'
+            }}>
+            Game Complete{gameScore.score === 100 ? '!!' : gameScore.score >= 90 ? '!' : ''}
+            </h2>
+            {gameMode === 'EPs and Limits' ? (
+            <>
+                <p><strong>Limits Time:</strong> {gameScore.limitsTimeFormatted}</p>
+                <p><strong>EPs Time:</strong> {gameScore.epsTimeFormatted}</p>
+                <p><strong>Total Time:</strong> {gameScore.totalTime}</p>
+            </>
+            ) : (
+            <p><strong>Time:</strong> {gameScore.totalTime}</p>
+            )}
+            <p><strong>Score:</strong> {gameScore.score}%</p>
             {gameScore.score === 100 && (
             <button onClick={() => setShowSubmitForm(true)} style={{ marginRight: '10px' }}>
                 Submit to Leaderboard
@@ -1181,6 +1251,14 @@ function LimitsEPs() {
           <div className="game-modal">
             <button className="game-modal-close" onClick={() => setShowGameModal(false)}>×</button>
             <h2>Game Mode</h2>
+            <p style={{ 
+                textAlign: 'center', 
+                color: '#666', 
+                margin: '-10px 0 20px 0',
+                fontSize: '0.9em'
+            }}>
+                Score 100% to add yourself to the leaderboard!
+            </p>
             
             <div className="game-modal-content">
               <label>Select Mode:</label>
@@ -1208,103 +1286,199 @@ function LimitsEPs() {
 
         {/*Add the submit form modal*/}
         {showSubmitForm && (
-            <div className="game-modal-overlay">
-                <div className="game-modal">
-                <button className="game-modal-close" onClick={() => setShowSubmitForm(false)}>×</button>
-                <h2>Submit to Leaderboard</h2>
-                <p>Max 4 Characters for Name, Country, and Branch</p>
-
-                <div className="game-modal-content">
-                    <label>Name:</label>
-                    <input
-                    type="text"
-                    value={submitFormData.playerName}
-                    onChange={(e) => setSubmitFormData({...submitFormData, playerName: e.target.value.slice(0, 4)})}
-                    className="game-mode-select"
-                    placeholder="ABCD"
-                    maxLength="4"
-                    />
-                    
-                    <label>Country:</label>
-                    <input
-                    type="text"
-                    value={submitFormData.country}
-                    onChange={(e) => setSubmitFormData({...submitFormData, country: e.target.value.toUpperCase().slice(0, 4)})}
-                    className="game-mode-select"
-                    placeholder="USA"
-                    maxLength="4"
-                    />
-                    
-                    <label>Branch:</label>
-                    <input
-                    type="text"
-                    value={submitFormData.branch}
-                    onChange={(e) => setSubmitFormData({...submitFormData, branch: e.target.value.toUpperCase().slice(0, 4)})}
-                    className="game-mode-select"
-                    placeholder="USMC"
-                    maxLength="4"
-                    />
-                    
-                    <label>NIFE Class:</label>
-                    <input
-                    type="text"
-                    value={submitFormData.nifeClass}
-                    onChange={(e) => setSubmitFormData({...submitFormData, nifeClass: e.target.value.slice(0, 5)})}
-                    className="game-mode-select"
-                    placeholder="25-01"
-                    maxLength="5"
-                    />
-                    
-                    <button 
-                    className="game-button-primary" 
-                    onClick={submitToLeaderboard}
-                    disabled={isSubmitting}
-                    >
-                    {isSubmitting ? 'Submitting...' : 'Submit'}
-                    </button>
-                </div>
-                </div>
-            </div>
-        )}
-
-        {/*// Add the leaderboard modal*/}
-        {showLeaderboard && (
         <div className="game-modal-overlay">
-            <div className="game-modal" style={{ maxWidth: '600px' }}>
-            <button className="game-modal-close" onClick={() => setShowLeaderboard(false)}>×</button>
-            <h2>Leaderboard - {gameMode}</h2>
-            
-            <div className="leaderboard-table">
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead>
-                    <tr style={{ borderBottom: '2px solid #ddd' }}>
-                    <th style={{ padding: '8px', textAlign: 'left' }}>Rank</th>
-                    <th style={{ padding: '8px', textAlign: 'left' }}>Name</th>
-                    <th style={{ padding: '8px', textAlign: 'left' }}>Time</th>
-                    <th style={{ padding: '8px', textAlign: 'left' }}>Country</th>
-                    <th style={{ padding: '8px', textAlign: 'left' }}>Branch</th>
-                    <th style={{ padding: '8px', textAlign: 'left' }}>Class</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {leaderboardData.map((entry, index) => (
-                    <tr key={index} style={{ borderBottom: '1px solid #eee' }}>
-                        <td style={{ padding: '8px' }}>#{entry.rank}</td>
-                        <td style={{ padding: '8px' }}>{entry.playerName}</td>
-                        <td style={{ padding: '8px', fontFamily: 'monospace' }}>{entry.formattedTime}</td>
-                        <td style={{ padding: '8px' }}>{entry.country}</td>
-                        <td style={{ padding: '8px' }}>{entry.branch}</td>
-                        <td style={{ padding: '8px' }}>{entry.nifeClass}</td>
-                    </tr>
-                    ))}
-                </tbody>
-                </table>
-                {leaderboardData.length === 0 && (
-                <p style={{ textAlign: 'center', padding: '20px' }}>No scores yet. Be the first!</p>
+            <div className="game-modal">
+            <button className="game-modal-close" onClick={() => setShowSubmitForm(false)}>×</button>
+            <h2>Submit to Leaderboard</h2>
+            <p style={{ 
+                textAlign: 'center', 
+                color: '#666', 
+                margin: '-10px 0 20px 0',
+                fontSize: '0.9em'
+            }}>
+                Only your best score will be displayed
+            </p>
+            <div className="game-modal-content">
+                <label>Name (4 chars):</label>
+                <input
+                type="text"
+                value={submitFormData.playerName}
+                onChange={(e) => setSubmitFormData({...submitFormData, playerName: e.target.value.slice(0, 4)})}
+                className="game-mode-select"
+                placeholder="ABCD"
+                maxLength="4"
+                />
+                
+                <label>Country:</label>
+                {submitFormData.country === 'OTHER' ? (
+                <input
+                    type="text"
+                    value={customCountry}
+                    onChange={(e) => setCustomCountry(e.target.value.toUpperCase().slice(0, 4))}
+                    className="game-mode-select"
+                    placeholder="Enter country (4 chars)"
+                    maxLength="4"
+                    autoFocus
+                />
+                ) : (
+                <select
+                    value={submitFormData.country}
+                    onChange={(e) => {
+                    setSubmitFormData({...submitFormData, country: e.target.value});
+                    if (e.target.value !== 'OTHER') setCustomCountry('');
+                    }}
+                    className="game-mode-select"
+                >
+                    <option value="">Select Country</option>
+                    <option value="USA">USA</option>
+                    <option value="ITA">ITA</option>
+                    <option value="GBR">GBR</option>
+                    <option value="CAN">CAN</option>
+                    <option value="AUS">AUS</option>
+                    <option value="GER">GER</option>
+                    <option value="FRA">FRA</option>
+                    <option value="NED">NED</option>
+                    <option value="KSA">KSA</option>
+                    <option value="SWE">SWE</option>
+                    <option value="OTHER">Other...</option>
+                </select>
                 )}
+                
+                <label>Branch:</label>
+                {submitFormData.branch === 'OTHER' ? (
+                <input
+                    type="text"
+                    value={customBranch}
+                    onChange={(e) => setCustomBranch(e.target.value.toUpperCase().slice(0, 4))}
+                    className="game-mode-select"
+                    placeholder="Enter branch (4 chars)"
+                    maxLength="4"
+                    autoFocus
+                />
+                ) : (
+                <select
+                    value={submitFormData.branch}
+                    onChange={(e) => {
+                    setSubmitFormData({...submitFormData, branch: e.target.value});
+                    if (e.target.value !== 'OTHER') setCustomBranch('');
+                    }}
+                    className="game-mode-select"
+                >
+                    <option value="">Select Branch</option>
+                    <option value="USN">USN</option>
+                    <option value="USMC">USMC</option>
+                    <option value="USCG">USCG</option>
+                    <option value="NAVY">NAVY</option>
+                    <option value="OTHER">Other...</option>
+                </select>
+                )}
+                
+                <label>Designator:</label>
+                {submitFormData.designator === 'OTHER' ? (
+                <input
+                    type="text"
+                    value={customDesignator}
+                    onChange={(e) => setCustomDesignator(e.target.value.toUpperCase().slice(0, 5))}
+                    className="game-mode-select"
+                    placeholder="Enter designator (5 chars)"
+                    maxLength="5"
+                    autoFocus
+                />
+                ) : (
+                <select
+                    value={submitFormData.designator || ''}
+                    onChange={(e) => {
+                    setSubmitFormData({...submitFormData, designator: e.target.value});
+                    if (e.target.value !== 'OTHER') setCustomDesignator('');
+                    }}
+                    className="game-mode-select"
+                >
+                    <option value="">Select Designator</option>
+                    <option value="SNA">SNA</option>
+                    <option value="SNFO">SNFO</option>
+                    <option value="AVP">AVP</option>
+                    <option value="OTHER">Other...</option>
+                </select>
+                )}
+                
+                <label>NIFE Class (##-##):</label>
+                <input
+                type="text"
+                value={submitFormData.nifeClass}
+                onChange={(e) => {
+                    setSubmitFormData({...submitFormData, nifeClass: e.target.value});
+                }}
+                className="game-mode-select"
+                placeholder="25-01"
+                maxLength="5"
+                />
+                
+                <button 
+                className="game-button-primary" 
+                onClick={submitToLeaderboard}
+                disabled={isSubmitting}
+                >
+                {isSubmitting ? 'Submitting...' : 'Submit'}
+                </button>
             </div>
             </div>
         </div>
+        )}
+        
+        {/*// Add the leaderboard modal*/}
+        {showLeaderboard && (
+            <div className="game-modal-overlay">
+                <div className="game-modal" style={{maxWidth: gameMode === 'EPs and Limits' ? '1000px' : '700px'}}>
+                <button className="game-modal-close" onClick={() => setShowLeaderboard(false)}>×</button>
+                <h2>Leaderboard - {gameMode}</h2>
+                
+                <div className="leaderboard-table">
+                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                        <tr style={{ borderBottom: '2px solid #ddd' }}>
+                        <th style={{ padding: '8px', textAlign: 'left' }}>Rank</th>
+                        <th style={{ padding: '8px', textAlign: 'left' }}>Name</th>
+                        {gameMode === 'EPs and Limits' ? (
+                            <>
+                            <th style={{ padding: '8px', textAlign: 'left' }}>Total</th>
+                            <th style={{ padding: '8px', textAlign: 'left' }}>Limits</th>
+                            <th style={{ padding: '8px', textAlign: 'left' }}>EPs</th>
+                            </>
+                        ) : (
+                            <th style={{ padding: '8px', textAlign: 'left' }}>Time</th>
+                        )}
+                        <th style={{ padding: '8px', textAlign: 'left' }}>Des.</th>
+                        <th style={{ padding: '8px', textAlign: 'left' }}>Branch</th>
+                        <th style={{ padding: '8px', textAlign: 'left' }}>Class</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {leaderboardData.map((entry, index) => (
+                        <tr key={index} style={{ borderBottom: '1px solid #eee' }}>
+                            <td style={{ padding: '8px' }}>#{entry.rank}</td>
+                            <td style={{ padding: '8px' }}>{entry.playerName}</td>
+                            {gameMode === 'EPs and Limits' ? (
+                                <>
+                                <td style={{ padding: '8px', fontFamily: 'monospace' }}>{entry.formattedTime}</td>
+                                <td style={{ padding: '8px', fontFamily: 'monospace' }}>{entry.formattedLimitsTime || '-'}</td>
+                                <td style={{ padding: '8px', fontFamily: 'monospace' }}>{entry.formattedEpsTime || '-'}</td>
+                                </>
+                            ) : (
+                                <td style={{ padding: '8px', fontFamily: 'monospace' }}>{entry.formattedTime}</td>
+                            )}
+                            <td style={{ padding: '8px' }}>{entry.designator}</td>
+                            <td style={{ padding: '8px' }}>{entry.branch}</td>
+                            <td style={{ padding: '8px' }}>{entry.nifeClass}</td>
+                        </tr>
+                        ))}
+                    </tbody>
+                    </table>
+                    {leaderboardData.length === 0 && (
+                    <p style={{ textAlign: 'center', padding: '20px' }}>No scores yet. Be the first!</p>
+                    )}
+                </div>
+                </div>
+            </div>
         )}
     </div>
   );

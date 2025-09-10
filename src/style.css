@@ -789,6 +789,53 @@ iframe {
   padding: 0 20px;
 }
 
+/* Zoom out the limits-eps-container to 80% */
+.limits-eps-container {
+  transform: scale(0.8);
+  transform-origin: top center;
+  width: 125%; /* Compensate for the 80% scale (100/80 = 125) */
+  max-width: 1125px; /* 900px * 1.25 */
+}
+
+/* Responsive behavior for scaled container */
+@media (max-width: 1200px) {
+  .limits-eps-container {
+    width: 100%;
+    max-width: 900px;
+    transform: scale(0.8);
+    transform-origin: top center;
+  }
+}
+
+@media (max-width: 900px) {
+  .limits-eps-container {
+    width: 100%;
+    max-width: 100%;
+    transform: scale(0.75);
+    transform-origin: top center;
+  }
+}
+
+@media (max-width: 768px) {
+  .limits-eps-container {
+    width: 100%;
+    max-width: 100%;
+    transform: scale(0.7);
+    transform-origin: top center;
+    padding: 0 10px;
+  }
+}
+
+@media (max-width: 600px) {
+  .limits-eps-container {
+    width: 100%;
+    max-width: 100%;
+    transform: scale(0.6);
+    transform-origin: top center;
+    padding: 0 5px;
+  }
+}
+
 .limits-eps-container h1,
 .told-card-container h1 {
   text-align: center;
@@ -1602,7 +1649,7 @@ input.incorrect-answer {
 
 .game-button-primary {
   padding: 12px 24px;
-  background-color: #4CAF50;
+  background-color: #228B22;
   color: white;
   border: none;
   border-radius: 6px;
@@ -1613,22 +1660,23 @@ input.incorrect-answer {
 }
 
 .game-button-primary:hover {
-  background-color: #45a049;
+  background-color: #1e6b1e;
 }
 
 .game-button-secondary {
   padding: 10px 20px;
-  background-color: #f0f0f0;
-  color: #333;
-  border: 1px solid #ccc;
+  background-color: #01202C;
+  color: white;
+  border: none;
   border-radius: 6px;
   font-size: 14px;
   cursor: pointer;
+  font-weight: bold;
   transition: background-color 0.3s ease;
 }
 
 .game-button-secondary:hover {
-  background-color: #e0e0e0;
+  background-color: #003B4F;
 }
 
 /* Game Score Display */
@@ -1667,10 +1715,42 @@ input.incorrect-answer {
   border-radius: 6px;
   cursor: pointer;
   font-weight: bold;
+  transition: background-color 0.3s ease;
 }
 
 .game-score-display button:hover {
   background-color: #003B4F;
+}
+
+/* Leaderboard Tabs */
+.leaderboard-tabs {
+  display: flex;
+  border-bottom: 2px solid #ddd;
+  margin-bottom: 20px;
+}
+
+.leaderboard-tab {
+  padding: 12px 20px;
+  background-color: #01202C;
+  color: white;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  flex: 1;
+  text-align: center;
+  margin-right: 2px;
+}
+
+.leaderboard-tab:hover {
+  background-color: #003B4F;
+}
+
+.leaderboard-tab.active {
+  background-color: #003B4F;
+  border-bottom-color: #ffffff;
 }
 
 /* TOLD Card Styles */

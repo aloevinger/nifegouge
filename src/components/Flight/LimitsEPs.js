@@ -34,7 +34,8 @@ function LimitsEPs() {
 
   //Leaderboard Variables
     const [showLeaderboard, setShowLeaderboard] = useState(false);
-    const [leaderboardData, setLeaderboardData] = useState([]);
+    const [leaderboardData, setLeaderboardData] = useState({});
+    const [activeLeaderboardTab, setActiveLeaderboardTab] = useState('Limits');
     const [showSubmitForm, setShowSubmitForm] = useState(false);
     const [submitFormData, setSubmitFormData] = useState({
         playerName: '',
@@ -287,7 +288,7 @@ function LimitsEPs() {
     const score = calculateScore();
     
     let gameData;
-    if (gameMode === 'EPs and Limits') {
+    if (gameMode === 'EPs_and_Limits') {
         gameData = {
         score,
         elapsedTime,
@@ -322,7 +323,7 @@ function LimitsEPs() {
   // Check for completion in game mode
   useEffect(() => {
     if (isGameActive && checkIfComplete()) {
-      if (gameMode === 'EPs and Limits') {
+      if (gameMode === 'EPs_and_Limits') {
         if (!showEPs && !completedLimits) {
           // Just completed Limits, record time and move to EPs
           const limitsEnd = Date.now();
@@ -774,15 +775,24 @@ function LimitsEPs() {
 
     const viewLeaderboard = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/leaderboard?testType=${gameMode.replace(/ /g, '_')}`);
-            const data = await response.json();
+            // Fetch data for all game modes
+            const gameModes = ['Limits', 'EPs', 'EPs_and_Limits'];
+            const allLeaderboardData = {};
             
-            if (response.ok) {
-            setLeaderboardData(data.leaderboard);
-            setShowLeaderboard(true);
-            } else {
-            alert('Failed to load leaderboard');
+            for (const mode of gameModes) {
+                const response = await fetch(`${API_BASE_URL}/leaderboard?testType=${mode}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    allLeaderboardData[mode] = data.leaderboard;
+                } else {
+                    allLeaderboardData[mode] = [];
+                }
             }
+            console.log(allLeaderboardData)
+            setLeaderboardData(allLeaderboardData);
+            setActiveLeaderboardTab(gameMode); // Set active tab to current game mode
+            setShowLeaderboard(true);
         } catch (error) {
             console.error('Error loading leaderboard:', error);
             alert('Failed to load leaderboard');
@@ -815,7 +825,7 @@ function LimitsEPs() {
             }}>
             Game Complete{gameScore.score === 100 ? '!!' : gameScore.score >= 90 ? '!' : ''}
             </h2>
-            {gameMode === 'EPs and Limits' ? (
+            {gameMode === 'EPs_and_Limits' ? (
             <>
                 <p><strong>Limits Time:</strong> {gameScore.limitsTimeFormatted}</p>
                 <p><strong>EPs Time:</strong> {gameScore.epsTimeFormatted}</p>
@@ -1242,8 +1252,10 @@ function LimitsEPs() {
   );
 
   return (
-    <div className="limits-eps-container">
-      {mainContent}
+    <>
+      <div className="limits-eps-container">
+        {mainContent}
+      </div>
       
       {/* Game Mode Modal */}
       {showGameModal && (
@@ -1269,7 +1281,7 @@ function LimitsEPs() {
               >
                 <option value="Limits">Limits</option>
                 <option value="EPs">EPs</option>
-                <option value="EPs and Limits">EPs and Limits</option>
+                <option value="EPs_and_Limits">EPs and Limits</option>
               </select>
               
               <button className="game-button-secondary" onClick={viewLeaderboard}>
@@ -1428,9 +1440,22 @@ function LimitsEPs() {
         {/*// Add the leaderboard modal*/}
         {showLeaderboard && (
             <div className="game-modal-overlay">
-                <div className="game-modal" style={{maxWidth: gameMode === 'EPs and Limits' ? '1000px' : '700px'}}>
+                <div className="game-modal" style={{maxWidth: activeLeaderboardTab === 'EPs_and_Limits' ? '1000px' : '700px'}}>
                 <button className="game-modal-close" onClick={() => setShowLeaderboard(false)}>×</button>
-                <h2>Leaderboard - {gameMode}</h2>
+                <h2>Leaderboard</h2>
+                
+                {/* Leaderboard Tabs */}
+                <div className="leaderboard-tabs">
+                    {['Limits', 'EPs', 'EPs_and_Limits'].map(tab => (
+                        <button
+                            key={tab}
+                            className={`leaderboard-tab ${activeLeaderboardTab === tab ? 'active' : ''}`}
+                            onClick={() => setActiveLeaderboardTab(tab)}
+                        >
+                            {tab.replaceAll('_', ' ')}
+                        </button>
+                    ))}
+                </div>
                 
                 <div className="leaderboard-table">
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -1438,7 +1463,7 @@ function LimitsEPs() {
                         <tr style={{ borderBottom: '2px solid #ddd' }}>
                         <th style={{ padding: '8px', textAlign: 'left' }}>Rank</th>
                         <th style={{ padding: '8px', textAlign: 'left' }}>Name</th>
-                        {gameMode === 'EPs and Limits' ? (
+                        {activeLeaderboardTab === 'EPs_and_Limits' ? (
                             <>
                             <th style={{ padding: '8px', textAlign: 'left' }}>Total</th>
                             <th style={{ padding: '8px', textAlign: 'left' }}>Limits</th>
@@ -1453,11 +1478,11 @@ function LimitsEPs() {
                         </tr>
                     </thead>
                     <tbody>
-                        {leaderboardData.map((entry, index) => (
+                        {(leaderboardData[activeLeaderboardTab] || []).map((entry, index) => (
                         <tr key={index} style={{ borderBottom: '1px solid #eee' }}>
                             <td style={{ padding: '8px' }}>#{entry.rank}</td>
                             <td style={{ padding: '8px' }}>{entry.playerName}</td>
-                            {gameMode === 'EPs and Limits' ? (
+                            {activeLeaderboardTab === 'EPs_and_Limits' ? (
                                 <>
                                 <td style={{ padding: '8px', fontFamily: 'monospace' }}>{entry.formattedTime}</td>
                                 <td style={{ padding: '8px', fontFamily: 'monospace' }}>{entry.formattedLimitsTime || '-'}</td>
@@ -1473,14 +1498,14 @@ function LimitsEPs() {
                         ))}
                     </tbody>
                     </table>
-                    {leaderboardData.length === 0 && (
+                    {(!leaderboardData[activeLeaderboardTab] || leaderboardData[activeLeaderboardTab].length === 0) && (
                     <p style={{ textAlign: 'center', padding: '20px' }}>No scores yet. Be the first!</p>
                     )}
                 </div>
                 </div>
             </div>
         )}
-    </div>
+    </>
   );
 }
 

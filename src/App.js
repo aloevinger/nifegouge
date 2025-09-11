@@ -93,7 +93,7 @@ function App() {
             <p className="about-text">
               This project is a work in progress (launched 18AUG25) and is actively being developed. 
               If you spot issues or have ideas for new features, please reach out at 
-              drew.Loevinger@gmail.com.
+              pinksheetmafia@gmail.com.
             </p>
             
             <p className="about-text">

@@ -22,6 +22,7 @@ function Questions() {
   // Modal state
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState('new'); // 'new' or 'edit'
+  const [showPdfModal, setShowPdfModal] = useState(false);
   const [modalData, setModalData] = useState({
     topic: 'aero',
     lecture: '',
@@ -378,6 +379,22 @@ function Questions() {
               </div>
             </div>
             
+            {/* Weather Figure PDF Button */}
+            {topic === 'weather' && (
+              <div style={{ textAlign: 'center', margin: '15px 0' }}>
+                <button 
+                  className="submitBtn" 
+                  onClick={() => setShowPdfModal(true)}
+                  style={{ 
+                    fontSize: '0.9em', 
+                    padding: '8px 16px'
+                  }}
+                >
+                  View Weather Figures
+                </button>
+              </div>
+            )}
+            
             <div className="feedback-row">
               <button className="thumb-btn up">
                 <img src="/images/thumb.png" alt="Thumbs up" />
@@ -392,6 +409,29 @@ function Questions() {
         <button className="submitBtn" onClick={() => openSubmitModal('new')}>
           Submit a Question
         </button>
+        
+        <div style={{ textAlign: 'center', marginTop: '10px' }}>
+          <button 
+            onClick={() => {
+              const link = document.createElement('a');
+              link.href = '/questions.xlsx';
+              link.download = 'questions.xlsx';
+              link.click();
+            }}
+            style={{
+              padding: '4px 8px',
+              fontSize: '0.7em',
+              backgroundColor: '#01202C',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontWeight: 'bold'
+            }}
+          >
+            Download Questions Excel
+          </button>
+        </div>
       </div>
       
       {/* Modal */}
@@ -482,6 +522,48 @@ function Questions() {
             <button className="submitBtn" onClick={submitModalQuestion}>
               Submit
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Weather Figure PDF Modal */}
+      {showPdfModal && (
+        <div className="modal" onClick={(e) => e.target.className === 'modal' && setShowPdfModal(false)}>
+          <div className="modal-content" style={{ maxWidth: '95%', width: 'auto', height: '90vh', margin: '2.5vh auto', padding: '10px' }}>
+            
+            <span className="close-button" onClick={() =>setShowPdfModal(false)}>&times;</span>
+            <h2 style={{ marginBottom: '20px', textAlign: 'center' }}>Weather Figures</h2>
+            
+            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+              <button 
+                onClick={() => {
+                  const link = document.createElement('a');
+                  link.href = '/Metars, Tafs, and station model.pdf';
+                  link.download = 'Weather_Figures.pdf';
+                  link.click();
+                }}
+              >
+                Download PDF
+              </button>
+            </div>
+            
+            <div style={{ width: '100%', height: 'calc(90vh - 120px)'}}>
+              <iframe
+                src="/Metars, Tafs, and station model.pdf"
+                title="Weather Figures PDF"
+                style={{ 
+                  width: '100%', 
+                  height: '100%', 
+                  border: 'none' 
+                }}
+              >
+                <p>Your browser does not support PDFs. 
+                  <a href="/Metars, Tafs, and station model.pdf" target="_blank" rel="noopener noreferrer">
+                    Click here to download the PDF
+                  </a>
+                </p>
+              </iframe>
+            </div>
           </div>
         </div>
       )}

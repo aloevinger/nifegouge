@@ -224,6 +224,10 @@ function Questions() {
       id: modalMode === 'edit' && currentQuestion ? currentQuestion[7] : ''
     };
     
+    // Show immediate success message and close modal
+    alert('Question submitted!');
+    setShowModal(false);
+    
     // Submit to Google Apps Script
     fetch('https://script.google.com/macros/s/AKfycbxZYDa0GlMHQtpE6zhvFuPZWCu5JzsDDhg7mEd3cRCqsFlg84g81_yoyj24Nrkuc072/exec', {
       redirect: 'follow',
@@ -235,13 +239,21 @@ function Questions() {
     })
     .then(res => res.text())
     .then(text => {
-      const data = JSON.parse(text);
-      if (data.success) {
-        alert('Submitted!');
-        setShowModal(false);
+      try {
+        const data = JSON.parse(text);
+        if (!data.success) {
+          // If submission failed, alert the user
+          alert('Something went wrong with submission. Please try again.');
+        }
+      } catch (parseError) {
+        console.error('Parse error:', parseError);
+        alert('Something went wrong with submission. Please try again.');
       }
     })
-    .catch(err => console.error('Error:', err));
+    .catch(err => {
+      console.error('Error:', err);
+      alert('Something went wrong with submission. Please try again.');
+    });
   };
 
   // Review Screen Component
@@ -429,7 +441,7 @@ function Questions() {
               fontWeight: 'bold'
             }}
           >
-            Download Questions Excel
+            Download All Questions Excel Sheet
           </button>
         </div>
       </div>

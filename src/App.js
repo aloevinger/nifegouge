@@ -5,6 +5,7 @@ import Weather from './components/Weather';
 import Questions from './components/Questions';
 import Nav from './components/Nav'; 
 import Flight from './components/Flight.js';
+import Docs from './components/Docs.js';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('about');
@@ -32,6 +33,16 @@ function App() {
           className={currentPage === 'questions' ? 'active' : ''}
         >
           Questions
+        </a>
+        <a 
+          href="#docs"
+          onClick={(e) => {
+            e.preventDefault();
+            setCurrentPage('docs');
+          }}
+          className={currentPage === 'docs' ? 'active' : ''}
+        >
+          Docs
         </a>
         <a 
           href="#frr"
@@ -121,6 +132,7 @@ function App() {
           </div>
         )}
         {currentPage === 'questions' && <Questions />}
+        {currentPage === 'docs' && <Docs />}
         {currentPage === 'frr' && <FRR />}
         {currentPage === 'nav' && <Nav />}
         {currentPage === 'weather' && <Weather />}

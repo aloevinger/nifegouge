@@ -49,7 +49,6 @@ function LimitsEPs() {
     const [customBranch, setCustomBranch] = useState('');
     const [customDesignator, setCustomDesignator] = useState('');
 
-    // Replace these with your actual API endpoints
     const API_BASE_URL = 'https://ms8qwr3ond.execute-api.us-east-2.amazonaws.com/prod';
 
   // Answer keys

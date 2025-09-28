@@ -96,13 +96,14 @@ function App() {
             
             <p className="about-text">
               This is a free, community-built, open-source resource designed to make NIFE less stressful. 
-              Here you'll find problem generators and solvers—primarily for Navigation, plus Weather and FR&R—as well as (eventually...) 
-              curated gouge documents and high-quality practice questions, all submitted and vetted by 
-              students who have successfully made it through NIFE.
+              Here you'll find problem generators and solvers (primarily for Navigation, plus Weather and FR&R), eps and limits practice/told cards for flight stage,
+              as well as curated gouge documents/links and high-quality practice questions, all submitted and vetted by 
+              students who have successfully made it through NIFE. 
             </p>
             
             <p className="about-text">
-              This project is a work in progress (launched 18AUG25) and is actively being developed. 
+              This project is a work in progress (launched 18AUG25). I've personally written about 450 questions and 15 documents. Going forward, 
+              any corrections or new content will be left up to the current NIFE community. 
               If you spot issues or have ideas for new features, please reach out at 
               pinksheetmafia@gmail.com.
             </p>

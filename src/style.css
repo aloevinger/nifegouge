@@ -2452,3 +2452,141 @@ input.incorrect-answer {
 .vote-score.negative {
   color: #f44336;
 }
+
+/* Active state for voting buttons */
+.thumb-btn.active {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.thumb-btn.up.active {
+  background-color: #2e7d32; /* Darker green when active */
+}
+
+.thumb-btn.down.active {
+  background-color: #c62828; /* Darker red when active */
+}
+
+/* Hover effects for voting buttons */
+.thumb-btn:not(.active):hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+/* Ensure feedback row has proper alignment */
+.feedback-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin: 15px 0;
+}
+
+/* Vote Score Styles - centered between buttons */
+.vote-score {
+  font-weight: bold;
+  padding: 0 10px;
+  font-size: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-width: 50px;
+}
+
+.vote-score.positive {
+  color: #4CAF50;
+}
+
+.vote-score.negative {
+  color: #f44336;
+}
+
+/* Edit button specific styling */
+.questions-container .submitBtn {
+  margin-top: 10px;
+}
+
+/* Moderation mode background */
+.questions-container.moderation-mode {
+  background-color: #003B4F;
+  padding: 20px;
+  border-radius: 10px;
+  margin: 20px auto;
+}
+
+.questions-container.moderation-mode .qa-box {
+  background-color: white;
+}
+
+.questions-container.moderation-mode .dropdown-row select,
+.questions-container.moderation-mode .dropdown-row input {
+  background-color: white;
+}
+
+/* Vote buttons with text labels */
+.thumb-btn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px;
+}
+
+/* Pending question background styling */
+.questions-container.pending-question-mode {
+  background-color: #fff9e6;
+  padding: 20px;
+  border-radius: 10px;
+  border: 2px solid #ffc107;
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2);
+}
+
+.questions-container.pending-question-mode .qa-box {
+  background-color: white;
+  border: 1px solid #ffc107;
+}
+
+.questions-container.pending-question-mode .dropdown-row select,
+.questions-container.pending-question-mode .dropdown-row input {
+  background-color: white;
+  border-color: #ffc107;
+}
+/* Disabled state for vote buttons */
+.thumb-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.thumb-btn.active:disabled {
+  opacity: 0.8;
+}
+
+/* Pending question mode styling */
+.pending-question-mode .qa-container {
+  border: 2px solid #ffc107;
+  border-radius: 8px;
+  padding: 10px;
+}
+.review-mode-container {
+  max-width: 900px;
+}
+
+.review-questions-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.review-questions-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.review-questions-list::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.review-questions-list::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

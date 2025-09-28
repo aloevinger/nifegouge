@@ -102,7 +102,7 @@ function App() {
             </p>
             
             <p className="about-text">
-              This project is a work in progress (launched 18AUG25). I've personally written about 450 questions and 15 documents. Going forward, 
+              This project is complete for now. I've personally written about 450 questions and 15 documents. Going forward, 
               any corrections or new content will be left up to the current NIFE community. 
               If you spot issues or have ideas for new features, please reach out at 
               pinksheetmafia@gmail.com.
@@ -112,7 +112,7 @@ function App() {
               The value of this resource depends on the community:
             </p>
             <ul className="about-list">
-              <li>Submit questions and docs you think will help future students.</li>
+              <li>Submit questions, docs, and links you think will help future students.</li>
               <li>Edit or downvote outdated or incorrect content.</li>
               <li>
                 If you're comfortable with code, contribute directly via our{' '}

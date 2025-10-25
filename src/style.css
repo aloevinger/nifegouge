@@ -59,7 +59,8 @@ body {
   background-color: #01202C;
   padding: 10px 20px;
   gap: 20px;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .sub-navbar {
@@ -853,6 +854,16 @@ iframe {
 }
 
 /* Limits Table Styles */
+.limits-page {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.eps-page {
+  max-width: 2000px;
+  margin: 0 auto;
+}
+
 .limits-table-container {
   margin-bottom: 30px;
 }
@@ -1007,6 +1018,16 @@ input.correct-answer {
 }
 
 input.incorrect-answer {
+  background-color: #f8d0d0 !important;
+  border-color: #d32f2f !important;
+}
+
+textarea.correct-answer {
+  background-color: #d0f0d0 !important;
+  border-color: #4caf50 !important;
+}
+
+textarea.incorrect-answer {
   background-color: #f8d0d0 !important;
   border-color: #d32f2f !important;
 }
@@ -2590,3 +2611,115 @@ input.incorrect-answer {
 .review-questions-list::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+/* Navigation enhancements for page toggle */
+.nav-links {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.page-toggle-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: 15px;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.page-toggle-container span {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.page-toggle-container span.active {
+  background-color: #003B4F;
+}
+
+.page-toggle-switch {
+  width: 30px;
+  height: 16px;
+  background-color: #003B4F;
+  border-radius: 8px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.page-toggle-slider {
+  width: 14px;
+  height: 14px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  position: absolute;
+  top: 1px;
+  transition: transform 0.3s ease;
+}
+
+.page-toggle-slider.left {
+  transform: translateX(1px);
+}
+
+.page-toggle-slider.right {
+  transform: translateX(15px);
+}
+
+.toggle-slider {
+  position: relative;
+  width: 60px;
+  height: 30px;
+  background-color: #ccc;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.toggle-slider.active {
+  background-color: #4a90e2;
+}
+.toggle-slider-circle {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.3s;
+}
+.toggle-slider.active .toggle-slider-circle {
+  transform: translateX(30px);
+}
+.navigation-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+.ep-counter {
+  font-weight: bold;
+  font-size: 16px;
+  color: #333;
+}
+
+
+  .click-style {
+    position: absolute;
+    /*background-color: rgba(0, 123, 255, 0.3);
+    border: 2px solid black;*/
+    cursor: pointer;
+  }
+
+  .click-style:hover {
+    background-color: rgba(0, 123, 255, 0.1); /* Darker on
+  hover */
+  }

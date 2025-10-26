@@ -1007,7 +1007,7 @@ function TW4EpsLimits() {
                   />
                   {/* Throttle/PCL/Speed Brake */}
                   <div
-                    onClick={() => tryNextEPStep(['PCL, Speed Brake'])}
+                    onClick={() => tryNextEPStep(['PCL', 'Speed Brake'])}
                     className = "click-style" style={{top: '28%', left: '10%', width: '84%', height: '10%'}}
                     title="PCL/Speed Brake"
                   />

@@ -360,8 +360,8 @@ function TW4EpsLimits() {
         emptyNum = i;
         break;
       }
-      return
     }
+    if(!nextEmptyField){return}
 
     let correctAnswer = epsAnswers[nextEmptyField]
     console.log(correctAnswer)

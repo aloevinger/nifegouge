@@ -1022,6 +1022,11 @@ input.incorrect-answer {
   border-color: #d32f2f !important;
 }
 
+input.partial-answer {
+  background-color: #faf6be !important;
+  border-color: #fddd0c !important;
+}
+
 textarea.correct-answer {
   background-color: #d0f0d0 !important;
   border-color: #4caf50 !important;

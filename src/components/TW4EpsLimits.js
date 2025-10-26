@@ -141,130 +141,130 @@ function TW4EpsLimits() {
   const epsAnswers = {
     // GROUND EMERGENCIES
     // ABORT START PROCEDURE
-    as1: 'PCL - OFF or STARTER switch - AUTO/RESET',
+    as1: ['PCL - OFF ', 'or STARTER switch - AUTO/RESET'],
     
     // EMERGENCY ENGINE SHUTDOWN ON THE GROUND
-    eesg1: 'PCL - OFF',
-    eesg2: 'FIREWALL SHUTOFF HANDLE - PULL',
-    eesg3: 'EMERGENCY GROUND EGRESS - AS REQUIRED',
+    eesg1: ['PCL - OFF'],
+    eesg2: ['FIREWALL SHUTOFF HANDLE - PULL'],
+    eesg3: ['EMERGENCY GROUND EGRESS - AS REQUIRED'],
     
     // EMERGENCY GROUND EGRESS
-    ege1: 'ISS MODE SELECTOR - SOLO',
-    ege2: 'SEAT SAFETY PIN - INSTALL (BOTH)',
-    ege3: 'PARKING BRAKE - AS REQUIRED',
-    ege4: 'CANOPY - OPEN',
-    ege5: 'CFS HANDLE SAFETY PIN - REMOVE (BOTH)',
-    ege6: 'CFS HANDLE - ROTATE 90 DEGREES COUNTERCLOCKWISE AND PULL (BOTH)',
-    ege7: 'UPPER FITTINGS, LOWER FITTINGS, AND LEG RESTRAINT GARTERS - RELEASE (BOTH)',
-    ege8: 'BAT\u200B, GEN, AND AUX BAT SWITCHES - OFF',
-    ege9: 'EVACUATE AIRCRAFT',
+    ege1: ['ISS MODE SELECTOR - SOLO'],
+    ege2: ['SEAT SAFETY PIN - INSTALL (BOTH)'],
+    ege3: ['PARKING BRAKE - AS REQUIRED'],
+    ege4: ['CANOPY - OPEN'],
+    ege5: ['CFS HANDLE SAFETY PIN - REMOVE (BOTH)'],
+    ege6: ['CFS HANDLE - ROTATE 90 DEGREES COUNTERCLOCKWISE AND PULL (BOTH)'],
+    ege7: ['UPPER FITTINGS, LOWER FITTINGS, AND LEG RESTRAINT GARTERS - RELEASE (BOTH)'],
+    ege8: ['BAT\u200B, ', 'GEN, ', 'AND AUX BAT SWITCHES - OFF'],
+    ege9: ['EVACUATE AIRCRAFT'],
     
     // TAKEOFF EMERGENCIES
     // ABORT
-    abort1: 'PCL - IDLE',
-    abort2: 'BRAKES - AS REQUIRED',
+    abort1: ['PCL - IDLE'],
+    abort2: ['BRAKES - AS REQUIRED'],
     
     // ENGINE FAILURE IMMEDIATELY AFTER TAKEOFF
-    efiat1: 'AIRSPEED - 110 KNOTS (MINIMUM)',
-    efiat2: 'PCL - AS REQUIRED',
-    efiat3: 'EMER LDG GR HANDLE - PULL (AS REQUIRED)',
-    efiat4: 'FLAPS - AS REQUIRED',
+    efiat1: ['AIRSPEED - 110 KNOTS (MINIMUM)'],
+    efiat2: ['PCL - AS REQUIRED'],
+    efiat3: ['EMER LDG GR HANDLE - PULL (AS REQUIRED)'],
+    efiat4: ['FLAPS - AS REQUIRED'],
     
     // IN-FLIGHT EMERGENCIES
     // ENGINE FAILURE DURING FLIGHT
-    efdf1: 'ZOOM/GLIDE - 125 KNOTS (MINIMUM)',
-    efdf2: 'PCL - OFF',
-    efdf3: 'INTERCEPT ELP',
-    efdf4: 'AIRSTART - ATTEMPT IF WARRANTED',
-    efdf5: 'FIREWALL SHUTOFF HANDLE - PULL',
-    efdf6: 'EXECUTE FORCED LANDING OR EJECT',
+    efdf1: ['ZOOM/GLIDE - 125 KNOTS (MINIMUM)'],
+    efdf2: ['PCL - OFF'],
+    efdf3: ['INTERCEPT ELP'],
+    efdf4: ['AIRSTART - ATTEMPT IF WARRANTED'],
+    efdf5: ['FIREWALL SHUTOFF HANDLE - PULL'],
+    efdf6: ['EXECUTE FORCED LANDING OR EJECT'],
     
     // IMMEDIATE AIRSTART (PMU NORM)
-    ia1: 'PCL - OFF',
-    ia2: 'STARTER SWITCH - AUTO/RESET',
-    ia3: 'PCL - IDLE, ABOVE 13% N1',
-    ia4: 'ENGINE INSTRUMENTS - MONITOR ITT, N1, AND OIL PRESSURE',
-    ia5: 'PCL - OFF',
-    ia6: 'FIREWALL SHUTOFF HANDLE - PULL',
-    ia7: 'EXECUTE FORCED LANDING OR EJECT',
-    ia8: 'PCL AS REQUIRED AFTER N1 REACHES IDLE RPM (APPROXIMATELY 67% N1)',
-    ia9: 'PEL - EXECUTE',
+    ia1: ['PCL - OFF'],
+    ia2: ['STARTER SWITCH - AUTO/RESET'],
+    ia3: ['PCL - IDLE, ', 'ABOVE 13% N1'],
+    ia4: ['ENGINE INSTRUMENTS - MONITOR ITT, ', 'N1, ', 'AND OIL PRESSURE'],
+    ia5: ['PCL - OFF'],
+    ia6: ['FIREWALL SHUTOFF HANDLE - PULL'],
+    ia7: ['EXECUTE FORCED LANDING OR EJECT'],
+    ia8: ['PCL AS REQUIRED ', 'AFTER N1 REACHES IDLE RPM (APPROXIMATELY 67% N1)'],
+    ia9: ['PEL - EXECUTE'],
     
     // UNCOMMANDED POWER CHANGES / LOSS OF POWER/ UNCOMMANDED PROPELLER FEATHER
-    upc1: 'PCL - MID RANGE',
-    upc2: 'PMU SWITCH - OFF',
-    upc3: 'PROP SYS CIRCUIT BREAKER (Left Front Console) - PULL, IF Np STABLE BELOW 40%',
-    upc4: 'PCL - AS REQUIRED',
-    upc5: 'PEL - EXECUTE',
-    upc6: 'PROP SYS CIRCUIT BREAKER - RESET, AS REQUIRED',
-    upc7: 'PCL - OFF',
-    upc8: 'FIREWALL SHUTOFF HANDLE - PULL',
-    upc9: 'EXECUTE FORCED LANDING OR EJECT',
+    upc1: ['PCL - MID RANGE'],
+    upc2: ['PMU SWITCH - OFF'],
+    upc3: ['PROP SYS CIRCUIT BREAKER (Left Front Console) - PULL, ', 'IF Np STABLE BELOW 40%'],
+    upc4: ['PCL - AS REQUIRED'],
+    upc5: ['PEL - EXECUTE'],
+    upc6: ['PROP SYS CIRCUIT BREAKER - RESET, AS REQUIRED'],
+    upc7: ['PCL - OFF'],
+    upc8: ['FIREWALL SHUTOFF HANDLE - PULL'],
+    upc9: ['EXECUTE FORCED LANDING OR EJECT'],
     
     // COMPRESSOR STALLS
-    cs1: 'PCL - SLOWLY RETARD BELOW STALL THRESHOLD',
-    cs2: 'DEFOG SWITCH - ON',
-    cs3: 'PCL - SLOWLY ADVANCE (AS REQUIRED)',
-    cs4: 'PEL - EXECUTE',
-    cs5: 'PCL - OFF',
-    cs6: 'FIREWALL SHUTOFF HANDLE - PULL',
-    cs7: 'EXECUTE FORCED LANDING OR EJECT',
+    cs1: ['PCL - SLOWLY RETARD BELOW STALL THRESHOLD'],
+    cs2: ['DEFOG SWITCH - ON'],
+    cs3: ['PCL - SLOWLY ADVANCE (AS REQUIRED)'],
+    cs4: ['PEL - EXECUTE'],
+    cs5: ['PCL - OFF'],
+    cs6: ['FIREWALL SHUTOFF HANDLE - PULL'],
+    cs7: ['EXECUTE FORCED LANDING OR EJECT'],
     
     // INADVERTENT DEPARTURE FROM CONTROLLED FLIGHT
-    idcf1: 'PCL - IDLE',
-    idcf2: 'CONTROLS - NEUTRAL',
-    idcf3: 'ALTITUDE - CHECK',
-    idcf4: 'RECOVER FROM UNUSUAL ATTITUDE',
+    idcf1: ['PCL - IDLE'],
+    idcf2: ['CONTROLS - NEUTRAL'],
+    idcf3: ['ALTITUDE - CHECK'],
+    idcf4: ['RECOVER FROM UNUSUAL ATTITUDE'],
     
     // FIRE IN FLIGHT
-    fif1: 'PCL - OFF',
-    fif2: 'FIREWALL SHUTOFF HANDLE - PULL',
-    fif3: 'FORCED LANDING - EXECUTE',
-    fif4: 'EJECT (BOTH)',
-    fif5: 'PEL - EXECUTE',
+    fif1: ['PCL - OFF'],
+    fif2: ['FIREWALL SHUTOFF HANDLE - PULL'],
+    fif3: ['FORCED LANDING - EXECUTE'],
+    fif4: ['EJECT (BOTH)'],
+    fif5: ['PEL - EXECUTE'],
     
     // SMOKE AND FUME ELIMINATION/ELECTRICAL FIRE
-    sfe1: 'OBOGS - CHECK (BOTH)',
-    sfe1a: 'OBOGS supply lever - ON',
-    sfe1b: 'OBOGS concentration lever - MAX',
-    sfe1c: 'OBOGS pressure lever - EMERGENCY',
+    sfe1: ['OBOGS - CHECK (BOTH)'],
+    sfe1a: ['OBOGS supply lever - ON'],
+    sfe1b: ['OBOGS concentration lever - MAX'],
+    sfe1c: ['OBOGS pressure lever - EMERGENCY'],
     
     // CHIP DETECTOR WARNING
-    cdw1: 'PCL - MINIMUM NECESSARY TO INTERCEPT ELP; AVOID UNNECESSARY PCL MOVEMENTS',
-    cdw2: 'PEL - EXECUTE',
+    cdw1: ['PCL - MINIMUM NECESSARY TO INTERCEPT ELP; AVOID UNNECESSARY PCL MOVEMENTS'],
+    cdw2: ['PEL - EXECUTE'],
     
     // OIL SYSTEM MALFUNCTION OR LOW OIL PRESSURE
-    osm1: 'TERMINATE MANEUVER',
-    osm2: 'CHECK OIL PRESSURE; IF OIL PRESSURE IS NORMAL, CONTINUE OPERATIONS',
-    osm3: 'PCL - MINIMUM NECESSARY TO INTERCEPT ELP; AVOID UNNECESSARY PCL MOVEMENTS',
-    osm4: 'PEL - EXECUTE',
+    osm1: ['TERMINATE MANEUVER'],
+    osm2: ['CHECK OIL PRESSURE; IF OIL PRESSURE IS NORMAL, CONTINUE OPERATIONS'],
+    osm3: ['PCL - MINIMUM NECESSARY TO INTERCEPT ELP; AVOID UNNECESSARY PCL MOVEMENTS'],
+    osm4: ['PEL - EXECUTE'],
     
     // LOW FUEL PRESSURE
-    lfp1: 'PEL - EXECUTE',
-    lfp2: 'BOOST PUMP SWITCH - ON',
+    lfp1: ['PEL - EXECUTE'],
+    lfp2: ['BOOST PUMP SWITCH - ON'],
     
     // HIGH FUEL FLOW
-    hff1: 'PEL - EXECUTE',
+    hff1: ['PEL - EXECUTE'],
     
     // OBOGS FAILURE/OVERTEMP/PHYSIOLOGICAL SYMPTOMS
-    obogs1: 'GREEN RING - PULL (AS REQUIRED) (BOTH)',
-    obogs2: 'DESCENT BELOW 10,000 FEET MSL - INITIATE',
-    obogs3: 'OBOGS SUPPLY LEVER - OFF (BOTH)',
+    obogs1: ['GREEN RING - PULL (AS REQUIRED) (BOTH)'],
+    obogs2: ['DESCENT BELOW 10,000 FEET MSL - INITIATE'],
+    obogs3: ['OBOGS SUPPLY LEVER - OFF (BOTH)'],
     
     // EJECT
-    eject1: 'EJECTION HANDLE - PULL (BOTH)',
+    eject1: ['EJECTION HANDLE - PULL (BOTH)'],
     
     // LANDING EMERGENCIES
     // FORCED LANDING
-    fl1: 'AIRSPEED - 125 KIAS PRIOR TO EXTENDING LANDING GEAR',
-    fl2: 'EMER LDG GR HANDLE - PULL (AS REQUIRED)',
-    fl3: 'AIRSPEED - 120 KIAS MINIMUM UNTIL INTERCEPTING FINAL; 110 KIAS MINIMUM ON FINAL',
-    fl4: 'FLAPS - AS REQUIRED',
+    fl1: ['AIRSPEED - 125 KIAS PRIOR TO EXTENDING LANDING GEAR'],
+    fl2: ['EMER LDG GR HANDLE - PULL (AS REQUIRED)'],
+    fl3: ['AIRSPEED - 120 KIAS MINIMUM UNTIL INTERCEPTING FINAL; 110 KIAS MINIMUM ON FINAL'],
+    fl4: ['FLAPS - AS REQUIRED'],
     
     // PRECAUTIONARY EMERGENCY LANDING (PEL)
-    pel1: 'TURN TO NEAREST SUITABLE FIELD',
-    pel2: 'CLIMB OR ACCELERATE TO INTERCEPT ELP',
-    pel3: 'GEAR, FLAPS, SPEED BRAKE - UP'
+    pel1: ['TURN TO NEAREST SUITABLE FIELD'],
+    pel2: ['CLIMB OR ACCELERATE TO INTERCEPT ELP'],
+    pel3: ['GEAR, ', 'FLAPS, ', 'SPEED BRAKE - UP']
   };
 
   const handleLimitsChange = (field, value) => {
@@ -295,7 +295,7 @@ function TW4EpsLimits() {
       //Find input answer and correct answer and remove , - . ( ) ; and spaces
       let userAnswer = data[key] || '';
       userAnswer = userAnswer.replace(/[,\-–;().\/ ]/g, '');
-      let correctAnswer = answers[key];
+      let correctAnswer = Array.isArray(answers[key]) ? answers[key].join('') : answers[key];
       correctAnswer = correctAnswer.replace(/[,\-–;().\/ ]/g, '');
       
       //Regex expression to determine if the answer is a range. ## - ## or ## to ##
@@ -315,11 +315,13 @@ function TW4EpsLimits() {
       } else {
         const normalizedUser = userAnswer.toString().trim().toLowerCase();
         const normalizedCorrect = correctAnswer.toString().toLowerCase();
-        
+
         if (normalizedUser === normalizedCorrect) {
           results[key] = 'correct';
         } else if (normalizedUser === '') {
           results[key] = '';
+        } else if(normalizedCorrect.includes(normalizedUser)){
+          results[key] = 'partial';
         } else {
           results[key] = 'incorrect';
         }
@@ -340,6 +342,7 @@ function TW4EpsLimits() {
 
   const getInputClass = (field) => {
     if (checkResults[field] === 'correct') return 'correct-answer';
+    if (checkResults[field] === 'partial') return 'partial-answer';
     if (checkResults[field] === 'incorrect') return 'incorrect-answer';
     return '';
   };
@@ -348,32 +351,47 @@ function TW4EpsLimits() {
   const tryNextEPStep = (controls) => {
     let currentKey = epDivs[currentEPIndexArray[currentEPIndex]].key;
     const allFields = Object.keys(epsAnswers).filter(key => key.startsWith(currentKey));
-    const results = {};
-    
+    const results = checkResults;
     // Find the first non-empty field
     let nextEmptyField = null;
     let emptyNum = 0;
+
     for (let i = 0; i < allFields.length; i++) {
       const field = allFields[i];
-      if (epsData[field] == undefined || epsData[field] == '') {
+      
+      if (epsData[field] == undefined || epsData[field] == ''||results[field] == 'partial') {
         nextEmptyField = field;
         emptyNum = i;
         break;
       }
-      return
     }
+    if(!nextEmptyField){return}
+    if(results[nextEmptyField] == 'partial'){controls = [...controls, epsData[nextEmptyField]]}
 
-    let correctAnswer = epsAnswers[nextEmptyField]
-    console.log(correctAnswer)
-    console.log(emptyNum)
-
-    if(controls.some(control => correctAnswer.toLowerCase().includes(control.toLowerCase()))){
-      epsData[nextEmptyField] = correctAnswer;
+    let correctAnswers = epsAnswers[nextEmptyField]
+    
+    // Find all matching answers in order
+    const matchingAnswers = correctAnswers.filter(answer =>
+      controls.some(control =>
+        answer.toLowerCase().includes(control.toLowerCase()) ||
+        control.toLowerCase().includes(answer.toLowerCase())
+      )
+    );
+    
+    if(matchingAnswers.length == correctAnswers.length){
+      epsData[nextEmptyField] = matchingAnswers.join('');
+      const results = {};
       setCheckResults(results);
       if(emptyNum + 1 === EP_LENGTHS[currentEPIndexArray[currentEPIndex]]){
         checkAnswers();
       }
+    }else if (matchingAnswers.length > 0){
+      epsData[nextEmptyField] = matchingAnswers.join('');
+      const results = {};
+      results[nextEmptyField] = 'partial';
+      setCheckResults(results);
     }else{
+      const results = {};
       results[nextEmptyField] = 'incorrect';
       setCheckResults(results);
     }
@@ -482,13 +500,6 @@ function TW4EpsLimits() {
     alignItems: 'flex-start',
     gap: '8px'
   };
-
-  const clickStyle = {
-    position: 'absolute',
-    //backgroundColor: 'rgba(0, 123, 255, 0.3)',
-    //border: '2px solid black',
-    cursor: 'pointer'
-  }
 
   //EP div structures retrieval
   const epDivs = getEPDivs({
@@ -995,7 +1006,7 @@ function TW4EpsLimits() {
             {/* EPS LAYOUT WITH SIDE CONTROLS */}
             <div style={{display: 'flex', gap: LAYOUT_GAP, alignItems: 'flex-start', justifyContent: 'center'}}>
               {/* LEFT CONTROLS */}
-              <div style={{display: 'flex', flexDirection: 'column', gap: '0px', width: SIDE_CONTROLS_WIDTH, flexShrink: 0.4, minWidth: '110px'}}>
+              <div style={{display: 'flex', flexDirection: 'column', gap: '0px', width: SIDE_CONTROLS_WIDTH, flexShrink: 0.8, minWidth: '110px'}}>
                 {/* Left Panel Image with clickable overlay */}
                 <div style={{position: 'relative', width: '100%'}}>
                   <img src="/images/left.png" alt="Left Control" style={{width: '100%', height: 'auto', display: 'block'}} />
@@ -1007,7 +1018,7 @@ function TW4EpsLimits() {
                   />
                   {/* Throttle/PCL/Speed Brake */}
                   <div
-                    onClick={() => tryNextEPStep(['PCL, Speed Brake'])}
+                    onClick={() => tryNextEPStep(['PCL', 'Speed Brake'])}
                     className = "click-style" style={{top: '28%', left: '10%', width: '84%', height: '10%'}}
                     title="PCL/Speed Brake"
                   />
@@ -1126,7 +1137,7 @@ function TW4EpsLimits() {
                   <button className="action-button" onClick={() => tryNextEPStep(['iss'])}>
                     ISS
                   </button>
-                  <button className="action-button" onClick={() => tryNextEPStep(['Seat'])}>
+                  <button className="action-button" onClick={() => tryNextEPStep(['Seat', "Ejection Handle"])}>
                     Seat
                   </button>
                   <button className="action-button" onClick={() => tryNextEPStep(['canopy'])}>
@@ -1198,7 +1209,7 @@ function TW4EpsLimits() {
           </div>
 
           {/* RIGHT CONTROLS */}
-          <div style={{display: 'flex', flexDirection: 'column', gap: '0px', width: SIDE_CONTROLS_WIDTH, flexShrink: 0.4, minWidth: '110px'}}>
+          <div style={{display: 'flex', flexDirection: 'column', gap: '0px', width: SIDE_CONTROLS_WIDTH, flexShrink: 0.8, minWidth: '110px'}}>
 
             {/* Right Panel Image with clickable overlay */}
             <div style={{position: 'relative', width: '100%'}}>

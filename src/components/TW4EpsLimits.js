@@ -1,25 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { getEPDivs, EP_NAMES, EP_LENGTHS, getRandomEPIndex, shuffleIndices } from './EPDivsData';
+import { getEPDivs, EP_NAMES, EP_LENGTHS, getRandomEPIndex, shuffleIndices} from './EPDivsData';
 
 function TW4EpsLimits() {
   // Layout width parameters - adjust these to test different configurations
-  const SIDE_CONTROLS_WIDTH = '200px';  // Width of left and right image columns
-  const CENTER_CONTENT_WIDTH = '690px'; // Max width of the EPs table content
   const LAYOUT_GAP = '20px';            // Gap between columns
-  const EPS_CONTAINER_MAX_WIDTH = '1200px'; // Max width of container when showing EPs
-  const TEST_EPS_CONTAINER_MAX_WIDTH = '1200px';// Max width of container when showing EPs in test mode
-  const TEST_SIDE_CONTROLS_WIDTH = '180px';  // Width of left and right image columns
-  const TEST_CENTER_CONTENT_WIDTH = '800px'; // Max width of the EPs table content
+  const EPS_CONTAINER_MAX_WIDTH = '1200px';// Max width of container when showing EPs
+  const SIDE_CONTROLS_WIDTH = '180px';  // Width of left and right image columns
+  const CENTER_CONTENT_WIDTH = '750px'; // Max width of the EPs table content
 
   const [showEPs, setShowEPs] = useState(false);
-  const [testMode, setTestMode] = useState(true);
   const [limitsData, setLimitsData] = useState({});
   const [epsData, setEpsData] = useState({});
   const [checkResults, setCheckResults] = useState({});
   const [currentEPIndex, setCurrentEPIndex] = useState(0);
-  const [currentEPIndexArray, setCurrentEPIndexArray] = useState([...Array(20).keys()]);
+  const [currentEPIndexArray, setCurrentEPIndexArray] = useState([shuffleIndices(20)]);
   const [isRandom, setisRandom] = useState(true);
-
+  useEffect(() => {
+    if(isRandom) {
+      setCurrentEPIndexArray(shuffleIndices(20));
+    }
+  }, []); 
   // T-6B Limits Answer Keys
   const limitsAnswers = {
     // Engine Operating Limits Table
@@ -347,9 +347,7 @@ function TW4EpsLimits() {
   // Find next appropriate input and try it
   const tryNextEPStep = (controls) => {
     let currentKey = epDivs[currentEPIndexArray[currentEPIndex]].key;
-    const allFields = testMode
-    ? Object.keys(epsAnswers).filter(key => key.startsWith(currentKey))
-    : Object.keys(epsAnswers);
+    const allFields = Object.keys(epsAnswers).filter(key => key.startsWith(currentKey));
     const results = {};
     
     // Find the first non-empty field
@@ -362,21 +360,23 @@ function TW4EpsLimits() {
         emptyNum = i;
         break;
       }
+      return
     }
 
     let correctAnswer = epsAnswers[nextEmptyField]
     console.log(correctAnswer)
+    console.log(emptyNum)
 
     if(controls.some(control => correctAnswer.toLowerCase().includes(control.toLowerCase()))){
       epsData[nextEmptyField] = correctAnswer;
+      setCheckResults(results);
+      if(emptyNum + 1 === EP_LENGTHS[currentEPIndexArray[currentEPIndex]]){
+        checkAnswers();
+      }
     }else{
       results[nextEmptyField] = 'incorrect';
+      setCheckResults(results);
     }
-
-    setCheckResults(results);
-    if(emptyNum + 1 === EP_LENGTHS[currentEPIndexArray[currentEPIndex]]){
-      console.log("LAST");
-      checkAnswers();}
   };
 
   const limitTableStyle = {
@@ -432,6 +432,8 @@ function TW4EpsLimits() {
     borderRadius: '6px',
     overflow: 'hidden',
     backgroundColor: '#f9f9f9',
+    maxWidth: "350px",
+    margin: '0 auto'
   };
 
   const epHeaderStyle = {
@@ -505,7 +507,7 @@ function TW4EpsLimits() {
 
   return (
     <>
-      <div className="limits-eps-container" style={showEPs ? (!testMode ? {maxWidth: EPS_CONTAINER_MAX_WIDTH}:{maxWidth: TEST_EPS_CONTAINER_MAX_WIDTH}) : {}}>
+      <div className="limits-eps-container" style={showEPs ? {maxWidth: EPS_CONTAINER_MAX_WIDTH} : {}}>
         <h1 style={{fontSize: '16px', marginBottom: '5px'}}>T-6B {showEPs ? 'EMERGENCY PROCEDURE CRITICAL ACTION MEMORY ITEMS' : 'OPERATING LIMITATIONS'}</h1>
         
         <p className="page-subtitle" style={{fontSize: '11px', marginBottom: '10px'}}>
@@ -987,85 +989,13 @@ function TW4EpsLimits() {
               </div>
             </div>
           </div>
-        ) : ( !testMode ? (
-          <div className="eps-page">
+        ) : ( 
+          
+        <div className="eps-page">
             {/* EPS LAYOUT WITH SIDE CONTROLS */}
             <div style={{display: 'flex', gap: LAYOUT_GAP, alignItems: 'flex-start', justifyContent: 'center'}}>
               {/* LEFT CONTROLS */}
-              <div style={{display: 'flex', flexDirection: 'column', gap: '0px', width: SIDE_CONTROLS_WIDTH, flexShrink: 0}}>
-                <div className="control-section">
-                  <h4>Emergency Actions</h4>
-                  <div className="action-buttons">
-                    <button className="action-button" onClick={() => tryNextEPStep(['egress'])}>
-                      EGE
-                    </button>
-                    <button className="action-button" onClick={() => tryNextEPStep(['iss'])}>
-                      ISS
-                    </button>
-                    <button className="action-button" onClick={() => tryNextEPStep(['Seat'])}>
-                      Seat
-                    </button>
-                    <button className="action-button" onClick={() => tryNextEPStep(['Declare', 'MAYDAY'])}>
-                      MAYDAY
-                    </button>
-                    <button className="action-button" onClick={() => tryNextEPStep(['canopy'])}>
-                      Canopy
-                    </button>
-                    <button className="action-button" onClick={() => tryNextEPStep(['fittings'])}>
-                      Fittings
-                    </button>
-                    <button className="action-button" onClick={() => tryNextEPStep(['evacuate'])}>
-                      Evacuate
-                    </button>
-                    <button className="action-button" onClick={() => tryNextEPStep(['speed', 'glide', 'controls', 'attitude', 'descent'])}>
-                      Control Stick
-                    </button>
-                    <button className="action-button" onClick={() => tryNextEPStep(['elp'])}>
-                      ELP
-                    </button>
-                    <button className="action-button" onClick={() => tryNextEPStep(['airstart'])}>
-                      Airstart
-                    </button>
-                    <button className="action-button" onClick={() => tryNextEPStep(['forced landing', 'eject'])}>
-                      Forced Landing/Eject
-                    </button>
-                    <button className="action-button" onClick={() => tryNextEPStep(['monitor', 'check'])}>
-                      Monitor Instruments
-                    </button>
-                    <button className="action-button" onClick={() => tryNextEPStep(['pel'])}>
-                      PEL
-                    </button>
-                    <button className="action-button" onClick={() => tryNextEPStep(['altitude'])}>
-                      Altitude
-                    </button>
-                    <button className="action-button" onClick={() => tryNextEPStep(['terminate'])}>
-                      Terminate Maneuver
-                    </button>
-                    <button className="action-button" onClick={() => tryNextEPStep(['green ring'])}>
-                      Green ring
-                    </button>
-                    <button className="action-button" onClick={() => tryNextEPStep(['suitable'])}>
-                      TTNSF
-                    </button>
-                  </div>
-                </div>
-                {/* Landing Gear and Flaps Handle Image with clickable overlay */}
-                <div style={{position: 'relative', width: '100%'}}>
-                  <img src="/images/ldggrhandle.png" alt="Landing Gear Handle" style={{width: '100%', height: 'auto', display: 'block'}} />
-                  {/* Emergency Landing Gear Handle*/}
-                  <div
-                    onClick={() => tryNextEPStep(['Emer Ldg Gr'])}
-                    className = "click-style" style={{top: '0%', left: '30%', width: '28%', height: '23%'}}
-                    title="Emer Ldg Gr"
-                  />
-                  {/*Landing Gear Handle*/}
-                  <div
-                    onClick={() => tryNextEPStep(['Gear'])}
-                    className = "click-style" style={{top: '40%', left: '30%', width: '21%', height: '40%'}}
-                    title="Landing Gear"
-                  />
-                </div>
-
+              <div style={{display: 'flex', flexDirection: 'column', gap: '0px', width: SIDE_CONTROLS_WIDTH, flexShrink: 0.4, minWidth: '110px'}}>
                 {/* Left Panel Image with clickable overlay */}
                 <div style={{position: 'relative', width: '100%'}}>
                   <img src="/images/left.png" alt="Left Control" style={{width: '100%', height: 'auto', display: 'block'}} />
@@ -1075,226 +1005,11 @@ function TW4EpsLimits() {
                     className = "click-style" style={{top: '23%', left: '60%', width: '35%', height: '4.7%'}}
                     title="Flaps"
                   />
-                  {/* Throttle/PCL */}
+                  {/* Throttle/PCL/Speed Brake */}
                   <div
-                    onClick={() => tryNextEPStep(['PCL', 'speed', 'glide'])}
+                    onClick={() => tryNextEPStep(['PCL, Speed Brake'])}
                     className = "click-style" style={{top: '28%', left: '10%', width: '84%', height: '10%'}}
-                    title="Throttle/PCL, Airspeed"
-                  />
-                  {/*Canopy Fracture System*/}
-                  <div
-                    onClick={() => tryNextEPStep(['CFS'])}
-                    className = "click-style" style={{top: '48.7%', left: '10%', width: '70%', height: '4%'}}
-                    title="CFS"
-                  />
-                  {/*Prop Sys Circuit Breaker*/}
-                  <div
-                    onClick={() => tryNextEPStep(['Prop'])}
-                    className = "click-style" style={{top: '60.9%', left: '54%', width: '10%', height: '2%'}}
-                    title="Prop Sys Circuit Breaker"
-                  />
-                  {/* Firewall Shutoff Handle*/}
-                  <div
-                    onClick={() => tryNextEPStep(['Firewall'])}
-                    className = "click-style" style={{top: '85.5%', left: '7%', width: '50%', height: '9%'}}
-                    title="Firewall Shutoff Handle"
-                  />
-                </div>
-              </div>
-
-            {/* CENTER - EPS CONTENT */}
-            <div style={{flex: `0 1 ${CENTER_CONTENT_WIDTH}`, maxWidth: CENTER_CONTENT_WIDTH}}>
-              {/* EPS TWO COLUMN LAYOUT */}
-              <div style={{display: 'flex', gap: '5px', alignItems: 'flex-start'}}>
-                {/* LEFT COLUMN */}
-                <div style={{flex: 1}}>
-                  {/* GROUND EMERGENCIES */}
-                  <div style={categoryHeaderStyle}>GROUND EMERGENCIES</div>
-          
-                  {/* ABORT START PROCEDURE */}
-                  <div>{epDivs[0]}</div>
-
-                  {/* EMERGENCY ENGINE SHUTDOWN ON THE GROUND */}
-                  <div>{epDivs[1]}</div>
-
-                  {/* EMERGENCY GROUND EGRESS */}
-                  <div>{epDivs[2]}</div>
-
-                  {/* TAKEOFF EMERGENCIES */}
-                  <div style={categoryHeaderStyle}>TAKEOFF EMERGENCIES</div>
-                  
-                  {/* ABORT */}
-                  <div>{epDivs[3]}</div>
-
-                  {/* ENGINE FAILURE IMMEDIATELY AFTER TAKEOFF */}
-                  <div>{epDivs[4]}</div>
-
-                  {/* IN-FLIGHT EMERGENCIES */}
-                  <div style={categoryHeaderStyle}>IN-FLIGHT EMERGENCIES</div>
-                  
-                  {/* ENGINE FAILURE DURING FLIGHT */}
-                  <div>{epDivs[5]}</div>
-
-                  {/* IMMEDIATE AIRSTART */}
-                  <div>{epDivs[6]}</div>
-
-                  {/* UNCOMMANDED POWER CHANGES */}
-                  <div>{epDivs[7]}</div>
-                </div>
-
-                {/* RIGHT COLUMN */}
-                <div style={{flex: 1}}>
-                  {/* COMPRESSOR STALLS (top of right column, under ground emergencies) */}
-                  <div>{epDivs[8]}</div>
-                  
-                  {/* INADVERTENT DEPARTURE FROM CONTROLLED FLIGHT */}
-                  <div>{epDivs[9]}</div>
-                  
-                  {/* FIRE IN FLIGHT */}
-                  <div>{epDivs[10]}</div>
-
-                  {/* SMOKE AND FUME ELIMINATION/ELECTRICAL FIRE */}
-                  <div>{epDivs[11]}</div>
-
-                  {/* CHIP DETECTOR WARNING */}
-                  <div>{epDivs[12]}</div>
-
-                  {/* OIL SYSTEM MALFUNCTION OR LOW OIL PRESSURE */}
-                  <div>{epDivs[13]}</div>
-
-                  {/* LOW FUEL PRESSURE */}
-                  <div>{epDivs[14]}</div>
-
-                  {/* HIGH FUEL FLOW */}
-                  <div>{epDivs[15]}</div>
-
-                  {/* OBOGS FAILURE/OVERTEMP/PHYSIOLOGICAL SYMPTOMS */}
-                  <div>{epDivs[16]}</div>
-
-                  {/* EJECT */}
-                  <div>{epDivs[17]}</div>
-
-                  {/* LANDING EMERGENCIES */}
-                  <div style={categoryHeaderStyle}>LANDING EMERGENCIES</div>
-                  
-                  {/* FORCED LANDING */}
-                  <div>{epDivs[18]}</div>
-
-                  {/* PRECAUTIONARY EMERGENCY LANDING (PEL) */}
-                  <div>{epDivs[19]}</div>
-                </div>
-              </div>
-            </div>
-
-          {/* RIGHT CONTROLS */}
-          <div style={{display: 'flex', flexDirection: 'column', gap: '0px', width: SIDE_CONTROLS_WIDTH, flexShrink: 0}}>
-            {/* Defog Image with clickable overlay */}
-            <div style={{position: 'relative', width: '100%'}}>
-              <img src="/images/defog.png" alt="Defog" style={{width: '100%', height: 'auto', display: 'block'}} />
-              {/* Defog Switch Clickable Area */}
-              <div
-                onClick={() => tryNextEPStep(['defog'])}
-                className = "click-style" style={{top: '26%', left: '23%', width: '20%', height: '40%'}}
-                title="Defog Switch"
-              />
-            </div>
-
-            {/* Parking Brake Image with clickable overlay */}
-            <div style={{position: 'relative', width: '100%'}}>
-              <img src="/images/parking.png" alt="Parking Brake" style={{width: '100%', height: 'auto', display: 'block'}} />
-              {/* ELT Switch Clickable Area */}
-              <div
-                className = "click-style" style={{top: '4%', left: '39%', width: '8%', height: '5%'}}
-                title="ELT Switch"
-              />
-              {/* Parking Brake Handle Clickable Area */}
-              <div
-                onClick={() => tryNextEPStep(['Brake'])}
-                className = "click-style" style={{top: '28%', left: '45%', width: '20%', height: '30%'}}
-                title="Parking Brake"
-              />
-            </div>
-
-            {/* Right Panel Image with clickable overlay */}
-            <div style={{position: 'relative', width: '100%'}}>
-              <img src="/images/right.png" alt="Right Control" style={{width: '100%', height: 'auto', display: 'block'}} />
-              {/* BAT Switch Clickable Area */}
-              <div
-                onClick={() => tryNextEPStep(['bat'])}
-                className = "click-style" style={{top: '1.5%', left: '20%', width: '10%', height: '2%'}}
-                title="BAT Switch"
-              />
-              {/* GEN Switch Clickable Area */}
-              <div
-                onClick={() => tryNextEPStep(['gen'])}
-                className = "click-style" style={{top: '1.5%', left: '38.5%', width: '10%', height: '2%'}}
-                title="GEN Switch"
-              />
-              {/* AUX BAT Switch Clickable Area */}
-              <div
-                onClick={() => tryNextEPStep(['AUX'])}
-                className = "click-style" style={{top: '1.5%', left: '55.5%', width: '10%', height: '2%'}}
-                title="AUX BAT Switch"
-              />
-              {/* STARTER Switch Clickable Area */}
-              <div
-                onClick={() => tryNextEPStep(['starter'])}
-                className = "click-style" style={{top: '6.8%', left: '15%', width: '10%', height: '2%'}}
-                title="Starter Switch"
-              />
-              {/* PMU Switch Clickable Area */}
-              <div
-                onClick={() => tryNextEPStep(['pmu'])}
-                className = "click-style" style={{top: '12.3%', left: '75%', width: '10%', height: '2%'}}
-                title="PMU Switch"
-              />
-              {/* BOOST PUMP Switch Clickable Area */}
-              <div
-                onClick={() => tryNextEPStep(['boost pump'])}
-                className = "click-style" style={{top: '12.3%', left: '59.5%', width: '10%', height: '2%'}}
-                title="Boost Pump Switch"
-              />
-              {/* OBOGS Controls Area */}
-              <div
-                onClick={() => tryNextEPStep(['OBOGS - Ch', 'supply'])}
-                className = "click-style" style={{top: '35.7%', left: '76%', width: '10%', height: '4%'}}
-                title="OBOGS Supply Lever"
-              />
-              <div
-                onClick={() => tryNextEPStep(['OBOGS - Ch', 'concentration'])}
-                className = "click-style" style={{top: '35.7%', left: '43.5%', width: '10%', height: '4%'}}
-                title="OBOGS Concentration Lever"
-              />
-              <div
-                onClick={() => tryNextEPStep(['OBOGS - Ch', 'pressure'])}
-                className = "click-style" style={{top: '35.7%', left: '11%', width: '10%', height: '4%'}}
-                title="OBOGS Pressure Lever"
-              />
-            </div>
-          </div>
-        </div>
-        </div>
-        ) : (
-          
-          <div className="eps-page">
-            {/* EPS LAYOUT WITH SIDE CONTROLS */}
-            <div style={{display: 'flex', gap: LAYOUT_GAP, alignItems: 'flex-start', justifyContent: 'center'}}>
-              {/* LEFT CONTROLS */}
-              <div style={{display: 'flex', flexDirection: 'column', gap: '0px', width: TEST_SIDE_CONTROLS_WIDTH, flexShrink: 0}}>
-                {/* Left Panel Image with clickable overlay */}
-                <div style={{position: 'relative', width: '100%'}}>
-                  <img src="/images/left.png" alt="Left Control" style={{width: '100%', height: 'auto', display: 'block'}} />
-                  {/* Flaps */}
-                  <div
-                    onClick={() => tryNextEPStep(['flaps'])}
-                    className = "click-style" style={{top: '23%', left: '60%', width: '35%', height: '4.7%'}}
-                    title="Flaps"
-                  />
-                  {/* Throttle/PCL */}
-                  <div
-                    onClick={() => tryNextEPStep(['PCL'])}
-                    className = "click-style" style={{top: '28%', left: '10%', width: '84%', height: '10%'}}
-                    title="Throttle/PCL"
+                    title="PCL/Speed Brake"
                   />
                   {/*Canopy Fracture System*/}
                   <div
@@ -1318,7 +1033,7 @@ function TW4EpsLimits() {
               </div>
 
           {/* CENTER - EPS CONTENT */}
-          <div style={{flex: `0 1 ${TEST_CENTER_CONTENT_WIDTH}`, maxWidth: TEST_CENTER_CONTENT_WIDTH}}>   
+          <div style={{flex: `0 1 ${CENTER_CONTENT_WIDTH}`, width: CENTER_CONTENT_WIDTH, alignItems: 'center', flexShrink: 1}}>   
             <div style={{position: 'relative', width: '100%'}}>   
               <img src="/images/croptop.png" alt="Top Control" style={{width: '100%', height: 'auto', display: 'block'}} />
               <div
@@ -1332,12 +1047,22 @@ function TW4EpsLimits() {
                     title="Landing Gear"
               />
               <div
+                onClick={() => tryNextEPStep(['Brakes'])}
+                className = "click-style" style={{top: '67%', left: '19%', width: '18.5%', height: '30%'}}
+                    title="Brakes"
+              />
+              <div
+                onClick={() => tryNextEPStep(['Brakes'])}
+                className = "click-style" style={{top: '67%', left: '63%', width: '18.5%', height: '30%'}}
+                    title="Brakes"
+              />
+              <div
                 onClick={() => tryNextEPStep(['Defog'])}
                 className = "click-style" style={{top: '89.5%', left: '45.2%', width: '2.5%', height: '4%'}}
                     title="Defog"
               />
               <div
-                onClick={() => tryNextEPStep(['Brake'])}
+                onClick={() => tryNextEPStep(['Parking Brake'])}
                 className = "click-style" style={{top: '69.5%', left: '90%', width: '3%', height: '10.5%'}}
                     title="Parking Brake"
               />
@@ -1384,7 +1109,7 @@ function TW4EpsLimits() {
               <div
                 onClick={() => tryNextEPStep(['N1'])}
                 className = "click-style" style={{top: '45%', left: '69.5%', width: '5.2%', height: '6%'}}
-                    title="ITT"
+                    title="N1"
               />
               <div
                 onClick={() => tryNextEPStep(['Hyd Press'])}
@@ -1392,9 +1117,9 @@ function TW4EpsLimits() {
                     title="Hyd Pressure"
               />
             </div>
-            <div style={{display: 'flex', gap: '0px', alignItems: 'flex-start', justifyContent: 'center', minHeight:'473px'}}>
-              <div style={{display: 'flex', flexDirection: 'column', gap: '0px', width: '28%', flexShrink: 0}}>
-                <div className="control-section" style = {{display: 'grid', gridTemplateColumns: '1fr', gap: '2px'}}>
+            <div style={{display: 'flex', gap: '2px', alignItems: 'flex-start', justifyContent: 'center'}}>
+              <div style={{display: 'flex', flexDirection: 'column', gap: '0px', width: '37.5%', flexShrink: 0}}>
+                <div className="control-section" style = {{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2px'}}>
                   <button className="action-button" onClick={() => tryNextEPStep(['egress'])}>
                     EGE
                   </button>
@@ -1410,21 +1135,19 @@ function TW4EpsLimits() {
                   <button className="action-button" onClick={() => tryNextEPStep(['fittings'])}>
                     Fittings
                   </button>
-                  <button className="action-button" onClick={() => tryNextEPStep(['evacuate'])}>
-                    Evacuate
+                  <button className="action-button" onClick={() => tryNextEPStep(['terminate'])}>
+                    Terminate Maneuver
                   </button>
                 </div>
               </div>
-              <div style={{display: 'flex', flexDirection: 'column', gap: '0px', width: '44%', flexShrink: 0, alignItems: 'center'}}>
+              <div style={{display: 'flex', flexDirection: 'column', gap: '0px', width: '25%', flexShrink: 0, alignItems: 'center'}}>
                 <img src="/images/stick.png" alt="Control Stick" 
-                style={{width: '50%', height: 'auto', display: 'block', cursor: 'pointer'}} 
+                style={{width: '100%', height: 'auto', display: 'block', cursor: 'pointer'}} 
                 onClick={() => tryNextEPStep(['Attitude', 'Speed', 'Zoom', 'Glide', 'Control', 'Descent'])}
                 title="Control Stick"/>
-                <div style={{width: '100%', alignItems: 'center'}}>
-                  {epDivs[currentEPIndexArray[currentEPIndex]]}</div>
               </div>
-              <div style={{display: 'flex', flexDirection: 'column', gap: '0px', width: '28%', flexShrink: 0}}>
-                <div className="control-section" style = {{display: 'grid', gridTemplateColumns: '1fr', gap: '2px'}}>
+              <div style={{display: 'flex', flexDirection: 'column', gap: '0px', width: '37.5%', flexShrink: 0}}>
+                <div className="control-section" style = {{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2px'}}>
                   <button className="action-button" onClick={() => tryNextEPStep(['forced landing', 'eject'])}>
                     Forced Landing/Eject
                   </button>
@@ -1437,18 +1160,21 @@ function TW4EpsLimits() {
                   <button className="action-button" onClick={() => tryNextEPStep(['airstart'])}>
                     Airstart
                   </button>
-                  <button className="action-button" onClick={() => tryNextEPStep(['terminate'])}>
-                    Terminate Maneuver
-                  </button>
                   <button className="action-button" onClick={() => tryNextEPStep(['green ring'])}>
                     Green ring
                   </button>
                   <button className="action-button" onClick={() => tryNextEPStep(['suitable'])}>
                     TTNSF
                   </button>
+                  <button className="action-button" onClick={() => tryNextEPStep(['evacuate'])}>
+                    Evacuate
+                  </button>
                 </div>
               </div>
             </div>
+            
+            <div style={{width: '100%', alignItems: 'center', minHeight: '350px', margin: '0 auto'}}>
+            {epDivs[currentEPIndexArray[currentEPIndex]]}</div>
             <div className="navigation-buttons">
               <button style={{minWidth: '147px'}} onClick={() => {
                 setisRandom(!isRandom);
@@ -1459,7 +1185,7 @@ function TW4EpsLimits() {
               <button onClick={() => setCurrentEPIndex(currentEPIndex-1)} disabled={currentEPIndex === 0}>
                 Previous
               </button>
-              <span className="ep-counter">
+              <span className="ep-counter" style={{minWidth: '61px'}}>
                 {currentEPIndex + 1} of {currentEPIndexArray.length}
               </span>
               <button onClick={() => setCurrentEPIndex(currentEPIndex+1)} disabled={currentEPIndex === currentEPIndexArray.length - 1}>
@@ -1472,7 +1198,7 @@ function TW4EpsLimits() {
           </div>
 
           {/* RIGHT CONTROLS */}
-          <div style={{display: 'flex', flexDirection: 'column', gap: '0px', width: TEST_SIDE_CONTROLS_WIDTH, flexShrink: 0}}>
+          <div style={{display: 'flex', flexDirection: 'column', gap: '0px', width: SIDE_CONTROLS_WIDTH, flexShrink: 0.4, minWidth: '110px'}}>
 
             {/* Right Panel Image with clickable overlay */}
             <div style={{position: 'relative', width: '100%'}}>
@@ -1533,16 +1259,11 @@ function TW4EpsLimits() {
           </div>
         </div>
         </div>
-        ))}
+        )}
         <div className="button-row" style={{ justifyContent: 'center', marginTop: '20px' }}>
           <button onClick={() => setShowEPs(!showEPs)}>
             Switch to {showEPs ? 'Limits' : 'Emergency Procedures'}
           </button>
-          {/* {showEPs?(
-            <button onClick={() => setTestMode(!testMode)}>
-              Switch to {testMode ? 'Review Mode' : 'Test Mode'}
-            </button>
-          ) : null} */}
           <button onClick={checkAnswers}>Check Answers</button>
           <button onClick={resetAnswers}>Reset</button>
         </div>

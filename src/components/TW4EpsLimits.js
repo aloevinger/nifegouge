@@ -1006,7 +1006,7 @@ function TW4EpsLimits() {
             {/* EPS LAYOUT WITH SIDE CONTROLS */}
             <div style={{display: 'flex', gap: LAYOUT_GAP, alignItems: 'flex-start', justifyContent: 'center'}}>
               {/* LEFT CONTROLS */}
-              <div style={{display: 'flex', flexDirection: 'column', gap: '0px', width: SIDE_CONTROLS_WIDTH, flexShrink: 0.8, minWidth: '110px'}}>
+              <div style={{display: 'flex', flexDirection: 'column', gap: '0px', width: SIDE_CONTROLS_WIDTH, flexShrink: 0.8, minWidth: '80px'}}>
                 {/* Left Panel Image with clickable overlay */}
                 <div style={{position: 'relative', width: '100%'}}>
                   <img src="/images/left.png" alt="Left Control" style={{width: '100%', height: 'auto', display: 'block'}} />
@@ -1044,9 +1044,9 @@ function TW4EpsLimits() {
               </div>
 
           {/* CENTER - EPS CONTENT */}
-          <div style={{flex: `0 1 ${CENTER_CONTENT_WIDTH}`, width: CENTER_CONTENT_WIDTH, alignItems: 'center', flexShrink: 1}}>   
-            <div style={{position: 'relative', width: '100%'}}>   
-              <img src="/images/croptop.png" alt="Top Control" style={{width: '100%', height: 'auto', display: 'block'}} />
+          <div style={{flex: `0 1 ${CENTER_CONTENT_WIDTH}`, width: CENTER_CONTENT_WIDTH, alignItems: 'center', flexShrink: 1, minWidth: '300px'}}>
+            <div style={{position: 'relative', width: '100%'}}>
+              <img src="/images/croptop.png" alt="Top Control" style={{width: '100%', height: 'auto', display: 'block', minWidth: 0}} />
               <div
                 onClick={() => tryNextEPStep(['Emer Ldg Gr'])}
                 className = "click-style" style={{top: '60%', left: '6%', width: '5.5%', height: '9%'}}
@@ -1129,7 +1129,7 @@ function TW4EpsLimits() {
               />
             </div>
             <div style={{display: 'flex', gap: '2px', alignItems: 'flex-start', justifyContent: 'center'}}>
-              <div style={{display: 'flex', flexDirection: 'column', gap: '0px', width: '37.5%', flexShrink: 0}}>
+              <div style={{display: 'flex', flexDirection: 'column', gap: '0px', width: '37.5%', flexShrink: 1, minWidth: '100px'}}>
                 <div className="control-section" style = {{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2px'}}>
                   <button className="action-button" onClick={() => tryNextEPStep(['egress'])}>
                     EGE
@@ -1151,13 +1151,13 @@ function TW4EpsLimits() {
                   </button>
                 </div>
               </div>
-              <div style={{display: 'flex', flexDirection: 'column', gap: '0px', width: '25%', flexShrink: 0, alignItems: 'center'}}>
-                <img src="/images/stick.png" alt="Control Stick" 
-                style={{width: '100%', height: 'auto', display: 'block', cursor: 'pointer'}} 
+              <div style={{display: 'flex', flexDirection: 'column', gap: '0px', width: '25%', flexShrink: 1, alignItems: 'center', minWidth: '60px'}}>
+                <img src="/images/stick.png" alt="Control Stick"
+                style={{width: '100%', height: 'auto', display: 'block', cursor: 'pointer', minWidth: 0}}
                 onClick={() => tryNextEPStep(['Attitude', 'Speed', 'Zoom', 'Glide', 'Control', 'Descent'])}
                 title="Control Stick"/>
               </div>
-              <div style={{display: 'flex', flexDirection: 'column', gap: '0px', width: '37.5%', flexShrink: 0}}>
+              <div style={{display: 'flex', flexDirection: 'column', gap: '0px', width: '37.5%', flexShrink: 1, minWidth: '100px'}}>
                 <div className="control-section" style = {{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2px'}}>
                   <button className="action-button" onClick={() => tryNextEPStep(['forced landing', 'eject'])}>
                     Forced Landing/Eject
@@ -1209,7 +1209,7 @@ function TW4EpsLimits() {
           </div>
 
           {/* RIGHT CONTROLS */}
-          <div style={{display: 'flex', flexDirection: 'column', gap: '0px', width: SIDE_CONTROLS_WIDTH, flexShrink: 0.8, minWidth: '110px'}}>
+          <div style={{display: 'flex', flexDirection: 'column', gap: '0px', width: SIDE_CONTROLS_WIDTH, flexShrink: 0.8, minWidth: '80px'}}>
 
             {/* Right Panel Image with clickable overlay */}
             <div style={{position: 'relative', width: '100%'}}>

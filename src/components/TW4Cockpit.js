@@ -60,7 +60,7 @@ function TW4Cockpit() {
     'auxBatTest': ['System test', 'AUX BAT TEST'],
     'cfs': ['CFS'],
     'prop': ['Prop'],
-    'fdrlgt': ['FDR'],
+    'fdrlgt': ['FD\u200BR'],
     'firewall': ['Firewall'],
     'antiG': ['anti-g'],
 

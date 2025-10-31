@@ -7,7 +7,8 @@ import Nav from './components/Nav';
 import Flight from './components/Flight.js';
 import Docs from './components/Docs.js';
 import TW4About from './components/TW4About.js';
-import TW4EpsLimits from './components/TW4EpsLimits.js';
+import TW4Cockpit from './components/TW4Cockpit.js';
+import TW4Limits from './components/TW4Limits.js';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('about');
@@ -112,16 +113,28 @@ function App() {
             </>
           )}
           {mode === 'TW4 Primary' && (
+            <>
             <a
-              href="#eps-limits"
+              href="#limits"
               onClick={(e) => {
                 e.preventDefault();
-                setCurrentPage('eps-limits');
+                setCurrentPage('limits');
               }}
-              className={currentPage === 'eps-limits' ? 'active' : ''}
+              className={currentPage === 'limits' ? 'active' : ''}
             >
-              EPs/Limits
+              Limits
             </a>
+            <a
+              href="#cockpit"
+              onClick={(e) => {
+                e.preventDefault();
+                setCurrentPage('cockpit');
+              }}
+              className={currentPage === 'cockpit' ? 'active' : ''}
+            >
+              Cockpit
+            </a>
+            </>
           )}
         </div>
       </div>
@@ -179,7 +192,8 @@ function App() {
         {currentPage === 'nav' && mode === 'NIFE' && <Nav />}
         {currentPage === 'weather' && mode === 'NIFE' && <Weather />}
         {currentPage === 'flight' && mode === 'NIFE' && <Flight />}
-        {currentPage === 'eps-limits' && mode === 'TW4 Primary' && <TW4EpsLimits />}
+        {currentPage === 'cockpit' && mode === 'TW4 Primary' && <TW4Cockpit />}
+        {currentPage === 'limits' && mode === 'TW4 Primary' && <TW4Limits />}
       </div>
     </div>
   );

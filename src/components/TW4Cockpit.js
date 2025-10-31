@@ -47,7 +47,7 @@ function TW4Cockpit() {
     'taxiLight': ['taxi light'],
     'anticollLight': ['anti-coll light'],
     'navLight': ['nav light'],
-    'trimDisco': ['Trim Disconnect'],
+    'trimDisco': ['Tri\u200Bm Disconnect'],
     'flaps': ['flaps'],
     'pcl': ['PCL', 'Speed Brake', 'Accelerate', 'trim'],
     'altLdgGrTest': ['System test', 'alt audio', 'ldg gr audio'],
@@ -80,7 +80,7 @@ function TW4Cockpit() {
     'defog': ['Defog'],
     'elt': ['elt'],
     'parkingBrake': ['Parking Brake'],
-    'navMenu': ['MFD','database','location', 'alignment', "FMS"],
+    'navMenu': ['MFD ','database','location', 'alignment', "FMS"],
     'tcas': ['TCAS'],
     'clock' : ['clock'],
     'airspeed': ['Airspeed', ', speed', 'Zoom', 'Glide', 'Accelerate', 'flight instruments', 'PFD'],
@@ -150,6 +150,7 @@ function TW4Cockpit() {
     'pressurization': ['Pressurization'],
     'ramair': ['Ram Air'],
     'tempcon': ['Temp Control'],
+    'obogsFlow': ['Flow I'],
     'obogsSupply': ['OBOGS -', 'supply'],
     'obogsConc': ['OBOGS -', 'concentration'],
     'obogsPress': ['OBOGS -', 'pressure']
@@ -191,6 +192,8 @@ function TW4Cockpit() {
         results[key] = '';
       } else if(normalizedCorrect.includes(normalizedUser)){
         results[key] = 'partial';
+      } else if (normalizedCorrect === ''){
+        results[key] = 'correct';
       } else {
         results[key] = 'incorrect';
       }
@@ -908,6 +911,11 @@ function TW4Cockpit() {
                     title="Ram Air"
                   />
                   {/* OBOGS Controls Area */}
+                  <div
+                    onClick={() => tryNextStep(clickableControls['obogsFlow'])}
+                    className={getClickClass('obogsFlow')} style={{top: '33.3%', left: '16.5%', width: '12.6%', height: '1.2%'}}
+                    title="OBOGS Flow Indicator"
+                  />
                   <div
                     onClick={() => tryNextStep(clickableControls['obogsSupply'])}
                     className={getClickClass('obogsSupply')} style={{top: '35.7%', left: '76.5%', width: '10%', height: '4%'}}

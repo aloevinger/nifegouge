@@ -807,10 +807,10 @@ export const QUAD_ANSWERS = {
   qbt9: ["Lamp test switch ---------- CHECK"],
   qbt10: ["Flaps ---------- UP"],
   qbt11: ["landing/", "taxi light", "anti-coll light", "nav light"],
-  qbt12: ["TRIM DISCONNECT switch ---------- NORM"],
+  qbt12: ["TRI\u200BM DISCONNECT switch ---------- NORM"],
   qbt13: ['floodLight', 'sideLight', 'instLight'],
   qbt14: ["TRI\u200BM AID switch ---------- OFF"],
-  qbt15: ["Trim operation ---------- CHECK"],
+  qbt15: ["PCL", "NWS"],
   qbt16: ["EMER LDG GR handle ---------- CHECK STOWED"],
   qbt17: ["Clock ---------- SET"],
   qbt18: ['hudcage', 'hudlgt', 'mfdrep', 'lgthud', 'lgtufcp'],
@@ -843,7 +843,7 @@ export const QUAD_ANSWERS = {
   qhias6: ["STARTER switch ---------- NORM"],
   qhias7: ["Repeat Steps 4-6 if IOAT is greater than 80°C"],
   qhias8: ["PMU switch ---------- NORM"],
-  qhias9: ["Continue with Engine Start"],
+  qhias9: [""],
 
   // ENGINE START (AUTO)
   qes1: ["Canopy ---------- CLOSED AND LATCHED"],
@@ -872,7 +872,7 @@ export const QUAD_ANSWERS = {
   qas6: ["AVIONICS MASTER switch ---------- ON"],
   qas7: ["OBOGS supply lever ---------- ON"],
   qas8: ["Oxyg\u200Ben mask ---------- ON AND SECURE"],
-  qas9: ["OBOGS ---------- CHECK"],
+  qas9: ["concentration", "pressure", "flow"],
   qas10: ["Anti-G test ---------- CHECK"],
   qas11: ["System test panel ---------- CHECK"],
   qas11a: ["Lamp test switch ---------- CHECK"],
@@ -1029,4 +1029,4 @@ export const QUAD_ANSWERS = {
   qbla9: ["Exterior walk-around inspection ---------- VISUALLY CHECK"]
 };
 
-export const QUAD_LENGTHS = [37, 9, 9, 5, 37, 2, 7, 11, 5, 2, 4, 6, 3, 5, 6, 13, 9, 16, 9];
+export const QUAD_LENGTHS = [37, 8, 9, 5, 37, 2, 7, 11, 5, 2, 4, 6, 3, 5, 6, 13, 9, 16, 9];

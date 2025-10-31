@@ -2739,8 +2739,8 @@ textarea.incorrect-answer {
 
   .click-style {
     position: absolute;
-    /*background-color: rgba(0, 123, 255, 0.3);
-    border: 1px solid black;*/
+    background-color: rgba(0, 123, 255, 0.3);
+    border: 1px solid black;/**/
     cursor: pointer;
   }
 

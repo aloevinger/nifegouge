@@ -311,7 +311,9 @@ function TW4Cockpit() {
       results[nextEmptyField] = 'incorrect';
       setCheckResults(results);
     }
-    removeDataHints((inputData[nextEmptyField] || '').toLowerCase(), nextEmptyField);
+    if(Object.keys(activeHints).length > 0){
+      removeDataHints((inputData[nextEmptyField] || '').toLowerCase(), nextEmptyField);
+    }
   };
   
   const removeDataHints = (inputValue, nextEmptyField) =>{

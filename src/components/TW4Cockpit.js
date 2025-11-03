@@ -39,6 +39,7 @@ function TW4Cockpit() {
   // Dictionary mapping clickable area IDs to their control arrays
   const clickableControls = {
     // Left panel
+    'trimIndi' : ['Tri\u200Bm Indicator'],
     'floodLight' : ['floodLight'],
     'sideLight' : ['sideLight'],
     'instLight' : ['instLight'],
@@ -67,7 +68,9 @@ function TW4Cockpit() {
     // Center top panel
     'masterArm': ['Master Arm'],
     'emerLdgGr': ['Emer Ldg Gr'],
+    'flapIndi': ['Flap Indicator'],
     'gear': ['Gear'],
+    'gearlgt': ['Gea\u200Br Light'],
     'brakes': ['Brakes', 'Rudder Pedals'],
     'com1': ['COM1'],
     'com2': ['COM2'],
@@ -82,18 +85,33 @@ function TW4Cockpit() {
     'parkingBrake': ['Parking Brake'],
     'navMenu': ['MFD ','database','location', 'alignment', "FMS"],
     'tcas': ['TCAS'],
+    'tcasrng': ['TCA\u200BS Range'],
+    'mastwarn': ["Master Warning"],
+    'mastcaut': ["Master Caution"],
+    'firelight': ["Fire Light"],
+    'redaoa': ["Red Chevron"],
+    'amberaoa': ["Amber Donut"],
+    'greenaoa': ["Green Chevron"],
     'clock' : ['clock'],
+    'aoaindi': ["AOA Indicator"],
     'airspeed': ['Airspeed', ', speed', 'Zoom', 'Glide', 'Accelerate', 'flight instruments', 'PFD'],
     'attitude': ['Attitude', 'flight instruments', 'PFD'],
-    'altitude': ['Altitude', 'MSL', 'Climb', 'Descen', 'flight instruments', 'altimeter', 'PFD'],
+    'altitude': ['Altitude', 'MSL', 'Climb', 'Descen', 'flight instruments', 'PFD'],
+    'vsi': ['VSI'],
+    'slipskid': ["slip skid"],
+    'turni': ["turn indi"],
+    'headi': ["Heading indi"],
+    'greset': ['G Reset'],
     'fuelquan': ['Fuel Quantity', 'Fuel B\u200Balance'],
-    'np': ['Np'],
+    'np': ['N\u200Bp'],
     'torque': ['Torque', "Engine Instruments"],
     'oilPress': ['Oil Press', "Engine Instruments"],
     'oilTemp': ['Oil Temp', "Engine Instruments"],
     'itt': ['ITT', "Engine Instruments"],
     'n1': ['N1', "Engine Instruments"],
     'hydPress': ['Hyd Press', "Engine Instruments"],
+    'bingo': ['Bingo Set'],
+    'fuelflow': ['Fuel Flow'],
     'ioat': ['IOAT'],
     'voltamps': ['Volts', 'Amps'],
     'altdelta': ['P\u200Bressurization'],
@@ -102,12 +120,15 @@ function TW4Cockpit() {
     'vor': ['vor'],
     'transponder': ['transponder'],
     'pfdbut': ['flags'],
+    'sysbut': ['System button'],
     'hudcage': ['hudcage'],
     'hudlgt': ['hudlgt'],
     'mfdrep': ['mfdrep'],
     'lgthud': ['lgthud'],
     'lgtufcp': ['lgtufcp'],
     'baroset': ['altimeter'],
+    'bfi': ['BFI'],
+    'bfiset': ['altimete2r'],
     'eicas': ['eicas'],
 
     // Center buttons
@@ -205,6 +226,7 @@ function TW4Cockpit() {
   const resetAnswers = () => {
     setInputData({});
     setCheckResults({});
+    setActiveHints({});
   };
 
   const getInputClass = (field) => {
@@ -366,6 +388,11 @@ function TW4Cockpit() {
                 <div style={{position: 'relative', width: '100%'}}>
                   <img src="/images/left.png" alt="Left Control" style={{width: '100%', height: 'auto', display: 'block'}} />
                   <div
+                    onClick={() => tryNextStep(clickableControls['trimIndi'])}
+                    className = {getClickClass('trimIndi')} style={{top: '0.7%', left: '26%', width: '53%', height: '3.8%'}}
+                    title="Trim Indicators"
+                  />
+                  <div
                     onClick={() => tryNextStep(clickableControls['trimAid'])}
                     className = {getClickClass('trimAid')} style={{top: '7.4%', left: '76%', width: '9%', height: '1.5%'}}
                     title="Trim Aid"
@@ -503,9 +530,29 @@ function TW4Cockpit() {
                         title="Emer Ldg Gr"
                   />
                   <div
+                    onClick={() => tryNextStep(clickableControls['flapIndi'])}
+                    className={getClickClass('flapIndi')} style={{top: '66%', left: '12%', width: '5%', height: '6%'}}
+                        title="Flap Indicator"
+                  />
+                  <div
                     onClick={() => tryNextStep(clickableControls['gear'])}
-                    className={getClickClass('gear')} style={{top: '78%', left: '6.2%', width: '4%', height: '9%'}}
+                    className={getClickClass('gear')} style={{top: '78.5%', left: '6.2%', width: '4%', height: '8%'}}
                         title="Landing Gear"
+                  />
+                  <div
+                    onClick={() => tryNextStep(clickableControls['gearlgt'])}
+                    className={getClickClass('gearlgt')} style={{top: '77.1%', left: '4.8%', width: '2.5%', height: '2.9%'}}
+                        title="Landing Gear Light"
+                  />
+                  <div
+                    onClick={() => tryNextStep(clickableControls['gearlgt'])}
+                    className={getClickClass('gearlgt')} style={{top: '75.3%', left: '8%', width: '2.5%', height: '2.9%'}}
+                        title="Landing Gear Light"
+                  />
+                  <div
+                    onClick={() => tryNextStep(clickableControls['gearlgt'])}
+                    className={getClickClass('gearlgt')} style={{top: '77.1%', left: '11.2%', width: '2.5%', height: '2.9%'}}
+                        title="Landing Gear Light"
                   />
                   <div
                     onClick={() => tryNextStep(clickableControls['brakes'])}
@@ -578,14 +625,54 @@ function TW4Cockpit() {
                         title="NAV Menu"
                   />
                   <div
+                    onClick={() => tryNextStep(clickableControls['mastwarn'])}
+                    className={getClickClass('mastwarn')} style={{top: '13.5%', left: '30.1%', width: '2.3%', height: '1.6%'}}
+                        title="Master Warn"
+                  />
+                  <div
+                    onClick={() => tryNextStep(clickableControls['mastcaut'])}
+                    className={getClickClass('mastcaut')} style={{top: '13.5%', left: '34.75%', width: '2.3%', height: '1.6%'}}
+                        title="Master Caut"
+                  />
+                  <div
+                    onClick={() => tryNextStep(clickableControls['firelight'])}
+                    className={getClickClass('firelight')} style={{top: '9.8%', left: '32.6%', width: '2.1%', height: '2.3%'}}
+                        title="Fire Light"
+                  />
+                  <div
+                    onClick={() => tryNextStep(clickableControls['redaoa'])}
+                    className={getClickClass('redaoa')} style={{top: '4.3%', left: '31.6%', width: '1%', height: '1.3%'}}
+                        title="AOA Red Chevron"
+                  />
+                  <div
+                    onClick={() => tryNextStep(clickableControls['amberaoa'])}
+                    className={getClickClass('amberaoa')} style={{top: '2.45%', left: '31.6%', width: '1%', height: '1.3%'}}
+                        title="AOA Amber Donut"
+                  />
+                  <div
+                    onClick={() => tryNextStep(clickableControls['greenaoa'])}
+                    className={getClickClass('greenaoa')} style={{top: '0.5%', left: '31.6%', width: '1%', height: '1.3%'}}
+                        title="AOA Green Donut"
+                  />
+                  <div
                     onClick={() => tryNextStep(clickableControls['clock'])}
                     className={getClickClass('clock')} style={{top: '29.6%', left: '32.1%', width: '4%', height: '1.1%'}}
                         title="Clock"
                   />
                   <div
                     onClick={() => tryNextStep(clickableControls['tcas'])}
-                    className={getClickClass('tcas')} style={{top: '38.9%', left: '36.1%', width: '1.4%', height: '1.6%'}}
+                    className={getClickClass('tcas')} style={{top: '42.6%', left: '36.1%', width: '1.4%', height: '1.6%'}}
                         title="TCAS"
+                  />
+                  <div
+                    onClick={() => tryNextStep(clickableControls['tcasrng'])}
+                    className={getClickClass('tcasrng')} style={{top: '50.1%', left: '36.1%', width: '1.4%', height: '1.6%'}}
+                        title="RNG"
+                  />
+                  <div
+                    onClick={() => tryNextStep(clickableControls['aoaindi'])}
+                    className={getClickClass('aoaindi')} style={{top: '38.7%', left: '41.6%', width: '1%', height: '9.6%'}}
+                        title="AOA Indicator"
                   />
                   <div
                     onClick={() => tryNextStep(clickableControls['airspeed'])}
@@ -601,6 +688,31 @@ function TW4Cockpit() {
                     onClick={() => tryNextStep(clickableControls['altitude'])}
                     className={getClickClass('altitude')} style={{top: '38.6%', left: '54.2%', width: '1.8%', height: '9%'}}
                         title="Altitude"
+                  />
+                  <div
+                    onClick={() => tryNextStep(clickableControls['vsi'])}
+                    className={getClickClass('vsi')} style={{top: '38.6%', left: '56.1%', width: '1.7%', height: '9%'}}
+                        title="VSI"
+                  />
+                  <div
+                    onClick={() => tryNextStep(clickableControls['slipskid'])}
+                    className={getClickClass('slipskid')} style={{top: '46.8%', left: '49.4%', width: '0.5%', height: '0.6%'}}
+                        title="Slip/Skid Indicator"
+                  />
+                  <div
+                    onClick={() => tryNextStep(clickableControls['turni'])}
+                    className={getClickClass('turni')} style={{top: '47.7%', left: '47.9%', width: '3.5%', height: '0.5%'}}
+                        title="Turn Indicator"
+                  />
+                  <div
+                    onClick={() => tryNextStep(clickableControls['headi'])}
+                    className={getClickClass('headi')} style={{top: '50.8%', left: '45.4%', width: '8.5%', height: '10%'}}
+                        title="Heading Indicator"
+                  />
+                  <div
+                    onClick={() => tryNextStep(clickableControls['greset'])}
+                    className={getClickClass('greset')} style={{top: '50.1%', left: '58.5%', width: '1.4%', height: '1.3%'}}
+                        title="G Reset"
                   />
                   <div
                     onClick={() => tryNextStep(clickableControls['fuelquan'])}
@@ -643,6 +755,16 @@ function TW4Cockpit() {
                         title="Hyd Pressure"
                   />
                   <div
+                    onClick={() => tryNextStep(clickableControls['bingo'])}
+                    className={getClickClass('bingo')} style={{top: '46.5%', left: '61.5%', width: '1.4%', height: '1.3%'}}
+                        title="Bingo Fuel Set"
+                  />
+                  <div
+                    onClick={() => tryNextStep(clickableControls['fuelflow'])}
+                    className={getClickClass('fuelflow')} style={{top: '48.5%', left: '64.5%', width: '4.5%', height: '0.6%'}}
+                        title="Fuel Flow"
+                  />
+                  <div
                     onClick={() => tryNextStep(clickableControls['ioat'])}
                     className={getClickClass('ioat')} style={{top: '49.4%', left: '64.5%', width: '4.5%', height: '0.7%'}}
                         title="IOAT"
@@ -683,6 +805,11 @@ function TW4Cockpit() {
                         title="PFD Button"
                   />
                   <div
+                    onClick={() => tryNextStep(clickableControls['sysbut'])}
+                    className={getClickClass('sysbut')} style={{top: '5.8%', left: '56.1%', width: '1.7%', height: '1.9%'}}
+                        title="SYS Button"
+                  />
+                  <div
                     onClick={() => tryNextStep(clickableControls['hudcage'])}
                     className={getClickClass('hudcage')} style={{top: '18.5%', left: '46.3%', width: '0.7%', height: '1.7%'}}
                         title="HUD CAGE Switch"
@@ -713,8 +840,18 @@ function TW4Cockpit() {
                         title="BARO SET"
                   />
                   <div
+                    onClick={() => tryNextStep(clickableControls['bfi'])}
+                    className={getClickClass('bfi')} style={{top: '20.5%', left: '63.2%', width: '8%', height: '8.6%'}}
+                        title="BFI"
+                  />
+                  <div
+                    onClick={() => tryNextStep(clickableControls['bfiset'])}
+                    className={getClickClass('bfiset')} style={{top: '29.5%', left: '70%', width: '1.6%', height: '2%'}}
+                        title="BFI Baro Set"
+                  />
+                  <div
                     onClick={() => tryNextStep(clickableControls['eicas'])}
-                    className={getClickClass('eicas')} style={{top: '56.1%', left: '63.8%', width: '16.3%', height: '0.8%'}}
+                    className={getClickClass('eicas')} style={{top: '56.1%', left: '63.8%', width: '16.3%', height: '5%'}}
                         title="EICAS Warnings"
                   />
                 </div>
@@ -800,14 +937,22 @@ function TW4Cockpit() {
                 {divMap[currentDivKey][0][currentIndexArray[currentIndex]]}
                 </div>
                 <div className="navigation-buttons">
-                  <button onClick={() => setCurrentIndex(currentIndex-1)} 
+                  <button onClick={() => {
+                    setCurrentIndex(currentIndex-1);
+                    setCheckResults(emptyResults());
+                    setActiveHints({});
+                  }} 
                     disabled={currentIndex === 0}>
                     Previous
                   </button>
                   <span className="ep-counter" style={{minWidth: '61px'}}>
                     {currentIndex + 1} of {currentIndexArray.length}
                   </span>
-                  <button onClick={() => setCurrentIndex(currentIndex+1)} 
+                  <button onClick={() => {
+                    setCurrentIndex(currentIndex+1);
+                    setCheckResults(emptyResults());
+                    setActiveHints({});
+                  }} 
                     disabled={currentIndex === currentIndexArray.length - 1}>
                     Next
                   </button>
@@ -944,7 +1089,7 @@ function TW4Cockpit() {
             {isRandom ? "Random " : "Sequential "} Order
           </button>
           <button onClick={giveHint}>Hint</button>
-          <button onClick={nextAnswer}>Next Answer</button>
+          <button onClick={nextAnswer}>Next Answer/Skip</button>
           <button onClick={allAnswers}>All Answers</button>
           {currentDivKey === 'epDivs' && <button onClick={checkAnswers}>Check</button>}
           <button onClick={resetAnswers}>Reset</button>

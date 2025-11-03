@@ -755,41 +755,41 @@ export const getQuadDivs = ({getInputClass}) => {
           <span className={getInputClass('qesd16')}>16. GEN, BAT, and AUX BAT switches ---------- OFF</span>
         </div>
       </div>
-    ),
+    )
 
     // 18. BEFORE LEAVING AIRCRAFT
-    (
-      <div key="qbla" style={quadSectionStyle}>
-        <div style={quadHeaderStyle}>BEFORE LEAVING AIRCRAFT</div>
-        <div style={quadStepStyle}>
-          <span className={getInputClass('qbla1')}>1. CFS handle safety pins ---------- INSTALL</span>
-        </div>
-        <div style={quadStepStyle}>
-          <span className={getInputClass('qbla2')}>2. DTS/DVR cartridge ---------- REMOVE (AS REQUIRED)</span>
-        </div>
-        <div style={quadStepStyle}>
-          <span className={getInputClass('qbla3')}>3. ISS mode selector ---------- SOLO</span>
-        </div>
-        <div style={quadStepStyle}>
-          <span className={getInputClass('qbla4')}>4. Oxygen hose and communication cord ---------- STOW WITH LOOP FORWARD</span>
-        </div>
-        <div style={quadStepStyle}>
-          <span className={getInputClass('qbla5')}>5. HUD combiner cover ---------- INSTALL</span>
-        </div>
-        <div style={quadStepStyle}>
-          <span className={getInputClass('qbla6')}>6. Wheel chocks ---------- INSTALL (AS REQUIRED)</span>
-        </div>
-        <div style={quadStepStyle}>
-          <span className={getInputClass('qbla7')}>7. PARKING BRAKE ---------- AS REQUIRED</span>
-        </div>
-        <div style={quadStepStyle}>
-          <span className={getInputClass('qbla8')}>8. Canopy ---------- CLOSED (AS REQUIRED)</span>
-        </div>
-        <div style={quadStepStyle}>
-          <span className={getInputClass('qbla9')}>9. Exterior walk-around inspection ---------- VISUALLY CHECK</span>
-        </div>
-      </div>
-    )
+    // (
+    //   <div key="qbla" style={quadSectionStyle}>
+    //     <div style={quadHeaderStyle}>BEFORE LEAVING AIRCRAFT</div>
+    //     <div style={quadStepStyle}>
+    //       <span className={getInputClass('qbla1')}>1. CFS handle safety pins ---------- INSTALL</span>
+    //     </div>
+    //     <div style={quadStepStyle}>
+    //       <span className={getInputClass('qbla2')}>2. DTS/DVR cartridge ---------- REMOVE (AS REQUIRED)</span>
+    //     </div>
+    //     <div style={quadStepStyle}>
+    //       <span className={getInputClass('qbla3')}>3. ISS mode selector ---------- SOLO</span>
+    //     </div>
+    //     <div style={quadStepStyle}>
+    //       <span className={getInputClass('qbla4')}>4. Oxygen hose and communication cord ---------- STOW WITH LOOP FORWARD</span>
+    //     </div>
+    //     <div style={quadStepStyle}>
+    //       <span className={getInputClass('qbla5')}>5. HUD combiner cover ---------- INSTALL</span>
+    //     </div>
+    //     <div style={quadStepStyle}>
+    //       <span className={getInputClass('qbla6')}>6. Wheel chocks ---------- INSTALL (AS REQUIRED)</span>
+    //     </div>
+    //     <div style={quadStepStyle}>
+    //       <span className={getInputClass('qbla7')}>7. PARKING BRAKE ---------- AS REQUIRED</span>
+    //     </div>
+    //     <div style={quadStepStyle}>
+    //       <span className={getInputClass('qbla8')}>8. Canopy ---------- CLOSED (AS REQUIRED)</span>
+    //     </div>
+    //     <div style={quadStepStyle}>
+    //       <span className={getInputClass('qbla9')}>9. Exterior walk-around inspection ---------- VISUALLY CHECK</span>
+    //     </div>
+    //   </div>
+    // )
   ];
 };
 
@@ -846,7 +846,7 @@ export const QUAD_ANSWERS = {
   qhias9: [""],
 
   // ENGINE START (AUTO)
-  qes1: ["Canopy ---------- CLOSED AND LATCHED"],
+  qes1: ["Canopy ---------- CLOSED AND LATCHED", "EICAS"],
   qes2: ["anti-coll light", "nav light"],
   qes3: ["EICAS"],
   qes4: ["PCL ---------- ADVANCE TO START POSITION", "EICAS"],
@@ -872,7 +872,7 @@ export const QUAD_ANSWERS = {
   qas6: ["AVIONICS MASTER switch ---------- ON"],
   qas7: ["OBOGS supply lever ---------- ON"],
   qas8: ["Oxyg\u200Ben mask ---------- ON AND SECURE"],
-  qas9: ["concentration", "pressure", "flow i"],
+  qas9: ["concentration", "OBOGS pressure", "flow i"],
   qas10: ["Anti-G test ---------- CHECK"],
   qas11: ["System test panel ---------- CHECK"],
   qas11a: ["Lamp test ", "Gear", "Gea\u200Br Light", "FD\u200BR", "Master Warning", "Fire Light", "Master Caution", "COM1", "COM2", "EICAS"],
@@ -883,7 +883,7 @@ export const QUAD_ANSWERS = {
   qas11f: ["OVR G audio switch ---------- CHECK"],
   qas11g: ["BINGO FUEL audio switch ---------- CHECK"],
   qas12: ["Speed brake ---------- CHECK", "EICAS"],
-  qas13: ["Flaps ---------- CHECK", "Flap Indicator", "EICAS", "Speed Brake"],
+  qas13: ["Flaps ---------- CHECK", "Flap Indicator", "EICAS"],
   qas14: ["TRI\u200BM AID switch ---------- ON", "EICAS"],
   qas15: ["Nosewheel steering ---------- ON"],
   qas16: ["PARKING BRAKE ---------- RELEASE"],
@@ -937,7 +937,7 @@ export const QUAD_ANSWERS = {
 
   // AFTER TAKEOFF
   qat1: ["Gear ---------- AS REQUIRED", "Altitude", "vsi"],
-  qat2: ["Flaps ---------- UP", "airspeed", "Gea\u200Br Light"],
+  qat2: ["Flaps ---------- UP", "airspeed", "Gea\u200Br Light Gear"],
 
   // CLIMB (PASSING 10,000 FEET)
   qclimb1: ["concentration", "Flow I"],
@@ -971,7 +971,7 @@ export const QUAD_ANSWERS = {
   qbl3: ["Gear ---------- DOWN", "Gea\u200Br Light"],
   qbl4: ["Brakes ---------- CHECK, AS REQUIRED"],
   qbl5: ["FLAPS ---------- AS REQUIRED", "Flap Indicator"],
-  qbl6: ["EICAS"],
+  qbl6: ["EICAS", "PCL"],
 
   // FULL STOP/TAXI BACK CHECKLIST
   qfstb1: ["PROBES ANTI-ICE switch ---------- OFF"],
@@ -993,7 +993,7 @@ export const QUAD_ANSWERS = {
   qal2: ["Seat safety pin ---------- INSTALL"],
   qal3: ["PROBES ANTI-ICE switch ---------- OFF", "EICAS"],
   qal4: ["Flaps ---------- UP", "Flap Indicator"],
-  qal5: ["T\u200Brim interrupt button ---------- DEPRESS", "EICAS"],
+  qal5: ["T\u200Brim interrupt button ---------- DEPRESS", "EICAS" ,"tri\u200Bm aid"],
   qal6: ["Tri\u200Bm indicator"],
   qal7: ["Transponder ---------- AS REQUIRED"],
   qal8: ["TCAS ---------- STBY"],
@@ -1008,25 +1008,25 @@ export const QUAD_ANSWERS = {
   qesd6: ["AIR COND switch ---------- OFF"],
   qesd7: ["EVAP BLWR control ---------- OFF"],
   qesd8: ["Oxyg\u200Ben mask ---------- REMOVE"],
-  qesd9: ["supply", "pressure", 'concentration'],
+  qesd9: ["supply", "OBOGS pressure", 'concentration'],
   qesd10: ["PCL ---------- IDLE >60 SECONDS, THEN OFF", "ITT", "N1", "Fuel Flow"],
   qesd11: ["CANOPY ---------- OPEN (AS REQUIRED)"],
   qesd12: ["EICAS"],
   qesd13: ["FD\u200BR light ---------- EXTINGUISHED"],
   qesd14: ["Gust lock ---------- ENGAGE (AS REQUIRED)"],
   qesd15: ["landing/", "taxi light", "anti-coll light", "nav light", 'floodLight', 'sideLight', 'instLight'],
-  qesd16: ['BAT\u200B, ', 'GEN, ', 'AND AUX BAT SWITCHES - OFF'],
+  qesd16: ['BAT\u200B, ', 'GEN, ', 'AND AUX BAT SWITCHES - OFF']
 
-  // BEFORE LEAVING AIRCRAFT
-  qbla1: ["CFS handle safety pins ---------- INSTALL"],
-  qbla2: ["DTS/DVR cartridge ---------- REMOVE (AS REQUIRED)"],
-  qbla3: ["ISS mode selector ---------- SOLO"],
-  qbla4: ["Oxyg\u200Ben hose and communication cord ---------- STOW WITH LOOP FORWARD"],
-  qbla5: ["HUD combiner cover ---------- INSTALL"],
-  qbla6: ["Wheel chocks ---------- INSTALL (AS REQUIRED)"],
-  qbla7: ["PARKING BRAKE ---------- AS REQUIRED"],
-  qbla8: ["Canopy ---------- CLOSED (AS REQUIRED)"],
-  qbla9: ["Exterior walk-around inspection ---------- VISUALLY CHECK"]
+  // // BEFORE LEAVING AIRCRAFT
+  // qbla1: ["CFS handle safety pins ---------- INSTALL"],
+  // qbla2: ["DTS/DVR cartridge ---------- REMOVE (AS REQUIRED)"],
+  // qbla3: ["ISS mode selector ---------- SOLO"],
+  // qbla4: ["Oxyg\u200Ben hose and communication cord ---------- STOW WITH LOOP FORWARD"],
+  // qbla5: ["HUD combiner cover ---------- INSTALL"],
+  // qbla6: ["Wheel chocks ---------- INSTALL (AS REQUIRED)"],
+  // qbla7: ["PARKING BRAKE ---------- AS REQUIRED"],
+  // qbla8: ["Canopy ---------- CLOSED (AS REQUIRED)", "EICAS"],
+  // qbla9: ["Exterior walk-around inspection ---------- VISUALLY CHECK"]
 };
 
-export const QUAD_LENGTHS = [37, 8, 9, 5, 37, 2, 7, 11, 5, 2, 4, 6, 3, 5, 6, 13, 9, 16, 9];
+export const QUAD_LENGTHS = [37, 8, 9, 5, 37, 2, 7, 11, 5, 2, 4, 6, 3, 5, 6, 13, 9, 16]; //,9

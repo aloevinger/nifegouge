@@ -5,7 +5,7 @@ import { getQuadDivs, QUAD_LENGTHS, QUAD_ANSWERS} from './QuadfoldData';
 function TW4Cockpit() {
   // Layout width parameters - adjust these to test different configurations
   const LAYOUT_GAP = '20px';            // Gap between columns
-  const CONTAINER_MAX_WIDTH = '1100px';// Max width of container when showing EPs
+  const CONTAINER_MAX_WIDTH = '1500px';// Max width of container when showing EPs
   const SIDE_CONTROLS_WIDTH = '160px';  // Width of left and right image columns
   const CENTER_CONTENT_WIDTH = '650px'; // Max width of the EPs table content
 
@@ -28,6 +28,7 @@ function TW4Cockpit() {
   const [currentDivKey, setCurrentDivKey] = useState('epDivs');
   const [inputAnswers, setInputAnswers] = useState(EP_ANSWERS);
   const [inputLengths, setInputLengths] = useState(EP_LENGTHS);
+  const [showInstructions, setShowInstructions] = useState(false);
   
   useEffect(() => {
     if(isRandom) {
@@ -136,7 +137,7 @@ function TW4Cockpit() {
     'iss': ['iss'],
     'seat': ['Seat', 'Ejection Handle', 'strap'],
     'canopy': ['canopy'],
-    'fittings': ['fittings', 'strap'],
+    'fittings': ['fi\u200Bttings', 'strap'],
     'mask': ['mask', 'regulator', 'oxygen hose'],
     'terminate': ['terminate'],
     'expo': ['external power'],
@@ -171,10 +172,10 @@ function TW4Cockpit() {
     'pressurization': ['Pressurization'],
     'ramair': ['Ram Air'],
     'tempcon': ['Temp Control'],
-    'obogsFlow': ['Flow I'],
+    'obogsFlow': ['OBOGS -', 'Flow I'],
     'obogsSupply': ['OBOGS -', 'supply'],
     'obogsConc': ['OBOGS -', 'concentration'],
-    'obogsPress': ['OBOGS -', 'pressure']
+    'obogsPress': ['OBOGS -', 'OBOGS pressure']
   };
 
   const handleInputsChange = (field, value) => {
@@ -255,8 +256,8 @@ function TW4Cockpit() {
     );
   };
 
-  const findNextEmpty = () =>{
-    setActiveHints({})
+  const findNextEmpty = (nextKey = null) =>{
+    if(nextKey){return{nextEmptyField: nextKey, emptyNum: null};}
     const results = checkResults;
     let currentKey = divMap[currentDivKey][0][currentIndexArray[currentIndex]].key;
     const allFields = Object.keys(inputAnswers).filter(key => key.startsWith(currentKey));
@@ -310,10 +311,28 @@ function TW4Cockpit() {
       results[nextEmptyField] = 'incorrect';
       setCheckResults(results);
     }
+    removeDataHints((inputData[nextEmptyField] || '').toLowerCase(), nextEmptyField);
+  };
+  
+  const removeDataHints = (inputValue, nextEmptyField) =>{
+    const matchingKeys = Object.keys(clickableControls).filter(key => {
+      // Check if the key itself is in the input value
+      if (inputValue.includes(key.toLowerCase())) {
+        return true;
+      }
+
+      // Check if any control string in the array matches
+      return clickableControls[key].some(control =>
+        inputValue.includes(control.toLowerCase()) ||
+        control.toLowerCase().includes(inputValue)
+      );
+    });
+    giveHint(matchingKeys, nextEmptyField)
   };
 
   const nextAnswer = () =>{
     const {nextEmptyField, emptyNum} = findNextEmpty();
+    setActiveHints({});
     if(!nextEmptyField){return}
     let correctAnswers = inputAnswers[nextEmptyField]
     inputData[nextEmptyField] = correctAnswers.join('');
@@ -334,11 +353,11 @@ function TW4Cockpit() {
     }
   }
 
-  const giveHint =() =>{
-    const {nextEmptyField, emptyNum} = findNextEmpty();
+  const giveHint = (matchingKeys = null, nextKey = null) =>{
+    const {nextEmptyField, emptyNum} = findNextEmpty(nextKey);
+    setActiveHints({});
     if(!nextEmptyField){return}
     let correctAnswer = inputAnswers[nextEmptyField].join('').toLowerCase();
-    console.log(correctAnswer)
     const matches ={};
 
     Object.keys(clickableControls).forEach(key => {
@@ -350,6 +369,12 @@ function TW4Cockpit() {
         matches[key] = 'hint';
       }
     });
+    console.log(matchingKeys)
+    if(matchingKeys){
+      matchingKeys.forEach(key => {
+        delete matches[key];
+      });
+    }
     setActiveHints(matches)
   }
 
@@ -374,11 +399,71 @@ function TW4Cockpit() {
   return (
     <>
       <div className="limits-eps-container" style={{maxWidth: CONTAINER_MAX_WIDTH}}>
-        <h1 style={{fontSize: '16px', marginBottom: '5px'}}>T-6B INTERACTIVE COCKPIT</h1>
-        
-        <p className="page-subtitle" style={{fontSize: '11px', marginBottom: '10px'}}>
-          Every step can be solved by clicking on the correct control or step button. Clicking on any relevant control will fill the entire step. If you are unsure/can't find the right control, you can always type in the step
-        </p>
+        {/* Header with Instructions Button */}
+        <div style={{position: 'relative', marginBottom: '5px'}}>
+          <button
+            onClick={() => setShowInstructions(true)}
+            style={{
+              position: 'absolute',
+              left: '0',
+              top: '0'
+            }}
+          >
+            Instructions
+          </button>
+          <h1 style={{fontSize: '20px', margin: '15px', textAlign: 'center'}}>T-6B INTERACTIVE COCKPIT</h1>
+        </div>
+
+        {/* Instructions Modal */}
+        {showInstructions && (
+          <div style={{position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, 
+            backgroundColor: 'rgba(0, 0, 0, 0.5)', display: 'flex', alignItems: 'center', 
+            justifyContent: 'center', zIndex: 1000}}
+            onClick={() => setShowInstructions(false)}
+          >
+            <div
+              style={{backgroundColor: 'white', padding: '30px', borderRadius: '8px', 
+                maxWidth: '600px', maxHeight: '80vh', overflow: 'auto', position: 'relative'}}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setShowInstructions(false)}
+                style={{position: 'absolute', top: '10px', right: '10px', fontSize: '24px',
+                  background: 'none', border: 'none', cursor: 'pointer', color: '#666'}}
+              >
+                &times;
+              </button>
+              <h2 style={{marginTop: 0, marginBottom: '20px'}}>How to Use the Interactive Cockpit</h2>
+              <div style={{lineHeight: '1.6'}}>
+                <h3 style={{fontSize: '14px', marginTop: '15px'}}>How It Works</h3>
+                <ul>
+                  <li>Each checklist step can be completed by clicking the correct control or button, including skip</li>
+                  <li>For EPs you can also type answers directly into the input fields</li>
+                  <li>Clicking a correct control will automatically fill the entire step</li>
+                  <li>A <span style={{backgroundColor: '#f8d0d0'}}>red</span> step means the incorrect control was clicked or inputted. EPs are verbatim!</li>
+                  <li>A <span style={{backgroundColor: '#faf6be'}}>yellow</span> step means a part of the correct controls have been clicked or inputted</li>
+                  <li>A <span style={{backgroundColor: '#d0f0d0'}}>green</span> or <span style={{backgroundColor: '#d0f3f8'}}>blue</span> step means the correct controls have been clicked or inputted</li>
+                </ul>
+
+                <h3 style={{fontSize: '14px', marginTop: '15px'}}>Buttons & Controls</h3>
+                <ul>
+                  <li><strong>Hint:</strong> Highlights controls related to the current step</li>
+                  <li><strong>Next Answer/Skip:</strong> Reveals and fills the next unanswered/unchecked step</li>
+                  <li><strong>All Answers:</strong> Completes all remaining steps</li>
+                  <li><strong>Check:</strong> Validates your answers (EPs only)</li>
+                  <li><strong>Reset:</strong> Clears all answers and feedback</li>
+                  <li><strong>Random/Sequential Order:</strong> Toggle between randomized and sequential checklist order (EPs only)</li>
+                </ul>
+
+                <h3 style={{fontSize: '14px', marginTop: '15px'}}>Navigation</h3>
+                <ul>
+                  <li>Use <strong>Previous/Next</strong> buttons to move between checklists</li>
+                  <li>Switch between <strong>EPs</strong> and <strong>Quadfold</strong> checklists using the toggle at the bottom</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="eps-page">
             {/* EPS LAYOUT WITH SIDE CONTROLS */}
             <div style={{display: 'flex', gap: LAYOUT_GAP, alignItems: 'flex-start', justifyContent: 'center'}}>
@@ -1081,14 +1166,14 @@ function TW4Cockpit() {
             </div>
         </div>
         <div className="button-row" style={{ justifyContent: 'center', marginTop: '0px' }}>
-          <button style={{minWidth: '147px'}} onClick={() => {
+          {currentDivKey === 'epDivs' &&<button style={{minWidth: '147px'}} onClick={() => {
             setisRandom(!isRandom);
             refreshIndices(divMap[currentDivKey][0], !isRandom);
             setInputData({});
             resetAnswers();}}>
             {isRandom ? "Random " : "Sequential "} Order
-          </button>
-          <button onClick={giveHint}>Hint</button>
+          </button>}
+          <button onClick={() => giveHint()}>Hint</button>
           <button onClick={nextAnswer}>Next Answer/Skip</button>
           <button onClick={allAnswers}>All Answers</button>
           {currentDivKey === 'epDivs' && <button onClick={checkAnswers}>Check</button>}
@@ -1131,6 +1216,7 @@ function TW4Cockpit() {
               style={{display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer'}}
               onClick={() => {
                 setCurrentDivKey('quadDivs');
+                setisRandom(false);
                 refreshIndices(divMap['quadDivs'][0], isRandom);
                 setInputAnswers(divMap['quadDivs'][1]);
                 setInputLengths(divMap['quadDivs'][2]);

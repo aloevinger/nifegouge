@@ -183,31 +183,31 @@ export const getQuadDivs = ({getInputClass, openChecklistModal}) => {
     (
       <div key="qhias" style={quadSectionStyle}>
         <div style={{...quadHeaderStyle, backgroundColor: '#d32f2f'}}>HIGH IOAT AT START (&gt;80° C)</div>
-        <div style={quadStepStyle}>
+        <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qhias1')}>1. PCL ---------- VERIFY OFF</span>
         </div>
-        <div style={quadStepStyle}>
+        <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qhias2')}>2. PMU ---------- RESET IF NECESSARY</span>
         </div>
-        <div style={quadStepStyle}>
+        <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qhias3')}>3. PMU switch ---------- OFF</span>
         </div>
-        <div style={quadStepStyle}>
+        <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qhias4')}>4. Propeller Area ---------- CLEAR</span>
         </div>
-        <div style={quadStepStyle}>
+        <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qhias5')}>5. STARTER switch ---------- MANUAL FOR 20 SEC MAX</span>
         </div>
-        <div style={quadStepStyle}>
+        <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qhias6')}>6. STARTER switch ---------- NORM</span>
         </div>
-        <div style={quadStepStyle}>
+        <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qhias7')}>7. Repeat Steps 4-6 if IOAT is greater than 80°C</span>
         </div>
-        <div style={quadStepStyle}>
+        <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qhias8')}>8. PMU switch ---------- NORM</span>
         </div>
-        <div style={quadStepStyle}>
+        <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qhias9')}>9. Continue with Engine Start</span>
         </div>
       </div>
@@ -251,19 +251,19 @@ export const getQuadDivs = ({getInputClass, openChecklistModal}) => {
     (
       <div key="qmrp" style={quadSectionStyle}>
         <div style={{...quadHeaderStyle, backgroundColor: '#d32f2f'}}>MOTORING RUN PROCEDURE</div>
-        <div style={quadStepStyle}>
+        <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qmrp1')}>1. PCL ---------- OFF</span>
         </div>
-        <div style={quadStepStyle}>
+        <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qmrp2')}>2. IGNITION switch ---------- NORM</span>
         </div>
-        <div style={quadStepStyle}>
+        <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qmrp3')}>3. Propeller area ---------- CLEAR</span>
         </div>
-        <div style={quadStepStyle}>
+        <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qmrp4')}>4. STARTER switch ---------- MANUAL for 20 sec</span>
         </div>
-        <div style={quadStepStyle}>
+        <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qmrp5')}>5. STARTER switch ---------- NORM</span>
         </div>
       </div>
@@ -628,43 +628,43 @@ export const getQuadDivs = ({getInputClass, openChecklistModal}) => {
     (
       <div key="qfstb" style={quadSectionStyle}>
         <div style={quadHeaderStyle}>FULL STOP/TAXI BACK CHECKLIST</div>
-        <div style={quadStepStyle}>
+        <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qfstb1')}>1. PROBES ANTI-ICE switch ---------- OFF</span>
         </div>
-        <div style={quadStepStyle}>
+        <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qfstb2')}>2. Flaps ---------- TO</span>
         </div>
-        <div style={quadStepStyle}>
+        <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qfstb3')}>3. Trim ---------- Set for Takeoff</span>
         </div>
-        <div style={quadStepStyle}>
+        <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qfstb4')}>4. Transponder ---------- AS REQUIRED</span>
         </div>
-        <div style={quadStepStyle}>
+        <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qfstb5')}>5. Fuel quantity and balance ---------- CHECK</span>
         </div>
-        <div style={quadStepStyle}>
+        <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qfstb6')}>6. Engine instruments ---------- CHECK</span>
         </div>
-        <div style={quadStepStyle}>
+        <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qfstb7')}>7. DEFOG switch ---------- OFF</span>
         </div>
-        <div style={quadStepStyle}>
+        <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qfstb8')}>8. Minimum power by 60 KIAS ---------- COMPUTE</span>
         </div>
-        <div style={quadStepStyle}>
+        <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qfstb9')}>9. Exterior lights ---------- ON</span>
         </div>
-        <div style={quadStepStyle}>
+        <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qfstb10')}>10. Transponder ---------- AS REQUIRED</span>
         </div>
-        <div style={quadStepStyle}>
+        <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qfstb11')}>11. PROBES ANTI-ICE switch ---------- ON</span>
         </div>
-        <div style={quadStepStyle}>
+        <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qfstb12')}>12. Nose wheel steering ---------- OFF</span>
         </div>
-        <div style={quadStepStyle}>
+        <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qfstb13')}>13. EICAS display ---------- CHECK</span>
         </div>
       </div>

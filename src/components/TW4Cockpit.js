@@ -1,6 +1,6 @@
-import React, { useState, useEffect} from 'react';
-import { getEPDivs, EP_LENGTHS, EP_ANSWERS} from './EPDivsData';
-import { getQuadDivs, QUAD_LENGTHS, QUAD_ANSWERS} from './QuadfoldData';
+import React, { useState, useEffect, useRef} from 'react';
+import {getEPDivs, EP_LENGTHS, EP_ANSWERS} from './EPDivsData';
+import {getQuadDivs, QUAD_LENGTHS, QUAD_ANSWERS, QUAD_ACTIONS} from './QuadfoldData';
 
 function TW4Cockpit() {
   // Layout width parameters - adjust these to test different configurations
@@ -29,13 +29,34 @@ function TW4Cockpit() {
   const [inputAnswers, setInputAnswers] = useState(EP_ANSWERS);
   const [inputLengths, setInputLengths] = useState(EP_LENGTHS);
   const [showInstructions, setShowInstructions] = useState(false);
-  
+  const [showChecklistModal, setShowChecklistModal] = useState(false);
+  const [checklistModalContent, setChecklistModalContent] = useState(null);
+
+  const modalBaseContentRef = useRef(null);
+  const modalStepKeyRef = useRef(null);
+
   useEffect(() => {
     if(isRandom) {
       setCurrentIndex(0)
       setCurrentIndexArray(shuffleIndices(20));
     }
   }, []);
+
+  useEffect(() => {
+    if (showChecklistModal && modalBaseContentRef.current && modalStepKeyRef.current) {
+      const stepText = getStepText(modalStepKeyRef.current);
+      setChecklistModalContent(
+        <div>
+          {modalBaseContentRef.current}
+          {stepText && (
+            <div style={{marginTop: '20px', padding: '10px', border: '2px solid #666', borderRadius: '8px', backgroundColor: '#f0f0f0'}}>
+              <span className={getInputClass(modalStepKeyRef.current)}>{stepText}</span>
+            </div>
+          )}
+        </div>
+      );
+    }
+  }, [checkResults]);
 
   // Dictionary mapping clickable area IDs to their control arrays
   const clickableControls = {
@@ -266,8 +287,8 @@ function TW4Cockpit() {
     let emptyNum = 0;
     for (let i = 0; i < allFields.length; i++) {
       const field = allFields[i];
-
-      if (inputData[field] === undefined || inputData[field] === ''||results[field] === 'partial') {
+      console.log(inputAnswers[field])
+      if((inputData[field] === undefined || inputData[field] === ''||results[field] === 'partial') && inputAnswers[field] != "") {
         nextEmptyField = field;
         emptyNum = i;
         break;
@@ -334,6 +355,7 @@ function TW4Cockpit() {
 
   const nextAnswer = () =>{
     const {nextEmptyField, emptyNum} = findNextEmpty();
+    console.log(nextEmptyField);
     setActiveHints({});
     if(!nextEmptyField){return}
     let correctAnswers = inputAnswers[nextEmptyField]
@@ -380,6 +402,42 @@ function TW4Cockpit() {
     setActiveHints(matches)
   }
 
+  const openChecklistModal = (content, currentField = null) => {
+    let { nextEmptyField } = findNextEmpty();
+    if(currentField){nextEmptyField = currentField};
+    const stepText = getStepText(nextEmptyField);
+
+    modalBaseContentRef.current = content;
+    modalStepKeyRef.current = nextEmptyField;
+
+    console.log(nextEmptyField)
+    setChecklistModalContent(
+      <div>
+        {content}
+        {stepText && (
+          <div style={{marginTop: '20px', padding: '10px', border: '2px solid #666', borderRadius: '8px', backgroundColor: '#f0f0f0'}}>
+            <span className={getInputClass(nextEmptyField)}>{stepText}</span>
+          </div>
+        )}
+      </div>
+    );
+    setShowChecklistModal(true);
+  }
+
+  const closeChecklistModal = () => {
+    setShowChecklistModal(false);
+    setChecklistModalContent(null);
+  }
+
+  const getStepText = (key) => {
+    const element = document.querySelector(`[data-step-key="${key}"]`);
+    if (element) {
+      const span = element.querySelector('span');
+      return span ? span.textContent : '';
+    }
+    return '';
+  };
+
   //EP div structures retrieval
   const epDivs = getEPDivs({
     epsData: inputData,
@@ -389,7 +447,8 @@ function TW4Cockpit() {
 
   //Quad div structures retrieval
   const quadDivs = getQuadDivs({
-    getInputClass
+    getInputClass,
+    openChecklistModal
   });
 
   //Map div elements to key for retrival
@@ -402,18 +461,12 @@ function TW4Cockpit() {
     <>
       <div className="limits-eps-container" style={{maxWidth: CONTAINER_MAX_WIDTH}}>
         {/* Header with Instructions Button */}
-        <div style={{position: 'relative', marginBottom: '5px'}}>
-          <button
-            onClick={() => setShowInstructions(true)}
-            style={{
-              position: 'absolute',
-              left: '0',
-              top: '0'
-            }}
-          >
+        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '100px', marginBottom: '5px'}}>
+          <button onClick={() => setShowInstructions(true)}>
             Instructions
           </button>
-          <h1 style={{fontSize: '20px', margin: '15px', textAlign: 'center'}}>T-6B INTERACTIVE COCKPIT</h1>
+          <h1 style={{fontSize: '20px', margin: '15px 0'}}>T-6B INTERACTIVE COCKPIT</h1>
+          <div style={{width: '100px'}}></div> {/* Spacer to balance the button */}
         </div>
 
         {/* Instructions Modal */}
@@ -442,6 +495,7 @@ function TW4Cockpit() {
                   <li>Each checklist step can be completed by clicking the correct control or button, including skip</li>
                   <li>For EPs you can also type answers directly into the input fields</li>
                   <li>Clicking a correct control will automatically fill the entire step</li>
+                  <li>Clicking on steps in teh quadfold will reveal the corresponding expanded checklist item. </li>
                   <li>A <span style={{backgroundColor: '#f8d0d0'}}>red</span> step means the incorrect control was clicked or inputted. EPs are verbatim!</li>
                   <li>A <span style={{backgroundColor: '#faf6be'}}>yellow</span> step means a part of the correct controls have been clicked or inputted</li>
                   <li>A <span style={{backgroundColor: '#d0f0d0'}}>green</span> or <span style={{backgroundColor: '#d0f3f8'}}>blue</span> step means the correct controls have been clicked or inputted</li>
@@ -1018,10 +1072,35 @@ function TW4Cockpit() {
                     </div>
                   </div>
                 </div>
-                
-                <div style={{width: '100%', alignItems: 'center', minHeight: '350px', margin: '0 auto'}}>
+
+                <div style={{width: '100%', alignItems: 'center', minHeight: '350px', margin: '0 auto', position: 'relative'}}>
                 {/*The actual damn checklist*/}
                 {divMap[currentDivKey][0][currentIndexArray[currentIndex]]}
+
+                {/* Checklist Modal Overlay */}
+                {showChecklistModal && checklistModalContent && (
+                  <div style={{position: 'absolute', top: 0, left: `-${LAYOUT_GAP}`, right: `-${LAYOUT_GAP}`,
+                    bottom: '-20px', backgroundColor: 'rgba(0, 0, 0, 0.7)', display: 'flex',
+                    alignItems: 'flex-start', justifyContent: 'center', zIndex: 100, paddingTop: '10px',
+                    paddingLeft: LAYOUT_GAP, paddingRight: LAYOUT_GAP, paddingBottom: '50px'}}
+                    onClick={closeChecklistModal}
+                  >
+                    <div
+                      style={{width: '100%', maxHeight: '100%', position: 'relative'}}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <button
+                        onClick={closeChecklistModal}
+                        style={{position: 'absolute', top: '3px', right: '2px', fontSize: '16px',
+                          background: 'rgba(0, 0, 0, 0.7)', border: 'none', cursor: 'pointer', color: '#fff', zIndex: 101,
+                          padding: '0 4px', lineHeight: '1'}}
+                      >
+                        &times;
+                      </button>
+                      {checklistModalContent}
+                    </div>
+                  </div>
+                )}
                 </div>
                 <div className="navigation-buttons">
                   <button onClick={() => {
@@ -1219,7 +1298,7 @@ function TW4Cockpit() {
               onClick={() => {
                 setCurrentDivKey('quadDivs');
                 setisRandom(false);
-                refreshIndices(divMap['quadDivs'][0], isRandom);
+                refreshIndices(divMap['quadDivs'][0], false);
                 setInputAnswers(divMap['quadDivs'][1]);
                 setInputLengths(divMap['quadDivs'][2]);
                 resetAnswers();

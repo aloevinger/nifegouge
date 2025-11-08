@@ -34,8 +34,7 @@ const quadStepStyle = {
   gap: '0px',
   borderBottom: '1px solid #ddd',
   fontSize: '11px',
-  backgroundColor: 'white',
-  cursor: 'pointer'
+  backgroundColor: 'white'
 };
 
 const quadSubStepStyle = {
@@ -44,8 +43,7 @@ const quadSubStepStyle = {
   borderBottom: '1px solid #eee',
   display: 'flex',
   justifyContent: 'flex-end',
-  textAlign: 'right',
-  cursor: 'pointer'
+  textAlign: 'right'
 };
 
 export const getQuadDivs = ({getInputClass, openChecklistModal}) => {
@@ -58,58 +56,58 @@ export const getQuadDivs = ({getInputClass, openChecklistModal}) => {
             <div style={{display: 'flex', flexDirection: 'column', width: '350px', minWidth: '250px'}}>
                 <div key="qco" style={{...quadSectionStyle, maxWidth: 'none', width: '100%', margin: '0'}}>
                     <div style={quadHeaderStyle}>COCKPIT (ALL FLIGHTS)</div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco1" onClick={() => openChecklistModal(QUAD_ACTIONS.qco1, 'qco1')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco1)}>
                     <span className={getInputClass('qco1')}>1. Strap in ---------- COMPLETE</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco2" onClick={() => openChecklistModal(QUAD_ACTIONS.qco2, 'qco2')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco2)}>
                     <span className={getInputClass('qco2')}>2. BAT switch ---------- ON</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco3" onClick={() => openChecklistModal(QUAD_ACTIONS.qco3, 'qco3')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco3)}>
                     <span className={getInputClass('qco3')}>3. Regulator anti-suffocation valve ---------- CHECK</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco4" onClick={() => openChecklistModal(QUAD_ACTIONS.qco4, 'qco4')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco4)}>
                     <span className={getInputClass('qco4')}>4. External Power ---------- AS REQUIRED</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco5" onClick={() => openChecklistModal(QUAD_ACTIONS.qco5, 'qco5')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco5)}>
                     <span className={getInputClass('qco5')}>5. Seat height ---------- ADJUST</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco6" onClick={() => openChecklistModal(QUAD_ACTIONS.qco6, 'qco6')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco6)}>
                     <span className={getInputClass('qco6')}>6. Rudder pedals ---------- ADJUST</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco7" onClick={() => openChecklistModal(QUAD_ACTIONS.qco7, 'qco7')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco7)}>
                     <span className={getInputClass('qco7')}>7. Flight controls ---------- CHECK</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco8" onClick={() => openChecklistModal(QUAD_ACTIONS.qco8, 'qco8')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco8)}>
                     <span className={getInputClass('qco8')}>8. Fire detection system ---------- TEST (FIRE 1 and FIRE 2)</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco9" onClick={() => openChecklistModal(QUAD_ACTIONS.qco9, 'qco9')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco9)}>
                     <span className={getInputClass('qco9')}>9. Lamp test switch ---------- CHECK</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco10" onClick={() => openChecklistModal(QUAD_ACTIONS.qco10, 'qco10')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco10)}>
                     <span className={getInputClass('qco10')}>10. Flaps ---------- UP</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco11" onClick={() => openChecklistModal(QUAD_ACTIONS.qco11, 'qco11')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco11)}>
                     <span className={getInputClass('qco11')}>11. Exterior lights ---------- OFF</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco12" onClick={() => openChecklistModal(QUAD_ACTIONS.qco12, 'qco12')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco12)}>
                     <span className={getInputClass('qco12')}>12. TRIM DISCONNECT switch ---------- NORM</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco13" onClick={() => openChecklistModal(QUAD_ACTIONS.qco13, 'qco13')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco13)}>
                     <span className={getInputClass('qco13')}>13. Interior lights ---------- AS REQUIRED</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco14" onClick={() => openChecklistModal(QUAD_ACTIONS.qco14, 'qco14')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco14)}>
                     <span className={getInputClass('qco14')}>14. TRIM AID switch ---------- OFF</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco15" onClick={() => openChecklistModal(QUAD_ACTIONS.qco15, 'qco15')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco15)}>
                     <span className={getInputClass('qco15')}>15. Trim operation ---------- CHECK</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco16" onClick={() => openChecklistModal(QUAD_ACTIONS.qco16, 'qco16')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco16)}>
                     <span className={getInputClass('qco16')}>16. EMER LDG GR handle ---------- CHECK STOWED</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco17" onClick={() => openChecklistModal(QUAD_ACTIONS.qco17, 'qco17')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco17)}>
                     <span className={getInputClass('qco17')}>17. Clock ---------- SET</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco18" onClick={() => openChecklistModal(QUAD_ACTIONS.qco18, 'qco18')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco18)}>
                     <span className={getInputClass('qco18')}>18. UFCP lower panel switches ---------- SET</span>
                     </div>
                 </div>
@@ -117,61 +115,61 @@ export const getQuadDivs = ({getInputClass, openChecklistModal}) => {
             {/* Right CONTROLS */}
             <div style={{display: 'flex', flexDirection: 'column', width: '350px', minWidth: '250px'}}>
                 <div key="qco" style={{...quadSectionStyle, maxWidth: 'none', width: '100%', margin: '0'}}>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco19" onClick={() => openChecklistModal(QUAD_ACTIONS.qco19, 'qco19')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco19)}>
                     <span className={getInputClass('qco19')}>19. Audio panel ---------- AS REQUIRED</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco20" onClick={() => openChecklistModal(QUAD_ACTIONS.qco20, 'qco20')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco20)}>
                     <span className={getInputClass('qco20')}>20. DEFOG switch ---------- OFF</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco21" onClick={() => openChecklistModal(QUAD_ACTIONS.qco21, 'qco21')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco21)}>
                     <span className={getInputClass('qco21')}>21. ELT switch ---------- ARM</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco22" onClick={() => openChecklistModal(QUAD_ACTIONS.qco22, 'qco22')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco22)}>
                     <span className={getInputClass('qco22')}>22. PARKING BRAKE ---------- RESET</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco23" onClick={() => openChecklistModal(QUAD_ACTIONS.qco23, 'qco23')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco23)}>
                     <span className={getInputClass('qco23')}>23. Chocks ---------- REMOVED</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco24" onClick={() => openChecklistModal(QUAD_ACTIONS.qco24, 'qco24')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco24)}>
                     <span className={getInputClass('qco24')}>24. GEN switch ---------- OFF</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco25" onClick={() => openChecklistModal(QUAD_ACTIONS.qco25, 'qco25')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco25)}>
                     <span className={getInputClass('qco25')}>25. FUEL BAL switch ---------- AUTO</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco26" onClick={() => openChecklistModal(QUAD_ACTIONS.qco26, 'qco26')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco26)}>
                     <span className={getInputClass('qco26')}>26. MANUAL FUEL BAL switch ---------- OFF</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco27" onClick={() => openChecklistModal(QUAD_ACTIONS.qco27, 'qco27')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco27)}>
                     <span className={getInputClass('qco27')}>27. AVIONICS MASTER switch ---------- OFF</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco28" onClick={() => openChecklistModal(QUAD_ACTIONS.qco28, 'qco28')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco28)}>
                     <span className={getInputClass('qco28')}>28. BUS TIE switch ---------- NORM</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco29" onClick={() => openChecklistModal(QUAD_ACTIONS.qco29, 'qco29')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco29)}>
                     <span className={getInputClass('qco29')}>29. PROBES ANTI-ICE switch ---------- CHECK, OFF</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco30" onClick={() => openChecklistModal(QUAD_ACTIONS.qco30, 'qco30')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco30)}>
                     <span className={getInputClass('qco30')}>30. BOOST PUMP switch ---------- CHECK, ARM</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco31" onClick={() => openChecklistModal(QUAD_ACTIONS.qco31, 'qco31')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco31)}>
                     <span className={getInputClass('qco31')}>31. PMU switch ---------- NORM</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco32" onClick={() => openChecklistModal(QUAD_ACTIONS.qco32, 'qco32')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco32)}>
                     <span className={getInputClass('qco32')}>32. EVAP BLWR control ---------- AS REQUIRED</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco33" onClick={() => openChecklistModal(QUAD_ACTIONS.qco33, 'qco33')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco33)}>
                     <span className={getInputClass('qco33')}>33. AIR COND switch ---------- OFF</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco34" onClick={() => openChecklistModal(QUAD_ACTIONS.qco34, 'qco34')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco34)}>
                     <span className={getInputClass('qco34')}>34. BLEED AIR INFLOW switch ---------- OFF</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco35" onClick={() => openChecklistModal(QUAD_ACTIONS.qco35, 'qco35')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco35)}>
                     <span className={getInputClass('qco35')}>35. PRESSURIZATION switch ---------- NORM</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco36" onClick={() => openChecklistModal(QUAD_ACTIONS.qco36, 'qco36')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco36)}>
                     <span className={getInputClass('qco36')}>36. RAM AIR FLOW switch ---------- AS REQUIRED</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco37" onClick={() => openChecklistModal(QUAD_ACTIONS.qco37, 'qco37')}>
+                    <div style={{...quadStepStyle, fontSize: btFontSize}}  onClick={() => openChecklistModal(QUAD_ACTIONS.qco37)}>
                     <span className={getInputClass('qco37')}>37. TEMP CONTROL switch ---------- AUTO</span>
                     </div>
                 </div>
@@ -217,31 +215,31 @@ export const getQuadDivs = ({getInputClass, openChecklistModal}) => {
     (
       <div key="qestart" style={quadSectionStyle}>
         <div style={quadHeaderStyle}>ENGINE START (AUTO)</div>
-        <div style={quadStepStyle} data-step-key="qestart1" onClick={() => openChecklistModal(QUAD_ACTIONS.qestart1, 'qestart1')}>
+        <div style={quadStepStyle} onClick={() => openChecklistModal(QUAD_ACTIONS.qestart1)}>
           <span className={getInputClass('qestart1')}>1. Canopy ---------- CLOSED AND LATCHED</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qestart2" onClick={() => openChecklistModal(QUAD_ACTIONS.qestart2, 'qestart2')}>
+        <div style={quadStepStyle} onClick={() => openChecklistModal(QUAD_ACTIONS.qestart2)}>
           <span className={getInputClass('qestart2')}>2. Navigation and anti-collision lights ---------- AS REQUIRED</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qestart3" onClick={() => openChecklistModal(QUAD_ACTIONS.qestart3, 'qestart3')}>
+        <div style={quadStepStyle} onClick={() => openChecklistModal(QUAD_ACTIONS.qestart3)}>
           <span className={getInputClass('qestart3')}>3. PMU FAIL/PMU STATUS message ---------- EXTINGUISHED</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qestart4" onClick={() => openChecklistModal(QUAD_ACTIONS.qestart4, 'qestart4')}>
+        <div style={quadStepStyle} onClick={() => openChecklistModal(QUAD_ACTIONS.qestart4)}>
           <span className={getInputClass('qestart4')}>4. PCL ---------- ADVANCE TO START POSITION</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qestart5" onClick={() => openChecklistModal(QUAD_ACTIONS.qestart5, 'qestart5')}>
+        <div style={quadStepStyle} onClick={() => openChecklistModal(QUAD_ACTIONS.qestart5)}>
           <span className={getInputClass('qestart5')}>5. Propeller area ---------- CLEAR</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qestart6" onClick={() => openChecklistModal(QUAD_ACTIONS.qestart6, 'qestart6')}>
+        <div style={quadStepStyle} onClick={() => openChecklistModal(QUAD_ACTIONS.qestart6)}>
           <span className={getInputClass('qestart6')}>6. STARTER switch ---------- AUTO/RESET</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qestart7" onClick={() => openChecklistModal(QUAD_ACTIONS.qestart7, 'qestart7')}>
+        <div style={quadStepStyle} onClick={() => openChecklistModal(QUAD_ACTIONS.qestart7)}>
           <span className={getInputClass('qestart7')}>7. Engine Start ---------- MONITOR</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qestart8" onClick={() => openChecklistModal(QUAD_ACTIONS.qestart8, 'qestart8')}>
+        <div style={quadStepStyle} onClick={() => openChecklistModal(QUAD_ACTIONS.qestart8)}>
           <span className={getInputClass('qestart8')}>8. PCL ---------- ADVANCE PAST TWO CLICKS, THEN IDLE, AT OR ABOVE 60% N1</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qestart9" onClick={() => openChecklistModal(QUAD_ACTIONS.qestart9, 'qestart9')}>
+        <div style={quadStepStyle} onClick={() => openChecklistModal(QUAD_ACTIONS.qestart9)}>
           <span className={getInputClass('qestart9')}>9. External power ---------- DISCONNECTED</span>
         </div>
       </div>
@@ -277,58 +275,58 @@ export const getQuadDivs = ({getInputClass, openChecklistModal}) => {
             <div style={{display: 'flex', flexDirection: 'column', width: '350px', minWidth: '250px'}}>
                 <div key="qas" style={{...quadSectionStyle, maxWidth: 'none', width: '100%', margin: '0'}}>
                     <div style={quadHeaderStyle}>BEFORE TAXI</div>
-                    <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas1" onClick={() => openChecklistModal(QUAD_ACTIONS.qas1, 'qas1')}>
+                    <div style={{...quadStepStyle, fontSize: asFontSize}} onClick={() => openChecklistModal(QUAD_ACTIONS.qas1)}>
                     <span className={getInputClass('qas1')}>1. GEN switch ---------- ON</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas2" onClick={() => openChecklistModal(QUAD_ACTIONS.qas2, 'qas2')}>
+                    <div style={{...quadStepStyle, fontSize: asFontSize}} onClick={() => openChecklistModal(QUAD_ACTIONS.qas2)}>
                     <span className={getInputClass('qas2')}>2. AUX BAT switch ---------- ON</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas3" onClick={() => openChecklistModal(QUAD_ACTIONS.qas3, 'qas3')}>
+                    <div style={{...quadStepStyle, fontSize: asFontSize}} onClick={() => openChecklistModal(QUAD_ACTIONS.qas3)}>
                     <span className={getInputClass('qas3')}>3. BLED AIR INFLOW switch ---------- NORM</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas4" onClick={() => openChecklistModal(QUAD_ACTIONS.qas4, 'qas4')}>
+                    <div style={{...quadStepStyle, fontSize: asFontSize}} onClick={() => openChecklistModal(QUAD_ACTIONS.qas4)}>
                     <span className={getInputClass('qas4')}>4. EVAP BLWR control ---------- AS REQUIRED</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas5" onClick={() => openChecklistModal(QUAD_ACTIONS.qas5, 'qas5')}>
+                    <div style={{...quadStepStyle, fontSize: asFontSize}} onClick={() => openChecklistModal(QUAD_ACTIONS.qas5)}>
                     <span className={getInputClass('qas5')}>5. AIR COND switch ---------- AS REQUIRED</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas6" onClick={() => openChecklistModal(QUAD_ACTIONS.qas6, 'qas6')}>
+                    <div style={{...quadStepStyle, fontSize: asFontSize}} onClick={() => openChecklistModal(QUAD_ACTIONS.qas6)}>
                     <span className={getInputClass('qas6')}>6. AVIONICS MASTER switch ---------- ON</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas7" onClick={() => openChecklistModal(QUAD_ACTIONS.qas7, 'qas7')}>
+                    <div style={{...quadStepStyle, fontSize: asFontSize}} onClick={() => openChecklistModal(QUAD_ACTIONS.qas7)}>
                     <span className={getInputClass('qas7')}>7. OBOGS supply lever ---------- ON</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas8" onClick={() => openChecklistModal(QUAD_ACTIONS.qas8, 'qas8')}>
+                    <div style={{...quadStepStyle, fontSize: asFontSize}} onClick={() => openChecklistModal(QUAD_ACTIONS.qas8)}>
                     <span className={getInputClass('qas8')}>8. Oxygen mask ---------- ON AND SECURE</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas9" onClick={() => openChecklistModal(QUAD_ACTIONS.qas9, 'qas9')}>
+                    <div style={{...quadStepStyle, fontSize: asFontSize}} onClick={() => openChecklistModal(QUAD_ACTIONS.qas9)}>
                     <span className={getInputClass('qas9')}>9. OBOGS ---------- CHECK</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas10" onClick={() => openChecklistModal(QUAD_ACTIONS.qas10, 'qas10')}>
+                    <div style={{...quadStepStyle, fontSize: asFontSize}} onClick={() => openChecklistModal(QUAD_ACTIONS.qas10)}>
                     <span className={getInputClass('qas10')}>10. Anti-G test ---------- CHECK</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas11" onClick={() => openChecklistModal(QUAD_ACTIONS.qas11, 'qas11')}>
+                    <div style={{...quadStepStyle, fontSize: asFontSize}} onClick={() => openChecklistModal(QUAD_ACTIONS.qas11)}>
                     <span className={getInputClass('qas11')}>11. System test panel ---------- CHECK</span>
                     </div>
-                    <div style={quadSubStepStyle} data-step-key="qas11a" onClick={() => openChecklistModal(QUAD_ACTIONS.qas11a, 'qas11a')}>
+                    <div style={quadSubStepStyle} onClick={() => openChecklistModal(QUAD_ACTIONS.qas11)}>
                     <span className={getInputClass('qas11a')}>a. Lamp test switch -------------------- CHECK</span>
                     </div>
-                    <div style={quadSubStepStyle} data-step-key="qas11b" onClick={() => openChecklistModal(QUAD_ACTIONS.qas11b, 'qas11b')}>
+                    <div style={quadSubStepStyle} onClick={() => openChecklistModal(QUAD_ACTIONS.qas11)}>
                     <span className={getInputClass('qas11b')}>b. AOA system test switch -------------- TEST</span>
                     </div>
-                    <div style={quadSubStepStyle} data-step-key="qas11c" onClick={() => openChecklistModal(QUAD_ACTIONS.qas11c, 'qas11c')}>
+                    <div style={quadSubStepStyle} onClick={() => openChecklistModal(QUAD_ACTIONS.qas11)}>
                     <span className={getInputClass('qas11c')}>c. ALT audio switch ----------------------- TEST</span>
                     </div>
-                    <div style={quadSubStepStyle} data-step-key="qas11d" onClick={() => openChecklistModal(QUAD_ACTIONS.qas11d, 'qas11d')}>
+                    <div style={quadSubStepStyle} onClick={() => openChecklistModal(QUAD_ACTIONS.qas11)}>
                     <span className={getInputClass('qas11d')}>d. LDG GR audio swtich ---------------- TEST</span>
                     </div>
-                    <div style={quadSubStepStyle} data-step-key="qas11e" onClick={() => openChecklistModal(QUAD_ACTIONS.qas11e, 'qas11e')}>
+                    <div style={quadSubStepStyle} onClick={() => openChecklistModal(QUAD_ACTIONS.qas11)}>
                     <span className={getInputClass('qas11e')}>e. OVR SPD audio switch -------------- TEST</span>
                     </div>
-                    <div style={quadSubStepStyle} data-step-key="qas11f" onClick={() => openChecklistModal(QUAD_ACTIONS.qas11f, 'qas11f')}>
+                    <div style={quadSubStepStyle} onClick={() => openChecklistModal(QUAD_ACTIONS.qas11)}>
                     <span className={getInputClass('qas11f')}>f. OVR G audio switch ------------------- TEST</span>
                     </div>
-                    <div style={quadSubStepStyle} data-step-key="qas11g" onClick={() => openChecklistModal(QUAD_ACTIONS.qas11g, 'qas11g')}>
+                    <div style={quadSubStepStyle} onClick={() => openChecklistModal(QUAD_ACTIONS.qas11)}>
                     <span className={getInputClass('qas11g')}>g. BINGO FUEL audio switch ---------- TEST</span>
                     </div>
                 </div>
@@ -336,64 +334,64 @@ export const getQuadDivs = ({getInputClass, openChecklistModal}) => {
             {/* Right CONTROLS */}
             <div style={{display: 'flex', flexDirection: 'column', width: '350px', minWidth: '250px'}}>
                 <div key="qas" style={{...quadSectionStyle, maxWidth: 'none', width: '100%', margin: '0'}}>
-                    <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas12" onClick={() => openChecklistModal(QUAD_ACTIONS.qas12, 'qas12')}>
+                    <div style={{...quadStepStyle, fontSize: asFontSize}} onClick={() => openChecklistModal(QUAD_ACTIONS.qas12)}>
                     <span className={getInputClass('qas12')}>12. Speed brake ---------- CHECK</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas13" onClick={() => openChecklistModal(QUAD_ACTIONS.qas13, 'qas13')}>
+                    <div style={{...quadStepStyle, fontSize: asFontSize}} onClick={() => openChecklistModal(QUAD_ACTIONS.qas13)}>
                     <span className={getInputClass('qas13')}>13. Flaps ---------- CHECK</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas14" onClick={() => openChecklistModal(QUAD_ACTIONS.qas14, 'qas14')}>
+                    <div style={{...quadStepStyle, fontSize: asFontSize}} onClick={() => openChecklistModal(QUAD_ACTIONS.qas14)}>
                     <span className={getInputClass('qas14')}>14. TRIM AID switch ---------- ON</span>
                     </div>
                     <div style={quadSubStepStyle}>
                     <span>(Verify TAD OFF extinguished & Rudder Trim set to T/O)</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas15" onClick={() => openChecklistModal(QUAD_ACTIONS.qas15, 'qas15')}>
+                    <div style={{...quadStepStyle, fontSize: asFontSize}} onClick={() => openChecklistModal(QUAD_ACTIONS.qas15)}>
                     <span className={getInputClass('qas15')}>15. Nosewheel steering ---------- ON</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas16" onClick={() => openChecklistModal(QUAD_ACTIONS.qas16, 'qas16')}>
+                    <div style={{...quadStepStyle, fontSize: asFontSize}} onClick={() => openChecklistModal(QUAD_ACTIONS.qas16)}>
                     <span className={getInputClass('qas16')}>16. PARKING BRAKE ---------- RELEASE</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas17" onClick={() => openChecklistModal(QUAD_ACTIONS.qas17, 'qas17')}>
+                    <div style={{...quadStepStyle, fontSize: asFontSize}} onClick={() => openChecklistModal(QUAD_ACTIONS.qas17)}>
                     <span className={getInputClass('qas17')}>17. Brakes ---------- CHECK</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas18" onClick={() => openChecklistModal(QUAD_ACTIONS.qas18, 'qas18')}>
+                    <div style={{...quadStepStyle, fontSize: asFontSize}} onClick={() => openChecklistModal(QUAD_ACTIONS.qas18)}>
                     <span className={getInputClass('qas18')}>18. TCAS ---------- ON/TEST</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas19" onClick={() => openChecklistModal(QUAD_ACTIONS.qas19, 'qas19')}>
+                    <div style={{...quadStepStyle, fontSize: asFontSize}}>
                     <span className={getInputClass('qas19')}>19. UFCP and MFD ---------- CHECK AND SET</span>
                     </div>
-                    <div style={quadSubStepStyle} data-step-key="qas19a" onClick={() => openChecklistModal(QUAD_ACTIONS.qas19a, 'qas19a')}>
+                    <div style={quadSubStepStyle} onClick={() => openChecklistModal(QUAD_ACTIONS.qas19)}>
                     <span className={getInputClass('qas19a')}>a. Database, location, and alignment --- CHECK</span>
                     </div>
-                    <div style={quadSubStepStyle} data-step-key="qas19b" onClick={() => openChecklistModal(QUAD_ACTIONS.qas19b, 'qas19b')}>
+                    <div style={quadSubStepStyle}>
                     <span className={getInputClass('qas19b')}>b. UHF -------------------------------- AS REQUIRED</span>
                     </div>
-                    <div style={quadSubStepStyle} data-step-key="qas19c" onClick={() => openChecklistModal(QUAD_ACTIONS.qas19c, 'qas19c')}>
+                    <div style={quadSubStepStyle}>
                     <span className={getInputClass('qas19c')}>c. VHF --------------------------------- AS REQUIRED</span>
                     </div>
-                    <div style={quadSubStepStyle} data-step-key="qas19d" onClick={() => openChecklistModal(QUAD_ACTIONS.qas19d, 'qas19d')}>
+                    <div style={quadSubStepStyle}>
                     <span className={getInputClass('qas19d')}>d. VOR -------------------------------- AS REQUIRED</span>
                     </div>
-                    <div style={quadSubStepStyle} data-step-key="qas19e" onClick={() => openChecklistModal(QUAD_ACTIONS.qas19e, 'qas19e')}>
+                    <div style={quadSubStepStyle}>
                     <span className={getInputClass('qas19e')}>e. Transponder and FLT NO ------------------- SET</span>
                     </div>
-                    <div style={quadSubStepStyle} data-step-key="qas19f" onClick={() => openChecklistModal(QUAD_ACTIONS.qas19f, 'qas19f')}>
+                    <div style={quadSubStepStyle}>
                     <span className={getInputClass('qas19f')}>f. FMS --------------------------------- AS REQUIRED</span>
                     </div>
-                    <div style={quadSubStepStyle} data-step-key="qas19g" onClick={() => openChecklistModal(QUAD_ACTIONS.qas19g, 'qas19g')}>
+                    <div style={quadSubStepStyle}>
                     <span className={getInputClass('qas19g')}>g. Altitude, G, speed, fuel flags - AS REQUIRED</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas20" onClick={() => openChecklistModal(QUAD_ACTIONS.qas20, 'qas20')}>
+                    <div style={{...quadStepStyle, fontSize: asFontSize}}>
                     <span className={getInputClass('qas20')}>20. Flight instruments ---------- CHECK</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas21" onClick={() => openChecklistModal(QUAD_ACTIONS.qas21, 'qas21')}>
+                    <div style={{...quadStepStyle, fontSize: asFontSize}}>
                     <span className={getInputClass('qas21')}>21. Altimeters ---------- SET AND CHECK</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas22" onClick={() => openChecklistModal(QUAD_ACTIONS.qas22, 'qas22')}>
+                    <div style={{...quadStepStyle, fontSize: asFontSize}}>
                     <span className={getInputClass('qas22')}>22. EICAS display ---------- CHECK</span>
                     </div>
-                    <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas23" onClick={() => openChecklistModal(QUAD_ACTIONS.qas23, 'qas23')}>
+                    <div style={{...quadStepStyle, fontSize: asFontSize}}>
                     <span className={getInputClass('qas23')}>23. Landing/taxi lights ---------- AS REQUIRED</span>
                     </div>
                 </div>
@@ -405,10 +403,10 @@ export const getQuadDivs = ({getInputClass, openChecklistModal}) => {
     (
       <div key="qtaxi" style={quadSectionStyle}>
         <div style={quadHeaderStyle}>TAXI</div>
-        <div style={quadStepStyle} data-step-key="qtaxi1" onClick={() => openChecklistModal(QUAD_ACTIONS.qtaxi1, 'qtaxi1')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qtaxi1)}>
           <span className={getInputClass('qtaxi1')}>1. Transponder ---------- AS REQUIRED</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qtaxi2" onClick={() => openChecklistModal(QUAD_ACTIONS.qtaxi2, 'qtaxi2')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qtaxi2)}>
           <span className={getInputClass('qtaxi2')}>2. Heading and turn and slip indicators ---------- CHECK</span>
         </div>
       </div>
@@ -418,25 +416,25 @@ export const getQuadDivs = ({getInputClass, openChecklistModal}) => {
     (
       <div key="qogc" style={quadSectionStyle}>
         <div style={quadHeaderStyle}>OVERSPEED GOVERNOR CHECK</div>
-        <div style={quadStepStyle} data-step-key="qogc1" onClick={() => openChecklistModal(QUAD_ACTIONS.qogc1, 'qogc1')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qogc1)}>
           <span className={getInputClass('qogc1')}>1. Brakes ---------- HOLD AS REQUIRED</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qogc2" onClick={() => openChecklistModal(QUAD_ACTIONS.qogc2, 'qogc2')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qogc2)}>
           <span className={getInputClass('qogc2')}>2. PCL ---------- IDLE</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qogc3" onClick={() => openChecklistModal(QUAD_ACTIONS.qogc3, 'qogc3')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qogc3)}>
           <span className={getInputClass('qogc3')}>3. PMU switch ---------- OFF</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qogc4" onClick={() => openChecklistModal(QUAD_ACTIONS.qogc4, 'qogc4')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qogc4)}>
           <span className={getInputClass('qogc4')}>4. PCL ---------- ADVANCE AND VERIFY NP STABILIZES at 100±2%</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qogc5" onClick={() => openChecklistModal(QUAD_ACTIONS.qogc5, 'qogc5')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qogc5)}>
           <span className={getInputClass('qogc5')}>5. PCL ---------- ADVANCE AT LEAST AN ADDITIONAL 5% TORQUE AND VERIFY NP STABILIZES AT 100±2%</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qogc6" onClick={() => openChecklistModal(QUAD_ACTIONS.qogc6, 'qogc6')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qogc6)}>
           <span className={getInputClass('qogc6')}>6. PCL ---------- IDLE</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qogc7" onClick={() => openChecklistModal(QUAD_ACTIONS.qogc7, 'qogc7')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qogc7)}>
           <span className={getInputClass('qogc7')}>7. PMU switch ---------- NORM</span>
         </div>
       </div>
@@ -446,37 +444,37 @@ export const getQuadDivs = ({getInputClass, openChecklistModal}) => {
     (
       <div key="qbto" style={quadSectionStyle}>
         <div style={quadHeaderStyle}>BEFORE TAKEOFF</div>
-        <div style={quadStepStyle} data-step-key="qbto1" onClick={() => openChecklistModal(QUAD_ACTIONS.qbto1, 'qbto1')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qbto1)}>
           <span className={getInputClass('qbto1')}>1. Minimum power by 60 KIAS ---------- COMPUTE</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qbto2" onClick={() => openChecklistModal(QUAD_ACTIONS.qbto2, 'qbto2')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qbto2)}>
           <span className={getInputClass('qbto2')}>2. Speed brake ---------- RETRACTED</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qbto3" onClick={() => openChecklistModal(QUAD_ACTIONS.qbto3, 'qbto3')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qbto3)}>
           <span className={getInputClass('qbto3')}>3. Flaps ---------- TO</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qbto4" onClick={() => openChecklistModal(QUAD_ACTIONS.qbto4, 'qbto4')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qbto4)}>
           <span className={getInputClass('qbto4')}>4. Trim ---------- SET FOR TAKEOFF</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qbto5" onClick={() => openChecklistModal(QUAD_ACTIONS.qbto5, 'qbto5')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qbto5)}>
           <span className={getInputClass('qbto5')}>5. Fuel quantity and balance ---------- CHECK</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qbto6" onClick={() => openChecklistModal(QUAD_ACTIONS.qbto6, 'qbto6')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qbto6)}>
           <span className={getInputClass('qbto6')}>6. Engine instruments ---------- CHECK</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qbto7" onClick={() => openChecklistModal(QUAD_ACTIONS.qbto7, 'qbto7')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qbto7)}>
           <span className={getInputClass('qbto7')}>7. DVR control ---------- AS REQUIRED</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qbto8" onClick={() => openChecklistModal(QUAD_ACTIONS.qbto8, 'qbto8')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qbto8)}>
           <span className={getInputClass('qbto8')}>8. Electrical system ---------- VERIFY &gt;27 volts &amp; +50 amps OR LESS</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qbto9" onClick={() => openChecklistModal(QUAD_ACTIONS.qbto9, 'qbto9')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qbto9)}>
           <span className={getInputClass('qbto9')}>9. DEFOG switch ---------- OFF</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qbto10" onClick={() => openChecklistModal(QUAD_ACTIONS.qbto10, 'qbto10')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qbto10)}>
           <span className={getInputClass('qbto10')}>10. Seat safety pin ---------- REMOVED AND STOWED (BOTH)</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qbto11" onClick={() => openChecklistModal(QUAD_ACTIONS.qbto11, 'qbto11')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qbto11)}>
           <span className={getInputClass('qbto11')}>11. ISS mode selector ---------- AS REQUIRED</span>
         </div>
       </div>
@@ -486,19 +484,19 @@ export const getQuadDivs = ({getInputClass, openChecklistModal}) => {
     (
       <div key="qlc" style={quadSectionStyle}>
         <div style={quadHeaderStyle}>LINEUP CHECK</div>
-        <div style={quadStepStyle} data-step-key="qlc1" onClick={() => openChecklistModal(QUAD_ACTIONS.qlc1, 'qlc1')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qlc1)}>
           <span className={getInputClass('qlc1')}>1. Exterior lights ---------- ON</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qlc2" onClick={() => openChecklistModal(QUAD_ACTIONS.qlc2, 'qlc2')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qlc2)}>
           <span className={getInputClass('qlc2')}>2. Transponder ---------- AS REQUIRED</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qlc3" onClick={() => openChecklistModal(QUAD_ACTIONS.qlc3, 'qlc3')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qlc3)}>
           <span className={getInputClass('qlc3')}>3. PROBES ANTI-ICE switch ---------- ON</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qlc4" onClick={() => openChecklistModal(QUAD_ACTIONS.qlc4, 'qlc4')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qlc4)}>
           <span className={getInputClass('qlc4')}>4. Nosewheel steering ---------- OFF</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qlc5" onClick={() => openChecklistModal(QUAD_ACTIONS.qlc5, 'qlc5')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qlc5)}>
           <span className={getInputClass('qlc5')}>5. EICAS display ---------- CHECK</span>
         </div>
       </div>
@@ -508,10 +506,10 @@ export const getQuadDivs = ({getInputClass, openChecklistModal}) => {
     (
       <div key="qat" style={quadSectionStyle}>
         <div style={quadHeaderStyle}>AFTER TAKEOFF</div>
-        <div style={quadStepStyle} data-step-key="qat1" onClick={() => openChecklistModal(QUAD_ACTIONS.qat1, 'qat1')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qat1)}>
           <span className={getInputClass('qat1')}>1. Gear ---------- AS REQUIRED</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qat2" onClick={() => openChecklistModal(QUAD_ACTIONS.qat2, 'qat2')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qat2)}>
           <span className={getInputClass('qat2')}>2. Flaps ---------- UP</span>
         </div>
       </div>
@@ -521,16 +519,16 @@ export const getQuadDivs = ({getInputClass, openChecklistModal}) => {
     (
       <div key="qclimb" style={quadSectionStyle}>
         <div style={quadHeaderStyle}>CLIMB (PASSING 10,000 FEET)</div>
-        <div style={quadStepStyle} data-step-key="qclimb1" onClick={() => openChecklistModal(QUAD_ACTIONS.qclimb1, 'qclimb1')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qclimb1)}>
           <span className={getInputClass('qclimb1')}>1. OBOGS ---------- CHECK</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qclimb2" onClick={() => openChecklistModal(QUAD_ACTIONS.qclimb2, 'qclimb2')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qclimb2)}>
           <span className={getInputClass('qclimb2')}>2. DEFOG switch ---------- AS REQUIRED</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qclimb3" onClick={() => openChecklistModal(QUAD_ACTIONS.qclimb3, 'qclimb3')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qclimb3)}>
           <span className={getInputClass('qclimb3')}>3. Vent control lever ---------- AS REQUIRED</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qclimb4" onClick={() => openChecklistModal(QUAD_ACTIONS.qclimb4, 'qclimb4')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qclimb4)}>
           <span className={getInputClass('qclimb4')}>4. Pressurization system ---------- CHECK</span>
         </div>
       </div>
@@ -540,22 +538,22 @@ export const getQuadDivs = ({getInputClass, openChecklistModal}) => {
     (
       <div key="qoc" style={quadSectionStyle}>
         <div style={quadHeaderStyle}>OPERATIONS CHECK</div>
-        <div style={quadStepStyle} data-step-key="qoc1" onClick={() => openChecklistModal(QUAD_ACTIONS.qoc1, 'qoc1')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qoc1)}>
           <span className={getInputClass('qoc1')}>1. Hydraulic pressure ---------- CHECK</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qoc2" onClick={() => openChecklistModal(QUAD_ACTIONS.qoc2, 'qoc2')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qoc2)}>
           <span className={getInputClass('qoc2')}>2. Electrical systems ---------- CHECK</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qoc3" onClick={() => openChecklistModal(QUAD_ACTIONS.qoc3, 'qoc3')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qoc3)}>
           <span className={getInputClass('qoc3')}>3. Fuel quantity/balance ---------- CHECK</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qoc4" onClick={() => openChecklistModal(QUAD_ACTIONS.qoc4, 'qoc4')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qoc4)}>
           <span className={getInputClass('qoc4')}>4. OBOGS ---------- CHECK</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qoc5" onClick={() => openChecklistModal(QUAD_ACTIONS.qoc5, 'qoc5')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qoc5)}>
           <span className={getInputClass('qoc5')}>5. Engine instruments ---------- CHECK</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qoc6" onClick={() => openChecklistModal(QUAD_ACTIONS.qoc6, 'qoc6')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qoc6)}>
           <span className={getInputClass('qoc6')}>6. Pressurization ---------- CHECK</span>
         </div>
       </div>
@@ -565,13 +563,13 @@ export const getQuadDivs = ({getInputClass, openChecklistModal}) => {
     (
       <div key="qpssa" style={quadSectionStyle}>
         <div style={quadHeaderStyle}>PRE-STALL, SPIN, AND AEROBATIC CHECKS</div>
-        <div style={quadStepStyle} data-step-key="qpssa1" onClick={() => openChecklistModal(QUAD_ACTIONS.qpssa1, 'qpssa1')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qpssa1)}>
           <span className={getInputClass('qpssa1')}>1. Loose items ---------- STOWED</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qpssa2" onClick={() => openChecklistModal(QUAD_ACTIONS.qpssa2, 'qpssa2')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qpssa2)}>
           <span className={getInputClass('qpssa2')}>2. Engine instruments ---------- CHECKED</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qpssa3" onClick={() => openChecklistModal(QUAD_ACTIONS.qpssa3, 'qpssa3')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qpssa3)}>
           <span className={getInputClass('qpssa3')}>3. Fuel balance ---------- CHECK LESS THAN 50 POUNDS</span>
         </div>
       </div>
@@ -581,19 +579,19 @@ export const getQuadDivs = ({getInputClass, openChecklistModal}) => {
     (
       <div key="qdesc" style={quadSectionStyle}>
         <div style={quadHeaderStyle}>DESCENT</div>
-        <div style={quadStepStyle} data-step-key="qdesc1" onClick={() => openChecklistModal(QUAD_ACTIONS.qdesc1, 'qdesc1')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qdesc1)}>
           <span className={getInputClass('qdesc1')}>1. PFD ---------- CHECK</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qdesc2" onClick={() => openChecklistModal(QUAD_ACTIONS.qdesc2, 'qdesc2')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qdesc2)}>
           <span className={getInputClass('qdesc2')}>2. Altimeters ---------- SET</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qdesc3" onClick={() => openChecklistModal(QUAD_ACTIONS.qdesc3, 'qdesc3')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qdesc3)}>
           <span className={getInputClass('qdesc3')}>3. MASTER ARM switch ---------- AS REQUIRED</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qdesc4" onClick={() => openChecklistModal(QUAD_ACTIONS.qdesc4, 'qdesc4')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qdesc4)}>
           <span className={getInputClass('qdesc4')}>4. DEFOG switch ---------- AS REQUIRED</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qdesc5" onClick={() => openChecklistModal(QUAD_ACTIONS.qdesc5, 'qdesc5')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qdesc5)}>
           <span className={getInputClass('qdesc5')}>5. Vent control lever ---------- AS REQUIRED</span>
         </div>
       </div>
@@ -603,22 +601,22 @@ export const getQuadDivs = ({getInputClass, openChecklistModal}) => {
     (
       <div key="qbl" style={quadSectionStyle}>
         <div style={quadHeaderStyle}>BEFORE LANDING</div>
-        <div style={quadStepStyle} data-step-key="qbl1" onClick={() => openChecklistModal(QUAD_ACTIONS.qbl1, 'qbl1')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qbl1)}>
           <span className={getInputClass('qbl1')}>1. DEFOG switch ---------- OFF</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qbl2" onClick={() => openChecklistModal(QUAD_ACTIONS.qbl2, 'qbl2')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qbl2)}>
           <span className={getInputClass('qbl2')}>2. Engine instruments ---------- CHECK</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qbl3" onClick={() => openChecklistModal(QUAD_ACTIONS.qbl3, 'qbl3')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qbl3)}>
           <span className={getInputClass('qbl3')}>3. Gear ---------- DOWN</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qbl4" onClick={() => openChecklistModal(QUAD_ACTIONS.qbl4, 'qbl4')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qbl4)}>
           <span className={getInputClass('qbl4')}>4. Brakes ---------- CHECK, AS REQUIRED</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qbl5" onClick={() => openChecklistModal(QUAD_ACTIONS.qbl5, 'qbl5')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qbl5)}>
           <span className={getInputClass('qbl5')}>5. FLAPS ---------- AS REQUIRED</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qbl6" onClick={() => openChecklistModal(QUAD_ACTIONS.qbl6, 'qbl6')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qbl6)}>
           <span className={getInputClass('qbl6')}>6. Speed brake ---------- RETRACTED</span>
         </div>
       </div>
@@ -674,31 +672,31 @@ export const getQuadDivs = ({getInputClass, openChecklistModal}) => {
     (
       <div key="qal" style={quadSectionStyle}>
         <div style={quadHeaderStyle}>AFTER LANDING</div>
-        <div style={quadStepStyle} data-step-key="qal1" onClick={() => openChecklistModal(QUAD_ACTIONS.qal1, 'qal1')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qal1)}>
           <span className={getInputClass('qal1')}>1. ISS mode selector ---------- SOLO OR CMD FWD</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qal2" onClick={() => openChecklistModal(QUAD_ACTIONS.qal2, 'qal2')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qal2)}>
           <span className={getInputClass('qal2')}>2. Seat safety pin ---------- INSTALL</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qal3" onClick={() => openChecklistModal(QUAD_ACTIONS.qal3, 'qal3')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qal3)}>
           <span className={getInputClass('qal3')}>3. PROBES ANTI-ICE switch ---------- OFF</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qal4" onClick={() => openChecklistModal(QUAD_ACTIONS.qal4, 'qal4')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qal4)}>
           <span className={getInputClass('qal4')}>4. Flaps ---------- UP</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qal5" onClick={() => openChecklistModal(QUAD_ACTIONS.qal5, 'qal5')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qal5)}>
           <span className={getInputClass('qal5')}>5. Trim interrupt button ---------- DEPRESS</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qal6" onClick={() => openChecklistModal(QUAD_ACTIONS.qal6, 'qal6')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qal6)}>
           <span className={getInputClass('qal6')}>6. Trim ---------- SET FOR TAKEOFF</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qal7" onClick={() => openChecklistModal(QUAD_ACTIONS.qal7, 'qal7')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qal7)}>
           <span className={getInputClass('qal7')}>7. Transponder ---------- AS REQUIRED</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qal8" onClick={() => openChecklistModal(QUAD_ACTIONS.qal8, 'qal8')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qal8)}>
           <span className={getInputClass('qal8')}>8. TCAS ---------- STBY</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qal9" onClick={() => openChecklistModal(QUAD_ACTIONS.qal9, 'qal9')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qal9)}>
           <span className={getInputClass('qal9')}>9. BLEED AIR INFLOW switch ---------- OFF</span>
         </div>
       </div>
@@ -708,52 +706,52 @@ export const getQuadDivs = ({getInputClass, openChecklistModal}) => {
     (
       <div key="qesd" style={quadSectionStyle}>
         <div style={quadHeaderStyle}>ENGINE SHUTDOWN</div>
-        <div style={quadStepStyle} data-step-key="qesd1" onClick={() => openChecklistModal(QUAD_ACTIONS.qesd1, 'qesd1')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qesd1)}>
           <span className={getInputClass('qesd1')}>1. PARKING BRAKE ---------- SET</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qesd2" onClick={() => openChecklistModal(QUAD_ACTIONS.qesd2, 'qesd2')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qesd2)}>
           <span className={getInputClass('qesd2')}>2. Landing and taxi lights ---------- OFF</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qesd3" onClick={() => openChecklistModal(QUAD_ACTIONS.qesd3, 'qesd3')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qesd3)}>
           <span className={getInputClass('qesd3')}>3. Transponder ---------- AS REQUIRED</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qesd4" onClick={() => openChecklistModal(QUAD_ACTIONS.qesd4, 'qesd4')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qesd4)}>
           <span className={getInputClass('qesd4')}>4. AVIONICS MASTER switch ---------- OFF</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qesd5" onClick={() => openChecklistModal(QUAD_ACTIONS.qesd5, 'qesd5')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qesd5)}>
           <span className={getInputClass('qesd5')}>5. RAM AIR FLOW switch ---------- OFF</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qesd6" onClick={() => openChecklistModal(QUAD_ACTIONS.qesd6, 'qesd6')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qesd6)}>
           <span className={getInputClass('qesd6')}>6. AIR COND switch ---------- OFF</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qesd7" onClick={() => openChecklistModal(QUAD_ACTIONS.qesd7, 'qesd7')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qesd7)}>
           <span className={getInputClass('qesd7')}>7. EVAP BLWR control ---------- OFF</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qesd8" onClick={() => openChecklistModal(QUAD_ACTIONS.qesd8, 'qesd8')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qesd8)}>
           <span className={getInputClass('qesd8')}>8. Oxygen mask ---------- REMOVE</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qesd9" onClick={() => openChecklistModal(QUAD_ACTIONS.qesd9, 'qesd9')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qesd9)}>
           <span className={getInputClass('qesd9')}>9. OBOGS ---------- OFF</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qesd10" onClick={() => openChecklistModal(QUAD_ACTIONS.qesd10, 'qesd10')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qesd10)}>
           <span className={getInputClass('qesd10')}>10. PCL ---------- IDLE &gt;60 SECONDS, THEN OFF</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qesd11" onClick={() => openChecklistModal(QUAD_ACTIONS.qesd11, 'qesd11')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qesd11)}>
           <span className={getInputClass('qesd11')}>11. CANOPY ---------- OPEN (AS REQUIRED)</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qesd12" onClick={() => openChecklistModal(QUAD_ACTIONS.qesd12, 'qesd12')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qesd12)}>
           <span className={getInputClass('qesd12')}>12. PMU STATUS message ---------- EXTINGUISHED</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qesd13" onClick={() => openChecklistModal(QUAD_ACTIONS.qesd13, 'qesd13')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qesd13)}>
           <span className={getInputClass('qesd13')}>13. FDR light ---------- EXTINGUISHED</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qesd14" onClick={() => openChecklistModal(QUAD_ACTIONS.qesd14, 'qesd14')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qesd14)}>
           <span className={getInputClass('qesd14')}>14. Gust lock ---------- ENGAGE (AS REQUIRED)</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qesd15" onClick={() => openChecklistModal(QUAD_ACTIONS.qesd15, 'qesd15')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qesd15)}>
           <span className={getInputClass('qesd15')}>15. Interior/exterior lights ---------- OFF</span>
         </div>
-        <div style={quadStepStyle} data-step-key="qesd16" onClick={() => openChecklistModal(QUAD_ACTIONS.qesd16, 'qesd16')}>
+        <div style={quadStepStyle}  onClick={() => openChecklistModal(QUAD_ACTIONS.qesd16)}>
           <span className={getInputClass('qesd16')}>16. GEN, BAT, and AUX BAT switches ---------- OFF</span>
         </div>
       </div>
@@ -814,9 +812,9 @@ export const QUAD_ANSWERS = {
   qhias9: [""],
 
   // ENGINE START (AUTO)
-  qestart1: ["Canopy ---------- CLOSED AND LATCHED", "EICAS", "Master Warning"],
+  qestart1: ["Canopy ---------- CLOSED AND LATCHED", "EICAS"],
   qestart2: ["anti-coll light", "nav light"],
-  qestart3: ["EICAS", "pmu"],
+  qestart3: ["EICAS"],
   qestart4: ["PCL ---------- ADVANCE TO START POSITION", "EICAS"],
   qestart5: ["Pro\u200Bp\u200Beller area ---------- CLEAR"],
   qestart6: ["STARTER switch ---------- AUTO/RESET"],
@@ -853,7 +851,7 @@ export const QUAD_ANSWERS = {
   qas12: ["Speed brake ---------- CHECK", "EICAS"],
   qas13: ["Flaps ---------- CHECK", "Flap Indicator", "EICAS"],
   qas14: ["TRI\u200BM AID switch ---------- ON", "EICAS"],
-  qas15: ["Nosewheel steering ---------- ON", "EICAS"],
+  qas15: ["Nosewheel steering ---------- ON"],
   qas16: ["PARKING BRAKE ---------- RELEASE"],
   qas17: ["Brakes ---------- CHECK"],
   qas18: ["TCAS ---------- ON/TEST", "TCA\u200BS Range", "UHF"],
@@ -877,7 +875,7 @@ export const QUAD_ANSWERS = {
   // OVERSPEED GOVERNOR CHECK
   qogc1: ["Brakes ---------- HOLD AS REQUIRED"],
   qogc2: ["PCL ---------- IDLE", "N1"],
-  qogc3: ["PMU switch ---------- OFF", "N1", "Master Warning", "Master Caution"],
+  qogc3: ["PMU switch ---------- OFF", "N1"],
   qogc4: ["PCL", "N\u200BP"],
   qogc5: ["PCL", "TORQUE", "N\u200BP"],
   qogc6: ["PCL ---------- IDLE", "N1"],
@@ -888,7 +886,7 @@ export const QUAD_ANSWERS = {
   qbto2: ["EICAS"],
   qbto3: ["Flaps ---------- TO", "Flap Indicator"],
   qbto4: ["Tri\u200Bm Indicator"],
-  qbto5: ["Fuel quantity and balance ---------- CHECK", "EICAS"],
+  qbto5: ["Fuel quantity and balance ---------- CHECK"],
   qbto6: ["Engine instruments ---------- CHECK"],
   qbto7: ["DVR control ---------- AS REQUIRED"],
   qbto8: ["Electrical system ---------- VERIFY >27 volts & +50 amps OR LESS"],
@@ -959,7 +957,7 @@ export const QUAD_ANSWERS = {
   // AFTER LANDING
   qal1: ["ISS mode selector ---------- SOLO OR CMD FWD"],
   qal2: ["Seat safety pin ---------- INSTALL"],
-  qal3: ["PROBES ANTI-ICE switch ---------- OFF", "EICAS", "Master Caution"],
+  qal3: ["PROBES ANTI-ICE switch ---------- OFF", "EICAS"],
   qal4: ["Flaps ---------- UP", "Flap Indicator"],
   qal5: ["T\u200Brim interrupt button ---------- DEPRESS", "EICAS" ,"tri\u200Bm aid"],
   qal6: ["Tri\u200Bm indicator"],
@@ -1013,7 +1011,7 @@ const createActionBubbles = (bubbles, fontSizer = '11px') => (
             } else if (item.italic) {
               return <div key={i} style={{fontStyle: 'italic', ...(item.center && {textAlign: 'center'})}}>{item.text}</div>;
             } else if (item.highlight) {
-              return <div key={i} style={{...(item.center && {textAlign: 'center'})}}><span style={{fontStyle: 'italic', backgroundColor: 'yellow'}}>{item.text}</span></div>;
+              return <div key={i} style={{...(item.center && {textAlign: 'center'})}}><span style={{backgroundColor: 'yellow'}}>{item.text}</span></div>;
             } else if (item.underline) {
               return <div key={i} style={{textDecoration: 'underline', ...(item.center && {textAlign: 'center'})}}>{item.text}</div>;
             }  else if (item.space) {
@@ -1029,15 +1027,7 @@ const createActionBubbles = (bubbles, fontSizer = '11px') => (
   </div>
 );
 
-// Reusable action content
-const audioTestAction = createActionBubbles([
-  [{text: 'Conduct checks c. thru g. and give one voice reponse at the end.', center: true},
-  {text: 'Allow tones to silence before next challenge.', center: true}],
-  [{text: 'Confirm altitude aural words.'}, {text: 'Confirm gear aural tone.'}, {text: 'Confirm over speed aural tone.'}, {text: 'Confirm over-g aural tone.'}, {text: 'Confirm bingo aural tone.'}],
-  [{bold: true, text:'"Test"', center: true}]
-]);
-
-export const QUAD_ACTIONS = {
+export const QUAD_ACTIONS = { 
   // 0. COCKPIT (ALL FLIGHTS)
   qco1: createActionBubbles([
     [{text:"Leg Garters, Lower Koch Fittings, Upper Koch Fittings, Anti-G Hose, 2 Oxygen Connections (1 Main, 1 Emergency), Helmet (Visor Down: Aircraft Only), ICS Cord, Chin Strap Connected. Gloves on."},
@@ -1207,8 +1197,7 @@ export const QUAD_ACTIONS = {
   
   // 2. ENGINE START (AUTO)
   qestart1: createActionBubbles([
-    [{text:'a. Front cockpit crew member will check that both left and right canopy rail are clear of items (checklists, kneeboards, etc.) and that the canopy handle is in the open position then RESPOND….'},
-    {text: 'Rear cockpit crew member will check both rails clear, then RESPOND….'},
+    [{text:'a. Front cockpit crew member will check that both left and right canopy rail are clear of items (checklists, kneeboards, etc.) and that the canopy handle is in the open position then RESPOND…. Rear cockpit crew member will check both rails clear, then RESPOND….'},
     {text: 'b. Pull canopy lock release handle and hold, then pull canopy over center and release canopy lock release handle.'},
     {text: 'c. Ensure internal canopy handle is rotated to the full OPEN (aft) position and slowly lower canopy rail to canopy sill.'},
     {text: 'd. Rotate internal canopy handle forward with a slow steady motion until resistance is felt in lock mechanism (approximately ¾ ways forward).'},
@@ -1222,583 +1211,351 @@ export const QUAD_ACTIONS = {
   ],'9px'),
   qestart2: createActionBubbles([
     "Turn navigation and anti-collision lights ON (anti-collision lights remain off at night until execution of the lineup checklist).",
-    [{bold: true, text: '"On"', center: true}]
+    [{bold: true, text: '"On"'}]
   ]),
   qestart3: createActionBubbles([
     "Check PMU fail warning and status caution messages are extinguished. If not, reset PMU by turning PMU to OFF then back to NORM.",
-    [{bold: true, text: '"Extinguished"', center: true}]
+    [{bold: true, text: '"Extinguished"'}]
   ]),
   qestart4: createActionBubbles([
-    [{text: 'a. Smoothly advance to Start Ready position and ensure the ST READY advisory message remains illuminated for three seconds. If message goes out, do not start. Pull PCL back to cutoff and repeat step.'},
-    {text: 'b. Once ST READY advisory message illuminates, hover hand above PCL (prevents inadvertent movement, but in position to abort start if required).', underline: true}],
-    [{bold: true, text: '"Advance to start position"', center: true}]
+    [{text:'a. Smoothly advance to Start Ready position and ensure the ST READY advisory message remains illuminated for three seconds. If message goes out, do not start. Pull PCL back to cutoff and repeat step.'},
+    {text:'b. Once ST READY advisory message illuminates, hover hand above PCL (prevents inadvertent movement, but in position to abort start if required).'}]
+    [{bold: true, text: '"Advance to start position"'}]
   ]),
   qestart5: createActionBubbles([
     "Clear the area left, right, and forward of the propeller and then signal the lineman with the start signal. The lineman will act as fire watch.",
-    [{bold: true, text: '"Clear"', center: true}]
+    [{bold: true, text: '"Clear"'}]
   ]),
   qestart6: createActionBubbles([
     "Move starter switch to the AUTO/RESET position and release.",
-    [{bold: true, text: '"Auto / Reset"', center: true}]
+    [{bold: true, text: '"Auto / Reset"'}]
   ]),
   qestart7: createActionBubbles([
     [{text:'Monitor engine instruments for normal indications and the lineman during the start. Hydraulic pressure must climb to the normal range followed by N1 rotation. Indication of Fuel Flow must follow, with light-off occurring shortly thereafter. Call out \"Light-off\" with initial rise of ITT. ITT must rise steadily, peaking twice. Oil pressure will rise as well and N1 will accelerate to 60-61%. Call out \"N1 60%\" as appropriate. Ensure ST READY advisory message remains illuminated throughout.'},
     {italic: true, text: 'Note: ST READY message will change position on the EICAS during start.'}],
-    [{bold: true, text: '"Light-off..."', center: true}, {space: true}, {bold: true, text: '"ITT; N1; ST READY; Lineman"', center: true}, {text:'(Repeat until N1 60%)', center: true}, {space: true}, {bold: true, text: '"N1 60%"', center: true}]
+    [{bold: true, text: '"Light-off..."'}, {space: true}, {bold: true, text: '"ITT; N1; ST READY; Lineman"'}, {text:'(Repeat until N1 60%)'}, {space: true}, {bold: true, text: '"N1 60%"'}]
   ]),
   qestart8: createActionBubbles([
     [{text:'Upon N1 reaching 60%, advance PCL forward past idle stop (verify travel past idle by hearing two audible clicks) and retard PCL to idle stop.'},
     {italic: true, text: '(Note: Simulator only has one click passing idle gate).'}], 
-    [{bold: true, text: '"Two clicks, Idle, Max ITT ______"', center: true}]
+    [{bold: true, text: '"Two clicks, Idle, Max ITT ______"'}]
   ]),
   qestart9: createActionBubbles([
-    [{text:"If used, signal lineman to disconnect external power. The voltage will drop when the external power unit is turned off. External power is not disconnected until the plane captain has disconnected the external power cord and has pulled it clear of the aircraft."},
-    {space: true}, {bold: true, text: 'Keep hands above canopy rail and eyes on the lineman (use mirror as necessary) until clear.', center: true}],
-    [{bold: true, text: '"Disconnected"', center: true}]
+    "If used, signal lineman to disconnect external power. The voltage will drop when the external power unit is turned off. External power is not disconnected until the plane captain has disconnected the external power cord and has pulled it clear of the aircraft. Keep hands above canopy rail and eyes on the lineman (use mirror as necessary) until clear.",
+    [{bold: true, text: '"Disconnected"'}]
   ]),
 
   // 4. Before Taxi
   qas1: createActionBubbles([
     "Turn Generator switch ON and check GEN warning message is extinguished, 27 volts or greater and positive amps. Aft cockpit switch remains OFF.",
-    [{bold: true, text: '"On"', center: true}]
+    [{bold: true, text: '"On"'}]
   ]),
   qas2: createActionBubbles([
     "Set Aux Battery switch to ON.",
-    [{bold: true, text: '"On"', center: true}]
+    [{bold: true, text: '"On"'}]
   ]),
   qas3: createActionBubbles([
     "Set Bleed Air Inflow switch to NORM.",
-    [{bold: true, text: '"Norm"', center: true}]
+    [{bold: true, text: '"Norm"'}]
   ]),
   qas4: createActionBubbles([
     "Set Evaporator Blower rheostat to desired flow setting.",
-    [{bold: true, text: '"On" or "Off"', center: true}, {text:'(As required)', center: true}]
+    [{bold: true, text: '"On" or "Off"'}, {text:'(As required)'}]
   ]),
   qas5: createActionBubbles([
     "Set AIR COND switch to desired position and then select desired Temp Control setting.",
-    [{bold: true, text: '"On" or "Off"', center: true}, {text:'(As required)', center: true}]
+    [{bold: true, text: '"On" or "Off"'}, {text:'(As required)'}]
   ]),
   qas6: createActionBubbles([
     "Wait approximately 10 seconds after GEN switch ON before turning the Avionics Master switch ON. This will allow battery amperage to stabilize. Turn Avionics Master switch ON.",
-    [{bold: true, text: '"On"', center: true}]
+    [{bold: true, text: '"On"'}]
   ]),
   qas7: createActionBubbles([
     "Turn Green Supply Lever to the ON position.",
-    [{bold: true, text: '"On"', center: true}]
+    [{bold: true, text: '"On"'}]
   ]),
   qas8: createActionBubbles([
     "Don oxygen mask on and adjust as necessary",
-    [{bold: true, text: '"On and secure"', center: true}, {highlight: true, text: '"On and secure"', center: true}]
+    [{bold: true, text: '"On and secure"'}, {bold: true, text: '"On and secure"'}]
   ]),
   qas9: createActionBubbles([
     [{text:'Turn white Concentration Lever to MAX (check for green light on) and then back to NORMAL. Set red lever to EMERGENCY and check for continuous positive pressure. Set lever back to NORMAL. Check for good blinker operation while taking several breaths with the pressure lever in the Normal position (when you take a breath, the white blinker will appear).'},
     {italic: true, text: '(Note: Blinker does not operate in the UTD/OFT).'}],
-    [{bold: true, text: '"Normal, Normal, Good Blinker"', center: true},   {space: true},   {highlight: true, text: '"On, Normal, Normal, Good Blinker"', center: true}]
+    [{bold: true, text: '"Normal, Normal, Good Blinker"'},   {space: true},   {bold: true, text: '"On, Normal, Normal, Good Blinker"'}]
   ]),
   qas10: createActionBubbles([
     [{text: 'Depress the Anti G-Test switch and verify inflation of the G-Suit. The G-Suit must deflate when the test switch is released.'},
     {italic: true, text: '(Note: the G-Suit will not inflate in the simulator).'}], 
-    [  {bold: true, text: '"Checked"', center: true}, {highlight: true, text: '"Checked"', center: true}]
+    [  {bold: true, text: '"Checked"'}, {bold: true, text: '"Checked"'}]
   ]),
   qas11: createActionBubbles([
-    [{text: 'Activate the lamp test in the front cockpit. Check for FDR lights [front cockpit only], red gear handle, red and green gear position lights, gear door lights, MASTER WARN and MASTER CAUT (cancel master warning and caution indications), Fire lights, COM1 and COM2 transmit illuminate, and LAMP TEST on EICAS then report….'},
-    {space:true}, {text: 'Rear cockpit will perform test and report….'}], 
-    [{bold: true, text: '"Checked"', center: true}, {space:true}, {highlight: true, text: '"Checked"', center: true}]
-  ]),
-  qas11a: createActionBubbles([
-    [{text: 'Activate the lamp test in the front cockpit. Check for FDR lights [front cockpit only], red gear handle, red and green gear position lights, gear door lights, MASTER WARN and MASTER CAUT (cancel master warning and caution indications), Fire lights, COM1 and COM2 transmit illuminate, and LAMP TEST on EICAS then report….'},
-    {space:true}, {text: 'Rear cockpit will perform test and report….'}], 
-    [{bold: true, text: '"Checked"', center: true}, {space:true}, {highlight: true, text: '"Checked"', center: true}]
-  ]),
-  qas11b: createActionBubbles([
-    [{text: 'Conduct Low test (10.5 +/- 0.4 units).'}, {text: 'Conduct High test (18.0 +/- 0.4 units).'},
+    [{text: 'Activate the lamp test in the front cockpit. Check for FDR lights [front cockpit only], red gear handle, red and green gear position lights, gear door lights, MASTER WARN and MASTER CAUT (cancel master warning and caution indications), Fire lights, COM1 and COM2 transmit illuminate, and LAMP TEST on EICAS then report…. Rear cockpit will perform test and report…. Conduct Low test (10.5 +/- 0.4 units). Conduct High test (18.0 +/- 0.4 units).'},
     {italic: true, text: 'Note: Pull the control stick slightly aft (off the forward stop) to prevent stick shaker stress on the control stick push pull rod.'}], 
-    [{bold: true, text:'"Amber Donut, ___ units"', center: true}, {bold: true, text:'"Green Chevron, Stick Shaker, ___ units"', center: true}]
+    [{bold: true, text: '"Checked"'}, {bold: true, text: '"Checked"'}, {space: true}, {bold: true, text:'"Amber Donut, ___ units"'}, {bold: true, text:'"Green Chevron, Stick Shaker, ___ units"'}]
   ]),
-  qas11c: audioTestAction,
-  qas11d: audioTestAction,
-  qas11e: audioTestAction,
-  qas11f: audioTestAction,
-  qas11g: audioTestAction,
   qas12: createActionBubbles([
-    [{italic: true, text: 'Note:  Communication between the Aircrew and the Lineman is integral to the successful completion of the Speed Brake and Flap checks.  Remember that neither the Speed Brake nor the Flaps are visible from the cockpit.  To ensure the indicators are indicating correctly, we must rely on signals from the lineman.'},
-    {text: "Give Lineman the speed brake signal, indicating that the speed brake is being extended."},
-    {space:true}, {text: "Extend Speed Brake; check for advisory message on EICAS and thumbs up from Lineman."}],
-    [{bold: true, text: '"Light On"', center: true}, {highlight: true, text: '"Light On"', center: true}]
+    "Give Lineman the speed brake signal, indicating that the speed brake is being extended. Extend Speed Brake; check for advisory message on EICAS and thumbs up from Lineman.",
+    [{bold: true, text: '"Light On"'}, {bold: true, text: '"Light On"'}]
   ]),
   qas13: createActionBubbles([
-    [{italic: true, text: 'Note:  Communication between the Aircrew and the Lineman is integral to the successful completion of the Speed Brake and Flap checks.  Remember that neither the Speed Brake nor the Flaps are visible from the cockpit.  To ensure the indicators are indicating correctly, we must rely on signals from the lineman.'},
-    {text: "Give Lineman the Flaps signal. Select flaps to LDG. Check the Flap Indicator for proper indication, thumbs up from the Lineman, and Speed Brake advisory message has extinguished."},
-    {text: "Signal lineman for Takeoff Flaps (Flaps signal followed by making a \"T\" with both hands). Position Flaps to T/O and check flap indicator for proper indication as well as a thumbs up signal from the lineman."}, 
-    {text: "Attempt to extend the Speed Brake with the Flaps at T/O position. The Speed Brake must remain up. Leave Flaps in the T/O position."},
-    {text: "Rear Cockpit follows along with checks conducted and reports…."}],
-    [{bold: true, text: '"Landing, Speed Brake Light Out"', center: true}, {space: true}, {bold: true, text: '"Takeoff"', center: true}, {space: true}, {bold: true, text: '"Speed Brake does not extend"', center: true}, {space: true}, {highlight: true, text: '"Checked"', center: true}]
+    "Give Lineman the Flaps signal. Select flaps to LDG. Check the Flap Indicator for proper indication, thumbs up from the Lineman, and Speed Brake advisory message has extinguished. Signal lineman for Takeoff Flaps (Flaps signal followed by making a \"T\" with both hands). Position Flaps to T/O and check flap indicator for proper indication as well as a thumbs up signal from the lineman. Attempt to extend the Speed Brake with the Flaps at T/O position. The Speed Brake must remain up. Leave Flaps in the T/O position. Rear Cockpit follows along with checks conducted and reports….",
+    [{bold: true, text: '"Landing, Speed Brake Light Out"'}, {space: true}, {bold: true, text: '"Takeoff"'}, {space: true}, {bold: true, text: '"Speed Brake does not extend"'}, {space: true}, {bold: true, text: '"Checked"'}]
   ]),
   qas14: createActionBubbles([
     "Turn the TAD ON. The Rudder Trim indicators must move into the green position. The Aileron and Elevator Trim indicators must remain in the green position. The TAD OFF advisory message must extinguish.",
-    [{bold: true, text: '"On"', center: true}]
+    [{bold: true, text: '"On"'}]
   ]),
   qas15: createActionBubbles([
     "Select Nose Wheel Steering and confirm NWS ON advisory message illuminates on EICAS display.", 
-    [{bold: true, text: '"On"', center: true}]
+    [{bold: true, text: '"On"'}]
   ]),
   qas16: createActionBubbles([
     "Rotate handle 90º counterclockwise and EASE handle in.",
-    [{bold: true, text: '"Released"', center: true}]
+    [{bold: true, text: '"Released"'}]
   ]),
   qas17: createActionBubbles([
-    [{text: "F/C will conduct the first brake check then pass controls to the R/C for the second brake check."}, {space: true},
-    {text: "Visually clear the area left, right, and forward of the aircraft then give the lineman the brake release signal. On the lineman's signal, release brakes and advance the PCL slightly (if required) to roll forward. Reapply brakes on the lineman's signal."},
-    {space: true}, {text: "Set the parking brake whenever the aircraft is at a complete stop with the engine running."}],
-    [{bold: true, text: '"Clear Left, Right and Forward"', center: true}, {italic:true, text:'F/C conducts check and reports:', center: true}, {bold: true, text: '"Checked"', center: true}, {italic: true, text:'Perform three way change of controls', center: true}, {space: true}, 
-    {highlight: true, text: '"Clear, Left, Right and Forward"', center: true}, {italic:true, text:'R/C conducts check and reports:', center: true}, 
-    {highlight: true, text: '"Checked"', center: true}, {italic:true, text:'Perform three way change of controls', center: true}, {italic:true, text:'(Salute and dismiss Lineman)', center: true}]
+    "F/C will conduct the first brake check then pass controls to the R/C for the second brake check. Visually clear the area left, right, and forward of the aircraft then give the lineman the brake release signal. On the lineman's signal, release brakes and advance the PCL slightly (if required) to roll forward. Reapply brakes on the lineman's signal. Set the parking brake whenever the aircraft is at a complete stop with the engine running.",
+    [{bold: true, text: '"Clear Left, Right and Forward"'}, {text:'F/C conducts check and reports:'}, {bold: true, text: '"Checked"'}, {text:'Perform three way change of controls'}, {space: true}, {bold: true, text: '"Clear, Left, Right and Forward"'}, {text:'R/C conducts check and reports:'}, 
+    {bold: true, text: '"Checked"'}, {text:'Perform three way change of controls'}, {text:'(Salute and dismiss Lineman)'}]
   ]),
   qas18: createActionBubbles([
-    [{text: "From the NAV page, select the TCAS UFCP via left MFD LSK (R2). After the UFCP TCAS page comes up, turn on TCAS by pushing UFCP button (W1); TCAS will toggle from STBY to ON and report…"},
-    {space: true}, {text: "Select NAV display to 10nm range by pressing LSK (R4) for better visual of traffic symbols during test. Press and hold Left MFD LSK (R2) for 1 second and release. Verify TCAS symbols appear on NAV display and aural test 'TAS SYSTEM TEST OK' and report…"}],
-    [{bold: true, text: '"On"', center: true}, {space: true}, {bold: true, text: '"Tested"', center: true}]
+    "From the NAV page, select the TCAS UFCP via left MFD LSK (R2). After the UFCP TCAS page comes up, turn on TCAS by pushing UFCP button (W1); TCAS will toggle from STBY to ON and report… Select NAV display to 10nm range by pressing LSK (R4) for better visual of traffic symbols during test. Press and hold Left MFD LSK (R2) for 1 second and release. Verify TCAS symbols appear on NAV display and aural test 'TAS SYSTEM TEST OK' and report…",
+    [{bold: true, text: '"On"'}, {space: true}, {bold: true, text: '"Tested"'}]
   ]),
   qas19: createActionBubbles([
-    [{text: "Center MFD set to PFD display mode. Right MFD set to EICAS display mode."}, {space: true},
-    {text: "On left MFD, select menu, select INIT REF LSK (R6), select IDENT LSK (L1) and confirm FMS database date is current."}, {space: true},
-    {text: "Select POS IDENT LSK (R6). Page 1 is used to cross check FMS GEO position with airfield GEO position. Ensure proper airfield is used as reference. Page 3 is used to confirm INS GEO position is aligned with FMS GEO position."}, {space: true},
-    {text: "Select SETUP and disable SUA."}, {space: true},
-    {text: "Acknowledge and clear all messages in the NAV page and FMS scratchpad."}],
-    [{bold: true, text: '"Checked"', center: true}]
-  ]),
-
-  qas19a: createActionBubbles([
-    [{text: "Center MFD set to PFD display mode. Right MFD set to EICAS display mode."}, {space: true},
-    {text: "On left MFD, select menu, select INIT REF LSK (R6), select IDENT LSK (L1) and confirm FMS database date is current."}, {space: true},
-    {text: "Select POS IDENT LSK (R6). Page 1 is used to cross check FMS GEO position with airfield GEO position. Ensure proper airfield is used as reference. Page 3 is used to confirm INS GEO position is aligned with FMS GEO position."}, {space: true},
-    {text: "Select SETUP and disable SUA."}, {space: true},
-    {text: "Acknowledge and clear all messages in the NAV page and FMS scratchpad."}],
-    [{bold: true, text: '"Checked"', center: true}]
-  ]),
-
-  qas19b: createActionBubbles([
-    [{text: "Inform IP you're switching (CH 1 UHF), copy ATIS and verify information is current within 1 hour of present time. Ensure Audio Panel COM1 button is out and adjust volume as required."},
-    {text: "If your flight profile requires a clearance, inform IP you're switching Clearance (CH 2 UHF)"},
-    {text: "Call Navy Corpus Clearance Delivery and put your flight plan clearance on request (Sample clearance call for the ZOMBIE1 flight plan (VFR to KINGS4 MOA))."},
-    {text: "Clearance Delivery will provide clearance and transponder code (squawk). You are required to read back clearance and squawk. Sample read back is for ZOMBIE1 flight plan flight following."},
-    {text: "Clearance Delivery will verify your read-back is correct."},
-    {text: "If Clearance Delivery is not ready to provide your clearance and transponder code, attempt to pick up your clearance after completing the Before Takeoff Checklist."},
-    {text: "Once complete with Clearance Delivery or if departing VFR without a clearance, inform IP you're switching to CH 3."}],
-    [{bold: true, text: '"Switching ATIS"', center: true},
-    {bold: true, text: '"Switching Clearance"', center: true},
-    {bold:true, text: 'AC: "Clearance Delivery, (call sign), Zombie ONE on request, ready to copy"', center: true},
-    {text: 'CLR: "(Call sign), for VFR flight following squawk XXXX"', center: true},
-    {bold:true, text: 'AC: "(call sign), squawk XXXX"', center: true},
-    {text: 'CLR: "(call sign), read-back correct"', center: true},
-    {bold: true, text: '"Switching Channel 3"', center: true}]
-  ], '10px'),
-
-  qas19c: createActionBubbles([
-    [{text: "Set to desired frequency. Typically, KNGP Ground CH 3 will be set or at IP discretion."}],
-    [{bold: true, text: '"Set"', center: true}]
-  ]),
-
-  qas19d: createActionBubbles([
-    [{text: "Set to desired frequency. Typically, CH 1 (114.0), the NGP VOR will be set."}],
-    [{bold: true, text: '"Set"', center: true}]
-  ]),
-
-  qas19e: createActionBubbles([
-    [{text: 'Set appropriate code from flight clearance or IAW AC ID number via UFCP (W4) key and ensure the transponder is set to "STBY."'}, {space: true},
-    {text: '(AC IDs beginning with "7XX" will set "55XX" and "8XX" will set "56XX")'}, {space: true},
-    {text: "Set appropriate FLT No. corresponding to your ACID into the FMS Route page (BOMRXXX)"}],
-    [{bold: true, text: '"XXXX, Standby"', center: true}, {space: true},
-    {bold: true, text: '"Flight Number Set"', center: true}]
-  ]),
-
-  qas19f: createActionBubbles([
-    [{text: "This is a minimum recommended setup for a typical Contact flight. Subsequent setup will be dictated by type of sortie being flown."}, {space: true},
-    {text: "- Load Route appropriate for the flight. Default flight plan KING4MOA."}, 
-    {text: "- Left MFD set to NAV or TSD with range of 10NM"},
-    {text: "- PFD source set to VOR."},
-    {text: "- Bearing pointer #1 (green) set to VOR."},
-    {text: "- CDI course set to runway heading."},
-    {text: "- Heading bug set to departure heading."},
-    {text: "- Bearing pointer #2 (cyan) set to FMS."}],
-    [{bold: true, text: '"Set"', center: true}]
-  ]),
-
-  qas19g: createActionBubbles([
-    [{text: "Zero the G meter and turn on numerical G read out."}, {space: true},
-    {text: "Set fuel flags (Joker/Bingo) as briefed."}, {space: true},
-    {text: "Set altitude to first expected level off."}, {space: true},
-    {text: "Set speed bug as required."}],
-    [{bold: true, text: '"Set"', center: true}]
-  ]),
-
-  qas20: createActionBubbles([
-    [{text: "Check pitch, roll and heading indications, and no red X's. (A failed display will appear as a red X. Report any abnormal indication)."}],
-    [{bold: true, text: '"Checked"', center: true}, {space: true}, {highlight: true, text: '"Checked"', center: true}]
-  ]),
-
-  qas21: createActionBubbles([
-    [{text: "Set the local altimeter in the PFD and the BFI in both cockpits. Check to ensure the altimeter readouts are within 75' of local field elevation and within 75' of each other."}],
-    [{bold: true, text: '"____ set and checked twice"', center: true}, {space: true}, {highlight: true, text: '"____set and checked twice"', center: true}]
-  ]),
-
-  qas22: createActionBubbles([
-    [{text: "Check to ensure the Master Warning and Caution Lights are extinguished and EICAS Display is clear of all malfunctions."},
-    {underline:true, text: "Verbalize any Warning, Caution, or Advisory messages. You must only have L PHT and R PHT INOP cautions and NWS ON."}],
-    [{bold: true, text: '"(Report what is displayed), Checked"', center: true}, {space: true}, {highlight: true, text: '"(Report what is displayed), Checked"', center: true}]
-  ]),
-
-  qas23: createActionBubbles([
-    [{text: "Turn Landing and Taxi Lights ON."}],
-    [{bold: true, text: '"On"', center: true}]
+    "Center MFD set to PFD display mode. Right MFD set to EICAS display mode. On left MFD, select menu, select INIT REF LSK (R6), select IDENT LSK (L1) and confirm FMS database date is current. Select POS IDENT LSK (R6). Page 1 is used to cross check FMS GEO position with airfield GEO position. Ensure proper airfield is used as reference. Page 3 is used to confirm INS GEO position is aligned with FMS GEO position. Select SETUP and disable SUA. Acknowledge and clear all messages in the NAV page and FMS scratchpad.",
+    [{bold: true, text: '"Checked"'}]
   ]),
 
   // 5. TAXI
   qtaxi1: createActionBubbles([
     "At KNGP, verify Transponder is STBY. Set as required at other airfields.",
-    [{bold: true, text: '"Standby"', center: true}]
+    [{bold: true, text: '"Standby"'}]
   ]),
   qtaxi2: createActionBubbles([
     "Once clear of the line area and other aircraft, verify heading on the HSI and BFI, and confirm that the Side Slip, and Rate of Turn Indicators track appropriately during turns. Attempt to use expected turns in the taxi route to accomplish this check.",
-    [{bold: true, text: '"Checked"', center: true}]
+    [{bold: true, text: '"Checked"'}]
   ]),
 
   // 6. OVERSPEED GOVERNOR CHECK
   qogc1: createActionBubbles([
-    [{text: "Ensure that you have firm brake pressure prior to the run-up. (Set the parking brake, pump the brakes until firm, but also continue to hold firm brake pressure to ensure the aircraft does not roll forward once the PCL is advanced)."}],
-    [{bold: true, text: '"Hold"', center: true}]
+    "Ensure that you have firm brake pressure prior to the run-up. (Set the parking brake, pump the brakes until firm, but also continue to hold firm brake pressure to ensure the aircraft does not roll forward once the PCL is advanced).",
+    [{bold: true, text: '"Hold"'}]
   ]),
   qogc2: createActionBubbles([
-    [{text: "Verify PCL is at IDLE and N1 is between 60-61%."}],
-    [{bold: true, text: '"Idle"', center: true}]
+    "Verify PCL is at IDLE and N1 is between 60-61%.",
+    [{bold: true, text: '"Idle"'}]
   ]),
   qogc3: createActionBubbles([
-    [{text: "Place the PMU switch to OFF. Verify idle N1 stabilizes at or above 60%."}, {space: true},
-     {text: "The PMU FAIL and PMU STATUS messages will appear upon turning the PMU Off. Cancel the Master Warning and Caution Lights."}],
-    [{bold: true, text: '"Off"', center: true}, {space: true}, {italic: true, text: 'Note: It is acceptable for N1 to make little or no change when turning off the PMU as long as it is within limits.', center: true}]
+    "Place the PMU switch to OFF. Verify idle N1 stabilizes at or above 60%. The PMU FAIL and PMU STATUS messages will appear upon turning the PMU Off. Cancel the Master Warning and Caution Lights.",
+    [{bold: true, text: '"Off"'}, {italic: true, text: 'Note: It is acceptable for N1 to make little or no change when turning off the PMU as long as it is within limits.'}]
   ]),
   qogc4: createActionBubbles([
-    [{text: "Slowly advance PCL to 100 +/- 2% NP and allow the engine to stabilize."},
-    {text: "Verify that the propeller remains in the governed range with the PMU Off and 100 +/- 2%."}, {space: true},
-    {bold: true, text: 'WARNING: Advancing the PCL prior to engine stabilization with the PMU OFF or advancing too rapidly may cause high ITT and engine over temperature.'}, {space: true},
-    {italic: true, text: 'NOTE: At higher DA, less torque may be required to achieve 100%NP.'}],
-    [{bold: true, text: '"100% NP"', center: true}]
+    "Slowly advance PCL to 100 +/- 2% NP and allow the engine to stabilize. Verify that the propeller remains in the governed range with the PMU Off and 100 +/- 2%.",
+    [{bold: true, text: 'WARNING: Advancing the PCL prior to engine stabilization with the PMU OFF or advancing too rapidly may cause high ITT and engine over temperature.'},
+    {italic: true, text: 'NOTE: At higher DA, less torque may be required to achieve 100%NP.'}, {bold: true, text: '"100% NP"'}]
   ]),
   qogc5: createActionBubbles([
-    [{text: "Advance PCL at least an additional 5% Torque and verify NP remains 100 +/- 2%."}],
-    [{bold: true, text: '"Within Limits"', center: true}]
+    "Advance PCL at least an additional 5% Torque and verify NP remains 100 +/- 2%.",
+    [{bold: true, text: '"Within Limits"'}]
   ]),
   qogc6: createActionBubbles([
-    [{text: "Reduce PCL to Idle. Verify idle N1 stabilizes at 60% or above."}],
-    [{bold: true, text: '"Idle"', center: true}]
+    "Reduce PCL to Idle. Verify idle N1 stabilizes at 60% or above.",
+    [{bold: true, text: '"Idle"'}]
   ]),
   qogc7: createActionBubbles([
-    [{text: "Place the PMU switch to NORM. Verify PMU FAIL and PMU STATUS messages extinguish, NP returns to 46–50%, N1 returns to 60-61%."}],
-    [{bold: true, text: '"Norm"', center: true}]
+    "Place the PMU switch to NORM. Verify PMU FAIL and PMU STATUS messages extinguish, NP returns to 46–50%, N1 returns to 60-61%.",
+    [{bold: true, text: '"Norm"'}]
   ]),
 
   // 7. BEFORE TAKEOFF
   qbto1: createActionBubbles([
-    [{text: "Compute minimum power for takeoff (Torque) using the appropriate chart in the PCL or Quad-Fold checklist."}],
-    [{bold: true, text: '"100%"', center: true}, {text:'(Or whatever the chart indicates for the present IOAT reading and pressure altitude)', center: true}]
+    "Compute minimum power for takeoff (Torque) using the appropriate chart in the PCL or Quad-Fold checklist.",
+    [{bold: true, text: '"100%"'}, {text:'(Or whatever the chart indicates for the present IOAT reading and pressure altitude)'}]
   ]),
   qbto2: createActionBubbles([
-    [{text: "Ensure Speed Brake is retracted."}],
-    [{bold: true, text: '"Retracted"', center: true}]
+    "Ensure Speed Brake is retracted.",
+    [{bold: true, text: '"Retracted"'}]
   ]),
   qbto3: createActionBubbles([
-    [{text: "Ensure Flaps are set to Takeoff."}],
-    [{bold: true, text: '"Takeoff"', center: true}]
+    "Ensure Flaps are set to Takeoff.",
+    [{bold: true, text: '"Takeoff"'}]
   ]),
   qbto4: createActionBubbles([
-    [{text: "Ensure Trim Indicators are all showing in their respective green ranges."}],
-    [{bold: true, text: '"Set for Takeoff"', center: true}]
+    "Ensure Trim Indicators are all showing in their respective green ranges.",
+    [{bold: true, text: '"Set for Takeoff"'}]
   ]),
   qbto5: createActionBubbles([
-    [{text: "Check Fuel Quantity Totalizer. Verify fuel load is balanced and no FUEL BAL message is present on EICAS."}],
-    [{bold: true, text: '"___ lbs, balanced"', center: true}]
+    "Check Fuel Quantity Totalizer. Verify fuel load is balanced and no FUEL BAL message is present on EICAS.",
+    [{bold: true, text: '"___ lbs, balanced"'}]
   ]),
   qbto6: createActionBubbles([
-    [{text: "Check all engine instruments on the EICAS Display are within normal operating limits."}],
-    [{bold: true, text: '"Checked"', center: true}]
+    "Check all engine instruments on the EICAS Display are within normal operating limits.",
+    [{bold: true, text: '"Checked"'}]
   ]),
   qbto7: createActionBubbles([
-    [{text: "Not used at this time."}],
-    [{bold: true, text: '"Not Required"', center: true}]
+    "Not used at this time.",
+    [{bold: true, text: '"Not Required"'}]
   ]),
   qbto8: createActionBubbles([
-    [{text: "Verify 27 volts or greater and +50 amps or less."}],
-    [{bold: true, text: '"____Volts, ___ Amps"', center: true}]
+    "Verify 27 volts or greater and +50 amps or less.",
+    [{bold: true, text: '"____Volts, ___ Amps"'}]
   ]),
   qbto9: createActionBubbles([
-    [{text: "Check Defog Switch off."}],
-    [{bold: true, text: '"Off"', center: true}]
+    "Check Defog Switch off.",
+    [{bold: true, text: '"Off"'}]
   ]),
   qbto10: createActionBubbles([
-    [{text: "Prior to pulling the Ejection Seat Safety Pin, verify that upper Koch fittings, lower Koch fittings and leg restraint garters are attached correctly. Ensure the pin safety streamer is free and clear of the ejection seat handle."}, {space: true},
-    {text: 'With the "two-hand method" (one hand on the streamer and one on the pin) remove the Seat Safety Pin and stow in the canopy locking handle.'}, {space: true},
-    {text: "If a Seat Safety Pin is dropped, refer to the IFG."}],
-    [{bold: true, text: '"Attached six points, removed and stowed"', center: true}, {space: true}, {highlight: true, text: '"Attached six points, removed and stowed"', center: true}]
+    "Prior to pulling the Ejection Seat Safety Pin, verify that upper Koch fittings, lower Koch fittings and leg restraint garters are attached correctly. Ensure the pin safety streamer is free and clear of the ejection seat handle. With the \"two-hand method\" (one hand on the streamer and one on the pin) remove the Seat Safety Pin and stow in the canopy locking handle. If a Seat Safety Pin is dropped, refer to the IFG.",
+    [{bold: true, text: '"Attached six points, removed and stowed"'}, {space: true}, {bold: true, text: '"Attached six points, removed and stowed"'}]
   ]),
   qbto11: createActionBubbles([
-    [{text: "Verify ISS Mode Selector lever is locked in the desired detent. (Rear cockpit will position ISS to desired detent and report.)"}],
-    [{highlight: true, text: '"Solo" or "Both"', center: true}, {highlight: true, text:'(As required)', center: true}, {space: true}, {bold: true, text: '"Roger Solo" or "Roger Both"', center: true}, {bold: true, text:'(As required)', center: true}]
+    "Verify ISS Mode Selector lever is locked in the desired detent. (Rear cockpit will position ISS to desired detent and report.)",
+    [{bold: true, text: '"Solo" or "Both"'}, {text:'(As required)'}, {space: true}, {bold: true, text: '"Roger Solo" or "Roger Both"'}, {text:'(As required)'}]
   ]),
 
   // 8. LINEUP CHECK
   qlc1: createActionBubbles([
-    [{text: "Ensure both Landing and Taxi Lights are ON. Turn ON anti-collision lights if they were off (night ops)."}],
-    [{bold: true, text: '"On"', center: true}]
+    "Ensure both Landing and Taxi Lights are ON. Turn ON anti-collision lights if they were off (night ops).",
+    [{bold: true, text: '"On"'}]
   ]),
   qlc2: createActionBubbles([
-    [{text: "Select (W4) key on the UFCP. Use (W1) key to toggle from XPDRSBY (STANDBY) to XPDRACT (ACTIVE)."},
-    {text: "Check W3 line to ensure ALT ON mode is engaged."}, {space: true}, {text: "Hold the checklist after this step if Tower has only cleared you to"},
-    {bold: true, text: "Line up and Wait"}],
-    [{bold: true, text: '"Active"', center: true}]
+    "Select (W4) key on the UFCP. Use (W1) key to toggle from XPDRSBY (STANDBY) to XPDRACT (ACTIVE). Check W3 line to ensure ALT ON mode is engaged.",
+    [{bold: true, text: '"Active"'}]
   ]),
   qlc3: createActionBubbles([
-    [{text: "Turn ON Probes Anti-Ice switch. Check EICAS Display, ensure ANTI-ICE advisory light illuminates and the L PHT and R PHT messages extinguish."}, {space: true},
-    {bold: true, text: 'CAUTION: Prolonged use of pitot and AOA heat while on the ground will damage the pitot and AOA heating elements.'},
-    {text: "Hold the checklist after this step until aircraft is aligned on runway centerline and aircraft has been brought to a complete stop."}],
-    [{bold: true, text: '"On"', center: true}]
+    [{text:"Turn ON Probes Anti-Ice switch. Check EICAS Display, ensure ANTI-ICE advisory light illuminates and the L PHT and R PHT messages extinguish."},
+    {bold: true, text: 'CAUTION: Prolonged use of pitot and AOA heat while on the ground will damage the pitot and AOA heating elements.'}],
+    [{bold: true, text: '"On"'}]
   ]),
   qlc4: createActionBubbles([
-    [{text: "Once aligned with runway centerline, roll slightly forward to ensure Nose Wheel is straight, come to a stop using even braking and hold the brakes."}, {space: true},
-    {text: "Deactivate Nose Wheel Steering. Verify NWS ON status message on EICAS extinguishes."}],
-    [{bold: true, text: '"Off"', center: true}]
+    "Once aligned with runway centerline, roll slightly forward to ensure Nose Wheel is straight, come to a stop using even braking and hold the brakes. Deactivate Nose Wheel Steering. Verify NWS ON status message on EICAS extinguishes.",
+    [{bold: true, text: '"Off"'}]
   ]),
   qlc5: createActionBubbles([
-    [{text: "Check EICAS Display. Verbalize any EICAS WARNING, CAUTION or ADVISORY messages."}],
-    [{bold: true, text: '"(Report what is displayed), Checked"', center: true}, {space: true}, {highlight: true, text: '"(Report what is displayed), Checked"', center: true}]
+    "Check EICAS Display. Verbalize any EICAS WARNING, CAUTION or ADVISORY messages.",
+    [{bold: true, text: '"(Report what is displayed), Checked"'},   {space: true},   {bold: true, text: '"(Report what is displayed), Checked"'}]
   ]),
 
   // 9. AFTER TAKEOFF
   qat1: createActionBubbles([
-    [{text: "Check for two positive rates of climb indicated on the Altimeter, the VSI or visually."}],
-    [{bold: true, text: '"Two positive rates, Gear"', center: true}]
+    "Check for two positive rates of climb indicated on the Altimeter, the VSI or visually.",
+    [{bold: true, text: '"Two positive rates, Gear"'}]
   ]),
   qat2: createActionBubbles([
-    [{text: "Verify airspeed is above 110 KIAS and raise the flaps and then report…"},
-    {text: "Verify gear position lights and gear handle light have extinguished and the flap indicator indicates up prior to 150 KIAS; then report…"},
-    {text: "Rear cockpit verifies proper indications and reports…."}, {space: true},
-    {text: "Once safely airborne with the gear and flaps up, comply with local departure procedures."}, {space: true},
-    {text: "When directed by Tower, switch departure and check-in (Example for Kings 4 MOA). When directed by Tower, switch departure and check-in (Example for Kings 4 MOA)."},
-    {text: "When desired, switch left MFD to TSD display to view MOA/Mustang working areas."}],
-    [{bold: true, text: '"above 110, Flaps"', center: true}, {space: true}, {bold: true, text: '"Gear up, Flaps up, at ____knots"', center: true}, {highlight: true, text: '"Gear up, flaps up"', center: true},
-    {bold:true, text: "Switching Channel 12", center: true}, {bold: true, text: "UHF: “Corpus Departure, (call sign), passing (altitude) off Navy Corpus, Kings 4”", center :true}]
+    "Verify airspeed is above 110 KIAS and raise the flaps and then report… Verify gear position lights and gear handle light have extinguished and the flap indicator indicates up prior to 150 KIAS; then report… Rear cockpit verifies proper indications and reports…. Once safely airborne with the gear and flaps up, comply with local departure procedures.",
+    [{bold: true, text: '"above 110, Flaps"'}, {space: true}, {bold: true, text: '"Gear up, Flaps up, at ____knots"'}, {space: true}, {bold: true, text: '"Gear up, flaps up"'}]
   ]),
 
   // 10. CLIMB (PASSING 10,000 FEET)
   qclimb1: createActionBubbles([
-    [{text: "Set Concentration Lever to MAX. Check flow indicator for normal operation"}],
-    [{bold: true, text: '"MAX, Good Blinker"', center: true}, {space: true}, {highlight: true, text: '"MAX, Good Blinker"', center: true}]
+    "Set Concentration Lever to MAX. Check flow indicator for normal operation",
+    [{bold: true, text: '"MAX, Good Blinker"'}, {bold: true, text: '"MAX, Good Blinker"'}]
   ]),
   qclimb2: createActionBubbles([
-    [{text: "Set as required. (Normally Off)"}],
-    [{bold: true, text: '"On" or "Off" (As required)', center: true}]
+    "Set as required. (Normally Off)",
+    [{bold: true, text: '"On" or "Off" (As required)'}]
   ]),
   qclimb3: createActionBubbles([
-    [{text: "Set as required."}],
-    [{bold: true, text: '"Canopy" or "Foot" (As required)', center: true}]
+    "Set as required.",
+    [{bold: true, text: '"Canopy" or "Foot" (As required)'}]
   ]),
   qclimb4: createActionBubbles([
-    [{text: "Check cockpit altitude and pressure differential. Cockpit must be pressurized to ~8k'."}],
-    [{bold: true, text: '"Cockpit Altitude_____, Delta (Δ) P____"', center: true}]
+    "Check cockpit altitude and pressure differential. Cockpit must be pressurized to ~8k'.",
+    [{bold: true, text: '"Cockpit Altitude_____, Delta (Δ) P____"'}]
   ]),
 
   // 11. OPERATIONS CHECK
   qoc1: createActionBubbles([
-    [{text: "Check hydraulic pressure within limits of 3000 +/- 120 PSI."}],
-    [{bold: true, text: '"_______ PSI"', center: true}]
+    "Check hydraulic pressure within limits of 3000 +/- 120 PSI.",
+    [{bold: true, text: '"_______ PSI"'}]
   ]),
   qoc2: createActionBubbles([
-    [{text: "Check volts between 28.0 – 28.5,"},
-    {text: "Check amps between -2 – +50"}],
-    [{bold: true, text: '"____Volts"', center: true},
-    {bold: true, text: '"____Amps"', center: true}]
+    "Check volts between 28.0 – 28.5, Check amps between -2 – +50",
+    [{bold: true, text: '"____Volts, ____Amps"'}]
   ]),
   qoc3: createActionBubbles([
-    [{text: "Check fuel quantity total and fuel load is balanced."}],
-    [{bold: true, text: '"____lbs, balanced"', center: true}]
+    "Check fuel quantity total and fuel load is balanced.",
+    [{bold: true, text: '"____lbs, balanced"'}]
   ]),
   qoc4: createActionBubbles([
-    [{text: "Check flow indicator for normal operation."}],
-    [{bold: true, text: '"Good Blinker"', center: true}, {space: true}, {highlight: true, text: '"Good Blinker"', center: true}]
+    "Check flow indicator for normal operation.",
+    [{bold: true, text: '"Good Blinker"'}, {bold: true, text: '"Good Blinker"'}]
   ]),
   qoc5: createActionBubbles([
-    [{text: "Check engine instruments on the EICAS Display for normal operating limits."}],
-    [{bold: true, text: '"Checked"', center: true}]
+    "Check engine instruments on the EICAS Display for normal operating limits.",
+    [{bold: true, text: '"Checked"'}]
   ]),
   qoc6: createActionBubbles([
-    [{text: "Check cockpit altitude and pressure."}],
-    [{bold: true, text: '"Cockpit Altitude ____, Delta (Δ) P____"', center: true}]
+    "Check cockpit altitude and pressure.",
+    [{bold: true, text: '"Cockpit Altitude ____, Delta (Δ) P____"'}]
   ]),
 
   // 12. PRE-STALL, SPIN, AND AEROBATIC CHECKS
   qpssa1: createActionBubbles([
-    [{text: "Ensure all publications and checklists are secured. Check seat straps secure and tightened."}],
-    [{bold: true, text: '"Stowed"', center: true}, {space: true}, {highlight: true, text: '"Stowed"', center: true}]
+    "Ensure all publications and checklists are secured. Check seat straps secure and tightened.",
+    [{bold: true, text: '"Stowed"'}, {bold: true, text: '"Stowed"'}]
   ]),
   qpssa2: createActionBubbles([
-    [{text: "Check engine instruments on the EICAS Display for normal operating limits and no warning/caution messages illuminated on CAS Display."}],
-    [{bold: true, text: '"Checked"', center: true}]
+    "Check engine instruments on the EICAS Display for normal operating limits and no warning/caution messages illuminated on CAS Display.",
+    [{bold: true, text: '"Checked"'}]
   ]),
   qpssa3: createActionBubbles([
-    [{text: "Compare fuel tank levels to ensure you have less than a 50 lbs. imbalance."}],
-    [{bold: true, text: '"Balanced, within 50 Pounds"', center: true}]
+    "Compare fuel tank levels to ensure you have less than a 50 lbs. imbalance.",
+    [{bold: true, text: '"Balanced, within 50 Pounds"'}]
   ]),
 
   // 13. DESCENT
   qdesc1: createActionBubbles([
-    [{text: "Check that the PFD and BFI displays match and there are no red X's indicating a fault. Ensure artificial horizon has not tumbled. Re-cage the BFI as required."}],
-    [{bold: true, text: '"Checked"', center: true}, {space: true}, {highlight: true, text: '"Checked"', center: true}]
+    "Check that the PFD and BFI displays match and there are no red X's indicating a fault. Ensure artificial horizon has not tumbled. Re-cage the BFI as required.",
+    [{bold: true, text: '"Checked"'}, {bold: true, text: '"Checked"'}]
   ]),
   qdesc2: createActionBubbles([
-    [{text: "Set local altimeter in the PFD and BFI."}],
-    [{bold: true, text: '"____, set twice"', center: true}, {space: true}, {highlight: true, text: '"____, set twice"', center: true}]
+    "Set local altimeter in the PFD and BFI.",
+    [{bold: true, text: '"____, set twice"'}, {bold: true, text: '"____, set twice"'}]
   ]),
   qdesc3: createActionBubbles([
-    [{text: "Check in safe position."}],
-    [{bold: true, text: '"Safe"', center: true}]
+    "Check in safe position.",
+    [{bold: true, text: '"Safe"'}]
   ]),
   qdesc4: createActionBubbles([
-    [{text: "Set as required. (Normally Off)"}],
-    [{bold: true, text: '"On" or "Off" (As required)', center: true}]
+    "Set as required. (Normally Off)",
+    [{bold: true, text: '"On" or "Off"'}]
   ]),
   qdesc5: createActionBubbles([
-    [{text: "Set as required."}],
-    [{bold: true, text: '"Canopy" or "Foot"', center: true}, {text: "(As required)"}]
+    "Set as required.",
+    [{bold: true, text: '"Canopy" or "Foot"'}, {text:'(As required)'}]
   ]),
 
   // 14. BEFORE LANDING
   qbl1: createActionBubbles([
-    [{text: "Ensure the Defog is Off. (Engine performance decreases with defog on)"}],
-    [{bold: true, text: '"Off"', center: true}]
+    "Ensure the Defog is Off. (Engine performance decreases with defog on)",
+    [{bold: true, text: '"Off"'}]
   ]),
   qbl2: createActionBubbles([
-    [{text: "Check engine instruments on the EICAS Display for normal operating limits"}],
-    [{bold: true, text: '"Checked"', center: true}]
+    "Check engine instruments on the EICAS Display for normal operating limits",
+    [{bold: true, text: '"Checked"'}]
   ]),
   qbl3: createActionBubbles([
-    [{text: "Confirm that only three green annunciators are illuminated on the landing gear control panel."}],
-    [{bold: true, text: '"Down"', center: true}, {space: true}, {highlight: true, text: '"Down"', center: true}]
+    "Confirm that only three green annunciators are illuminated on the landing gear control panel.",
+    [{bold: true, text: '"Down"'}, {bold: true, text: '"Down"'}]
   ]),
   qbl4: createActionBubbles([
-    [{text: "Verify positive pressure by actuating toe brakes."}],
-    [{bold: true, text: '"Checked"', center: true}]
+    "Verify positive pressure by actuating toe brakes.",
+    [{bold: true, text: '"Checked"'}]
   ]),
   qbl5: createActionBubbles([
-    [{text: "Verify Flap Indicator corresponds to the position of the Flap Handle."}],
-    [{bold: true, text: '"Up/Takeoff/Landing"', center: true}, {space: true}, {highlight: true, text: '"Up/Takeoff/Landing"', center: true}]
+    "Verify Flap Indicator corresponds to the position of the Flap Handle.",
+    [{bold: true, text: '"Up/Takeoff/Landing"'}, {bold: true, text: '"Up/Takeoff/Landing"'}]
   ]),
   qbl6: createActionBubbles([
-    [{text: "Check EICAS display to ensure the Speed Brake Light is extinguished."}],
-    [{bold: true, text: '"Retracted"', center: true}]
+    "Check EICAS display to ensure the Speed Brake Light is extinguished.",
+    [{bold: true, text: '"Retracted"'}]
   ]),
 
-  // 15. AFTER LANDING
+  // 16. AFTER LANDING
   qal1: createActionBubbles([
-    [{text: "Verify ISS Mode Selector lever is locked in the desired detent. (Rear cockpit will position ISS to desired detent and report.)"}],
-    [{highlight: true, text: '"Solo"', center: true}, {space: true}, {bold: true, text: '"Roger Solo"', center: true}]
-  ]),
-  qal2: createActionBubbles([
-    [{text: 'Use the "two-hand method" to install the Seat Safety Pin. Ensure the pin is fully inserted to preclude inadvertent seat actuation.'}],
-    [{bold: true, text: '"Installed"', center: true}, {space: true}, {highlight: true, text: '"Installed"', center: true}]
-  ]),
-  qal3: createActionBubbles([
-    [{text: "Turn the Anti-Ice Switch off. Check EICAS display and ensure the ANTI ICE Advisory extinguishes and both L and R PHT INOP Cautions illuminate, acknowledge MASTER CAUTION."}],
-    [{bold: true, text: '"Off"', center: true}]
-  ]),
-  qal4: createActionBubbles([
-    [{text: "Select Flap Lever to Up. Check Flap Indicator indicates Up."}],
-    [{bold: true, text: '"Up"', center: true}]
-  ]),
-  qal5: createActionBubbles([
-    [{text: "Depress the Trim Interrupt button. Check EICAS Display to verify TRIM OFF and TAD OFF messages illuminated. Check TAD Switch moves to off."}],
-    [{bold: true, text: '"Depressed"', center: true}]
-  ]),
-  qal6: createActionBubbles([
-    [{text: "Adjust trim to place all three indicators into the green range."}],
-    [{bold: true, text: '"Set for Takeoff"', center: true}]
-  ]),
-  qal7: createActionBubbles([
-    [{text: "Set Transponder to STBY at KNGP. (After selecting XPDRSBY, select confirm to place in standby mode). Set as required at other airfields."}],
-    [{bold: true, text: '"Standby"', center: true}]
-  ]),
-  qal8: createActionBubbles([
-    [{text: "Set TCAS to the standby mode."}],
-    [{bold: true, text: '"Standby"', center: true}]
-  ]),
-  qal9: createActionBubbles([
-    [{text: "Turn off bleed air inflow switch."}],
-    [{bold: true, text: '"Off"', center: true}]
-  ]),
-
-  // 16. ENGINE SHUTDOWN
-  qesd1: createActionBubbles([
-    [{text: "Apply brakes and hold pressure while pulling and turning the parking brake lever 90° clockwise."}],
-    [{bold: true, text: '"Set"', center: true}]
-  ]),
-  qesd2: createActionBubbles([
-    [{text: "Turn off the landing and taxi lights."}],
-    [{bold: true, text: '"Off"', center: true}]
-  ]),
-  qesd3: createActionBubbles([
-    [{text: "Verify transponder in standby."}],
-    [{bold: true, text: '"Standby"', center: true}]
-  ]),
-  qesd4: createActionBubbles([
-    [{text: "If SOLO, record flight times. Place the Avionics Master switch to OFF."}],
-    [{bold: true, text: '"Off"', center: true}]
-  ]),
-  qesd5: createActionBubbles([
-    [{text: "Check Ram Air Inflow switch OFF."}],
-    [{bold: true, text: '"Off"', center: true}]
-  ]),
-  qesd6: createActionBubbles([
-    [{text: "Turn the Air Conditioner switch OFF."}],
-    [{bold: true, text: '"Off"', center: true}]
-  ]),
-  qesd7: createActionBubbles([
-    [{text: "Turn the Evaporator Blower control rheostat full counterclockwise to the OFF position."}],
-    [{bold: true, text: '"Off"', center: true}, {space: true}, {highlight: true, text: '"Off"', center: true}]
-  ]),
-  qesd8: createActionBubbles([
-    [{text: "Remove O2 mask"}],
-    [{bold: true, text: '"Removed"', center: true}]
-  ]),
-  qesd9: createActionBubbles([
-    [{text: "Ensure OBOGS pressure and concentration levers are in the normal position. Turn supply lever OFF."}],
-    [{bold: true, text: '"Normal, Normal, off"', center: true}, {space: true}, {highlight: true, text: '"Normal, Normal, off"', center: true}]
-  ]),
-  qesd10: createActionBubbles([
-    [{text: "Ensure PCL has been at IDLE for at least 60 seconds before setting the PCL to OFF. Monitor engine instruments to verify proper shutdown (ITT and N1 decreasing, fuel flow indicating zero)."}],
-    [{bold: true, text: '"Off"', center: true}]
-  ]),
-  qesd11: createActionBubbles([
-    [{text: "While the prop is winding down, ensure the canopy rails are clear of obstructions and open the canopy."}],
-    [{bold: true, text: '"Rail Clear"', center: true}, {space: true}, {highlight: true, text: '"Rail Clear"', center: true}]
-  ]),
-  qesd12: createActionBubbles([
-    [{text: "Ensure the PMU Status message is extinguished. (If a fault has been detected, the PMU Status message will illuminate 1 minute after touchdown; Notify maintenance if the light is present)."}],
-    [{bold: true, text: '"Extinguished"', center: true}]
-  ]),
-  qesd13: createActionBubbles([
-    [{text: "Check FDR Light status."}],
-    [{bold: true, text: '"Extinguished"', center: true}]
-  ]),
-  qesd14: createActionBubbles([
-    [{text: "Engage the gust lock (as required)."}, {space: true},
-    {text: "To engage gust lock completely after installing pin depress the left rudder pedal until it locks."}, {space: true},
-    {text: "(Note: DO NOT engage gust lock in SIM)"}],
-    [{bold: true, text: '"Engaged"', center: true}]
-  ]),
-  qesd15: createActionBubbles([
-    [{text: "Turn off interior lights as required. Secure the Navigation and Anti-Collision lights once the propeller comes to a stop."}],
-    [{bold: true, text: '"Off"', center: true}]
-  ]),
-  qesd16: createActionBubbles([
-    [{text: "Place the Generator, Battery and Aux Battery switches to OFF."}],
-    [{bold: true, text: '"Off"', center: true}]
-  ])
-};
+    "Verify ISS Mode Selector lever is locked in the desired detent. (Rear cockpit will position ISS to desired detent and report.)",
+    [{bold: true, text: '"Solo"'}, {bold: true, text: '"Roger Solo"'}]
+  ]
+)};

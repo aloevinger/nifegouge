@@ -31,6 +31,7 @@ function TW4Cockpit() {
   const [showInstructions, setShowInstructions] = useState(false);
   const [showChecklistModal, setShowChecklistModal] = useState(false);
   const [checklistModalContent, setChecklistModalContent] = useState(null);
+  const [autoExpanded, setAutoExpanded] = useState(false);
 
   const modalBaseContentRef = useRef(null);
   const modalStepKeyRef = useRef(null);
@@ -57,6 +58,31 @@ function TW4Cockpit() {
       );
     }
   }, [checkResults]);
+
+  // Auto-expand logic: automatically advance to next empty field when current field is completed
+  useEffect(() => {
+    if (!autoExpanded || currentDivKey !== 'quadDivs' || !showChecklistModal) return;
+
+    // Check if current field is checked/correct
+    const currentField = modalStepKeyRef.current;
+    if (currentField && (checkResults[currentField] === 'checked' || checkResults[currentField] === 'correct')) {
+      // Find next empty field
+      const { nextEmptyField } = findNextEmpty();
+
+      if (nextEmptyField && QUAD_ACTIONS[nextEmptyField]) {
+        // Auto-advance to next field
+        setTimeout(() => {
+          openChecklistModal(QUAD_ACTIONS[nextEmptyField], nextEmptyField);
+        }, 300);
+      } else {
+        // No more empty fields - close modal
+        setTimeout(() => {
+          closeChecklistModal();
+          setAutoExpanded(false);
+        }, 500);
+      }
+    }
+  }, [checkResults, autoExpanded, showChecklistModal, currentDivKey]);
 
   // Dictionary mapping clickable area IDs to their control arrays
   const clickableControls = {
@@ -249,6 +275,8 @@ function TW4Cockpit() {
     setInputData({});
     setCheckResults({});
     setActiveHints({});
+    setAutoExpanded(false);
+    closeChecklistModal();
   };
 
   const getInputClass = (field) => {
@@ -427,6 +455,10 @@ function TW4Cockpit() {
   const closeChecklistModal = () => {
     setShowChecklistModal(false);
     setChecklistModalContent(null);
+    // Disable auto-expand when manually closing modal
+    if (autoExpanded) {
+      setAutoExpanded(false);
+    }
   }
 
   const getStepText = (key) => {
@@ -436,6 +468,22 @@ function TW4Cockpit() {
       return span ? span.textContent : '';
     }
     return '';
+  };
+
+  const toggleAutoExpanded = () => {
+    if (!autoExpanded) {
+      // Activating auto-expand mode
+      setAutoExpanded(true);
+      // Find and open the first empty field
+      const { nextEmptyField } = findNextEmpty();
+      if (nextEmptyField && QUAD_ACTIONS[nextEmptyField]) {
+        openChecklistModal(QUAD_ACTIONS[nextEmptyField], nextEmptyField);
+      }
+    } else {
+      // Deactivating auto-expand mode
+      setAutoExpanded(false);
+      closeChecklistModal();
+    }
   };
 
   //EP div structures retrieval
@@ -495,7 +543,7 @@ function TW4Cockpit() {
                   <li>Each checklist step can be completed by clicking the correct control or button, including skip</li>
                   <li>For EPs you can also type answers directly into the input fields</li>
                   <li>Clicking a correct control will automatically fill the entire step</li>
-                  <li>Clicking on steps in teh quadfold will reveal the corresponding expanded checklist item. </li>
+                  <li>Clicking on steps in the quadfold will reveal the corresponding expanded checklist item. </li>
                   <li>A <span style={{backgroundColor: '#f8d0d0'}}>red</span> step means the incorrect control was clicked or inputted. EPs are verbatim!</li>
                   <li>A <span style={{backgroundColor: '#faf6be'}}>yellow</span> step means a part of the correct controls have been clicked or inputted</li>
                   <li>A <span style={{backgroundColor: '#d0f0d0'}}>green</span> or <span style={{backgroundColor: '#d0f3f8'}}>blue</span> step means the correct controls have been clicked or inputted</li>
@@ -509,6 +557,7 @@ function TW4Cockpit() {
                   <li><strong>Check:</strong> Validates your answers (EPs only)</li>
                   <li><strong>Reset:</strong> Clears all answers and feedback</li>
                   <li><strong>Random/Sequential Order:</strong> Toggle between randomized and sequential checklist order (EPs only)</li>
+                  <li><strong>Auto Expanded</strong> Auto-displays and progresses through the expanded checklist for each step (Quadfold only)</li>
                 </ul>
 
                 <h3 style={{fontSize: '14px', marginTop: '15px'}}>Navigation</h3>
@@ -1107,7 +1156,9 @@ function TW4Cockpit() {
                     setCurrentIndex(currentIndex-1);
                     setCheckResults(emptyResults());
                     setActiveHints({});
-                  }} 
+                    setAutoExpanded(false);
+                    closeChecklistModal();
+                  }}
                     disabled={currentIndex === 0}>
                     Previous
                   </button>
@@ -1118,7 +1169,9 @@ function TW4Cockpit() {
                     setCurrentIndex(currentIndex+1);
                     setCheckResults(emptyResults());
                     setActiveHints({});
-                  }} 
+                    setAutoExpanded(false);
+                    closeChecklistModal();
+                  }}
                     disabled={currentIndex === currentIndexArray.length - 1}>
                     Next
                   </button>
@@ -1259,6 +1312,20 @@ function TW4Cockpit() {
           <button onClick={allAnswers}>All Answers</button>
           {currentDivKey === 'epDivs' && <button onClick={checkAnswers}>Check</button>}
           <button onClick={resetAnswers}>Reset</button>
+          {currentDivKey === 'quadDivs' && (
+            <button
+              onClick={toggleAutoExpanded}
+              style={{
+                backgroundColor: autoExpanded ? '#4CAF50' : '#f0f0f0',
+                color: autoExpanded ? 'white' : 'black',
+                fontWeight: autoExpanded ? 'bold' : 'normal',
+                border: autoExpanded ? '2px solid #45a049' : '1px solid #ccc',
+                boxShadow: autoExpanded ? 'inset 0 2px 4px rgba(0,0,0,0.2)' : 'none'
+              }}
+            >
+              Auto Expanded
+            </button>
+          )}
         </div>
         <div style={{display: 'flex', justifyContent: 'center', marginTop: '0px', position: 'relative'}}>
           <div style={{

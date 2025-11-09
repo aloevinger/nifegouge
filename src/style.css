@@ -2642,6 +2642,35 @@ textarea.incorrect-answer {
   display: flex;
   gap: 20px;
   align-items: center;
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #003B4F #01202C; /* Firefox */
+}
+
+/* Webkit scrollbar styling */
+.nav-links::-webkit-scrollbar {
+  height: 6px;
+}
+
+.nav-links::-webkit-scrollbar-track {
+  background: #01202C;
+}
+
+.nav-links::-webkit-scrollbar-thumb {
+  background: #003B4F;
+  border-radius: 3px;
+}
+
+.nav-links::-webkit-scrollbar-thumb:hover {
+  background: #005070;
+}
+
+/* Prevent text wrapping in navigation links */
+.nav-links a {
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .page-toggle-container {

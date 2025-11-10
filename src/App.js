@@ -9,6 +9,7 @@ import Docs from './components/Docs.js';
 import TW4About from './components/TW4About.js';
 import TW4Cockpit from './components/TW4Cockpit.js';
 import TW4Limits from './components/TW4Limits.js';
+import TW4Briefs from './components/TW4Briefs.js';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('about');
@@ -134,6 +135,16 @@ function App() {
             >
               Cockpit
             </a>
+            <a
+              href="#briefs"
+              onClick={(e) => {
+                e.preventDefault();
+                setCurrentPage('briefs');
+              }}
+              className={currentPage === 'briefs' ? 'active' : ''}
+            >
+              Briefs
+            </a>
             </>
           )}
         </div>
@@ -194,6 +205,7 @@ function App() {
         {currentPage === 'flight' && mode === 'NIFE' && <Flight />}
         {currentPage === 'cockpit' && mode === 'TW4 Primary' && <TW4Cockpit />}
         {currentPage === 'limits' && mode === 'TW4 Primary' && <TW4Limits />}
+        {currentPage === 'briefs' && mode === 'TW4 Primary' && <TW4Briefs />}
       </div>
     </div>
   );

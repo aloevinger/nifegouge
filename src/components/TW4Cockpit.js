@@ -116,7 +116,7 @@ function TW4Cockpit() {
     'trimAid': ['tri\u200Bm aid'],
     'ldgLight': ['landing/'],
     'taxiLight': ['taxi light'],
-    'anticollLight': ['anti-coll light'],
+    'anticollLight': ['anti-coll light', 'anti-collision lights', "/exterior lights"],
     'navLight': ['nav light'],
     'trimDisco': ['Tri\u200Bm Disconnect'],
     'flaps': ['flaps'],
@@ -177,7 +177,7 @@ function TW4Cockpit() {
     'torque': ['Torque', "Engine Instruments"],
     'oilPress': ['Oil Press', "Engine Instruments"],
     'oilTemp': ['Oil Temp', "Engine Instruments"],
-    'itt': ['ITT', "Engine Instruments"],
+    'itt': ['ITT', "Engine Instruments", 'Engine Start -'],
     'n1': ['N1', "Engine Instruments"],
     'hydPress': ['Hyd Press', "Engine Instruments"],
     'bingo': ['Bingo Set'],
@@ -241,7 +241,7 @@ function TW4Cockpit() {
     'pressurization': ['Pressurization'],
     'ramair': ['Ram Air'],
     'tempcon': ['Temp Control'],
-    'obogsFlow': ['OBOGS -', 'Flow I'],
+    'obogsFlow': ['OBOGS -', 'OBOGS  -', 'Flow I'],
     'obogsSupply': ['OBOGS -', 'supply'],
     'obogsConc': ['OBOGS -', 'concentration'],
     'obogsPress': ['OBOGS -', 'OBOGS pressure']
@@ -490,7 +490,19 @@ function TW4Cockpit() {
     if (!nwcData) return;
 
     // Get the answer text for this step
-    const stepAnswer = inputAnswers[stepKey] || '';
+    const rawAnswer = inputAnswers[stepKey] || '';
+    let stepAnswer = rawAnswer;
+
+    // Filter out answers that start with zero-width space
+    if (Array.isArray(rawAnswer)) {
+      const filtered = rawAnswer.filter(item => typeof item === 'string' && !item.startsWith('\u200B'));
+      stepAnswer = filtered.length > 0 ? filtered.join('') : '';
+    } else if (typeof rawAnswer === 'string' && rawAnswer.startsWith('\u200B')) {
+      stepAnswer = '';
+    }
+
+    console.log(rawAnswer)
+    console.log(stepAnswer)
 
     const renderNWCContent = () => {
       const content = [];
@@ -620,7 +632,7 @@ function TW4Cockpit() {
 
     // Auto NWC logic: automatically show NWC when a step is completed via clicking controls
   useEffect(() => {
-    if (!autoNWC || (currentDivKey !== 'epDivs' && currentDivKey !== 'fullEpDivs')) return;
+    if (!autoNWC) return;
 
     // Get all step keys for the current EP/checklist
     const currentKey = divMap[currentDivKey][0][currentIndexArray[currentIndex]].key;
@@ -644,7 +656,7 @@ function TW4Cockpit() {
       const lastCompletedStep = newlyCompletedSteps[newlyCompletedSteps.length - 1];
 
       // Check if this step has NWC data
-      if (EP_NWC[lastCompletedStep]) {
+      if (EP_NWC[lastCompletedStep] || QUAD_NWC[lastCompletedStep] ) {
         setTimeout(() => {
           openNWCModal(lastCompletedStep);
         }, 600);
@@ -692,6 +704,7 @@ function TW4Cockpit() {
                 <ul>
                   <li>Each checklist step can be completed by clicking the correct control or button, including skip</li>
                   <li>For EPs you can also type answers directly into the input fields</li>
+                  <li><strong>Full EPs</strong> are the critical memory EPs including non memory items. Some items do not have a corresponding control and must be skipped</li>
                   <li>Clicking a correct control will automatically fill the entire step</li>
                   <li>Clicking on steps in the quadfold will reveal the corresponding expanded checklist item. </li>
                   <li>A <span style={{backgroundColor: '#f8d0d0'}}>red</span> step means the incorrect control was clicked or inputted. EPs are verbatim!</li>
@@ -701,19 +714,21 @@ function TW4Cockpit() {
 
                 <h3 style={{fontSize: '14px', marginTop: '15px'}}>Buttons & Controls</h3>
                 <ul>
+                  <li><strong>NWC Buttons:</strong> Small buttons on individual steps that display Notes, Warnings, and Cautions relevant to that step. <span style={{fontSize: '11px'}}>Note: NWCs from a checklist's preamble are included in the first step</span></li>
                   <li><strong>Hint:</strong> Highlights controls related to the current step</li>
                   <li><strong>Next Answer/Skip:</strong> Reveals and fills the next unanswered/unchecked step</li>
                   <li><strong>All Answers:</strong> Completes all remaining steps</li>
                   <li><strong>Check:</strong> Validates your answers (EPs only)</li>
                   <li><strong>Reset:</strong> Clears all answers and feedback</li>
                   <li><strong>Random/Sequential Order:</strong> Toggle between randomized and sequential checklist order (EPs only)</li>
-                  <li><strong>Auto Expanded</strong> Auto-displays and progresses through the expanded checklist for each step (Quadfold only)</li>
+                  <li><strong>Auto Expanded:</strong> Auto-displays and progresses through the expanded checklist for each step (Quadfold only)</li>
+                  <li><strong>Auto NWC:</strong> Automatically shows NWC information when a step is completed by clicking controls</li>
                 </ul>
 
                 <h3 style={{fontSize: '14px', marginTop: '15px'}}>Navigation</h3>
                 <ul>
                   <li>Use <strong>Previous/Next</strong> buttons to move between checklists</li>
-                  <li>Switch between <strong>EPs</strong> and <strong>Quadfold</strong> checklists using the toggle at the bottom</li>
+                  <li>Switch between <strong>EPs</strong>, <strong>Full EPs</strong>, and <strong>Quadfold</strong> checklists using the toggle at the bottom</li>
                 </ul>
               </div>
             </div>
@@ -1560,20 +1575,18 @@ function TW4Cockpit() {
           <button onClick={allAnswers}>All Answers</button>
           {(currentDivKey === 'epDivs' || currentDivKey === 'fullEpDivs') && <button onClick={checkAnswers}>Check</button>}
           <button onClick={resetAnswers}>Reset</button>
-          {(currentDivKey === 'epDivs' || currentDivKey === 'fullEpDivs') && (
-            <button
-              onClick={toggleAutoNWC}
-              style={{
-                backgroundColor: autoNWC ? '#4CAF50' : '#f0f0f0',
-                color: autoNWC ? 'white' : 'black',
-                fontWeight: autoNWC ? 'bold' : 'normal',
-                border: autoNWC ? '2px solid #45a049' : '1px solid #ccc',
-                boxShadow: autoNWC ? 'inset 0 2px 4px rgba(0,0,0,0.2)' : 'none'
-              }}
-            >
-              Auto NWC
-            </button>
-          )}
+          <button
+            onClick={toggleAutoNWC}
+            style={{
+              backgroundColor: autoNWC ? '#4CAF50' : '#f0f0f0',
+              color: autoNWC ? 'white' : 'black',
+              fontWeight: autoNWC ? 'bold' : 'normal',
+              border: autoNWC ? '2px solid #45a049' : '1px solid #ccc',
+              boxShadow: autoNWC ? 'inset 0 2px 4px rgba(0,0,0,0.2)' : 'none'
+            }}
+          >
+            Auto NWC
+          </button>
           {currentDivKey === 'quadDivs' && (
             <button
               onClick={toggleAutoExpanded}

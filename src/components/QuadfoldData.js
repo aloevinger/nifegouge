@@ -39,11 +39,12 @@ const quadStepStyle = {
 };
 
 const quadSubStepStyle = {
-  padding: '4px 12px 4px 32px',
+  padding: '2px 8px 4px 10px',
   fontSize: '9px',
   borderBottom: '1px solid #eee',
   display: 'flex',
   justifyContent: 'flex-end',
+  gap: '4px',
   textAlign: 'right',
   cursor: 'pointer'
 };
@@ -53,13 +54,13 @@ const nwcButtonStyle = {
   color: 'white',
   border: 'none',
   padding: '0px 0px',
-  fontSize: '8px',
+  fontSize: '7px',
   fontWeight: 'bold',
   borderRadius: '3px',
   cursor: 'pointer',
   marginLeft: '2px',
-  minWidth: '20px',
-  height: '20px'
+  minWidth: '16px',
+  height: '16px'
 };
 
 export const getQuadDivs = ({getInputClass, openChecklistModal, openNWCModal}) => {
@@ -69,7 +70,10 @@ export const getQuadDivs = ({getInputClass, openChecklistModal, openNWCModal}) =
         return (
           <button
             style={{...nwcButtonStyle, marginLeft: 'auto'}}
-            onClick={() => openNWCModal(stepKey)}
+            onClick={(e) => {
+              e.stopPropagation();
+              openNWCModal(stepKey);
+            }}
             title="View Notes, Warnings, and Cautions"
           >
             NWC
@@ -89,24 +93,30 @@ export const getQuadDivs = ({getInputClass, openChecklistModal, openNWCModal}) =
                     <div style={quadHeaderStyle}>COCKPIT (ALL FLIGHTS)</div>
                     <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco1" onClick={() => openChecklistModal(QUAD_ACTIONS.qco1, 'qco1')}>
                     <span className={getInputClass('qco1')}>1. Strap in ---------- COMPLETE</span>
+                    {renderNWCButton('qco1')}
                     </div>
                     <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco2" onClick={() => openChecklistModal(QUAD_ACTIONS.qco2, 'qco2')}>
                     <span className={getInputClass('qco2')}>2. BAT switch ---------- ON</span>
+                    {renderNWCButton('qco2')}
                     </div>
                     <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco3" onClick={() => openChecklistModal(QUAD_ACTIONS.qco3, 'qco3')}>
                     <span className={getInputClass('qco3')}>3. Regulator anti-suffocation valve ---------- CHECK</span>
                     </div>
                     <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco4" onClick={() => openChecklistModal(QUAD_ACTIONS.qco4, 'qco4')}>
                     <span className={getInputClass('qco4')}>4. External Power ---------- AS REQUIRED</span>
+                    {renderNWCButton('qco4')}
                     </div>
                     <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco5" onClick={() => openChecklistModal(QUAD_ACTIONS.qco5, 'qco5')}>
                     <span className={getInputClass('qco5')}>5. Seat height ---------- ADJUST</span>
+                    {renderNWCButton('qco5')}
                     </div>
                     <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco6" onClick={() => openChecklistModal(QUAD_ACTIONS.qco6, 'qco6')}>
                     <span className={getInputClass('qco6')}>6. Rudder pedals ---------- ADJUST</span>
+                    {renderNWCButton('qco6')}
                     </div>
                     <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco7" onClick={() => openChecklistModal(QUAD_ACTIONS.qco7, 'qco7')}>
                     <span className={getInputClass('qco7')}>7. Flight controls ---------- CHECK</span>
+                    {renderNWCButton('qco7')}
                     </div>
                     <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco8" onClick={() => openChecklistModal(QUAD_ACTIONS.qco8, 'qco8')}>
                     <span className={getInputClass('qco8')}>8. Fire detection system ---------- TEST (FIRE 1 and FIRE 2)</span>
@@ -157,6 +167,7 @@ export const getQuadDivs = ({getInputClass, openChecklistModal, openNWCModal}) =
                     </div>
                     <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco22" onClick={() => openChecklistModal(QUAD_ACTIONS.qco22, 'qco22')}>
                     <span className={getInputClass('qco22')}>22. PARKING BRAKE ---------- RESET</span>
+                    {renderNWCButton('qco22')}
                     </div>
                     <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco23" onClick={() => openChecklistModal(QUAD_ACTIONS.qco23, 'qco23')}>
                     <span className={getInputClass('qco23')}>23. Chocks ---------- REMOVED</span>
@@ -199,6 +210,7 @@ export const getQuadDivs = ({getInputClass, openChecklistModal, openNWCModal}) =
                     </div>
                     <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco36" onClick={() => openChecklistModal(QUAD_ACTIONS.qco36, 'qco36')}>
                     <span className={getInputClass('qco36')}>36. RAM AIR FLOW switch ---------- AS REQUIRED</span>
+                    {renderNWCButton('qco36')}
                     </div>
                     <div style={{...quadStepStyle, fontSize: btFontSize}} data-step-key="qco37" onClick={() => openChecklistModal(QUAD_ACTIONS.qco37, 'qco37')}>
                     <span className={getInputClass('qco37')}>37. TEMP CONTROL switch ---------- AUTO</span>
@@ -214,12 +226,14 @@ export const getQuadDivs = ({getInputClass, openChecklistModal, openNWCModal}) =
         <div style={{...quadHeaderStyle, backgroundColor: '#d32f2f'}}>HIGH IOAT AT START (&gt;80° C)</div>
         <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qhias1')}>1. PCL ---------- VERIFY OFF</span>
+          {renderNWCButton('qhias1')}
         </div>
         <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qhias2')}>2. PMU ---------- RESET IF NECESSARY</span>
         </div>
         <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qhias3')}>3. PMU switch ---------- OFF</span>
+          {renderNWCButton('qhias3')}
         </div>
         <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qhias4')}>4. Propeller Area ---------- CLEAR</span>
@@ -248,30 +262,38 @@ export const getQuadDivs = ({getInputClass, openChecklistModal, openNWCModal}) =
         <div style={quadHeaderStyle}>ENGINE START (AUTO)</div>
         <div style={quadStepStyle} data-step-key="qestart1" onClick={() => openChecklistModal(QUAD_ACTIONS.qestart1, 'qestart1')}>
           <span className={getInputClass('qestart1')}>1. Canopy ---------- CLOSED AND LATCHED</span>
+          {renderNWCButton('qestart1')}
         </div>
         <div style={quadStepStyle} data-step-key="qestart2" onClick={() => openChecklistModal(QUAD_ACTIONS.qestart2, 'qestart2')}>
           <span className={getInputClass('qestart2')}>2. Navigation and anti-collision lights ---------- AS REQUIRED</span>
+          {renderNWCButton('qestart2')}
         </div>
         <div style={quadStepStyle} data-step-key="qestart3" onClick={() => openChecklistModal(QUAD_ACTIONS.qestart3, 'qestart3')}>
           <span className={getInputClass('qestart3')}>3. PMU FAIL/PMU STATUS message ---------- EXTINGUISHED</span>
+          {renderNWCButton('qestart3')}
         </div>
         <div style={quadStepStyle} data-step-key="qestart4" onClick={() => openChecklistModal(QUAD_ACTIONS.qestart4, 'qestart4')}>
           <span className={getInputClass('qestart4')}>4. PCL ---------- ADVANCE TO START POSITION</span>
+          {renderNWCButton('qestart4')}
         </div>
         <div style={quadStepStyle} data-step-key="qestart5" onClick={() => openChecklistModal(QUAD_ACTIONS.qestart5, 'qestart5')}>
           <span className={getInputClass('qestart5')}>5. Propeller area ---------- CLEAR</span>
         </div>
         <div style={quadStepStyle} data-step-key="qestart6" onClick={() => openChecklistModal(QUAD_ACTIONS.qestart6, 'qestart6')}>
           <span className={getInputClass('qestart6')}>6. STARTER switch ---------- AUTO/RESET</span>
+          {renderNWCButton('qestart6')}
         </div>
         <div style={quadStepStyle} data-step-key="qestart7" onClick={() => openChecklistModal(QUAD_ACTIONS.qestart7, 'qestart7')}>
           <span className={getInputClass('qestart7')}>7. Engine Start ---------- MONITOR</span>
+          {renderNWCButton('qestart7')}
         </div>
         <div style={quadStepStyle} data-step-key="qestart8" onClick={() => openChecklistModal(QUAD_ACTIONS.qestart8, 'qestart8')}>
           <span className={getInputClass('qestart8')}>8. PCL ---------- ADVANCE PAST TWO CLICKS, THEN IDLE, AT OR ABOVE 60% N1</span>
+          {renderNWCButton('qestart8')}
         </div>
         <div style={quadStepStyle} data-step-key="qestart9" onClick={() => openChecklistModal(QUAD_ACTIONS.qestart9, 'qestart9')}>
           <span className={getInputClass('qestart9')}>9. External power ---------- DISCONNECTED</span>
+          {renderNWCButton('qestart9')}
         </div>
       </div>
     ),
@@ -291,6 +313,7 @@ export const getQuadDivs = ({getInputClass, openChecklistModal, openNWCModal}) =
         </div>
         <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qmrp4')}>4. STARTER switch ---------- MANUAL for 20 sec</span>
+          {renderNWCButton('qmrp4')}
         </div>
         <div style={{...quadStepStyle, cursor: 'default'}}>
           <span className={getInputClass('qmrp5')}>5. STARTER switch ---------- NORM</span>
@@ -320,9 +343,11 @@ export const getQuadDivs = ({getInputClass, openChecklistModal, openNWCModal}) =
                     </div>
                     <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas5" onClick={() => openChecklistModal(QUAD_ACTIONS.qas5, 'qas5')}>
                     <span className={getInputClass('qas5')}>5. AIR COND switch ---------- AS REQUIRED</span>
+                    {renderNWCButton('qas5')}
                     </div>
                     <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas6" onClick={() => openChecklistModal(QUAD_ACTIONS.qas6, 'qas6')}>
                     <span className={getInputClass('qas6')}>6. AVIONICS MASTER switch ---------- ON</span>
+                    {renderNWCButton('qas6')}
                     </div>
                     <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas7" onClick={() => openChecklistModal(QUAD_ACTIONS.qas7, 'qas7')}>
                     <span className={getInputClass('qas7')}>7. OBOGS supply lever ---------- ON</span>
@@ -332,6 +357,7 @@ export const getQuadDivs = ({getInputClass, openChecklistModal, openNWCModal}) =
                     </div>
                     <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas9" onClick={() => openChecklistModal(QUAD_ACTIONS.qas9, 'qas9')}>
                     <span className={getInputClass('qas9')}>9. OBOGS ---------- CHECK</span>
+                    {renderNWCButton('qas9')}
                     </div>
                     <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas10" onClick={() => openChecklistModal(QUAD_ACTIONS.qas10, 'qas10')}>
                     <span className={getInputClass('qas10')}>10. Anti-G test ---------- CHECK</span>
@@ -370,6 +396,7 @@ export const getQuadDivs = ({getInputClass, openChecklistModal, openNWCModal}) =
                     </div>
                     <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas13" onClick={() => openChecklistModal(QUAD_ACTIONS.qas13, 'qas13')}>
                     <span className={getInputClass('qas13')}>13. Flaps ---------- CHECK</span>
+                    {renderNWCButton('qas13')}
                     </div>
                     <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas14" onClick={() => openChecklistModal(QUAD_ACTIONS.qas14, 'qas14')}>
                     <span className={getInputClass('qas14')}>14. TRIM AID switch ---------- ON</span>
@@ -399,7 +426,7 @@ export const getQuadDivs = ({getInputClass, openChecklistModal, openNWCModal}) =
                     <span className={getInputClass('qas19b')}>b. UHF -------------------------------- AS REQUIRED</span>
                     </div>
                     <div style={quadSubStepStyle} data-step-key="qas19c" onClick={() => openChecklistModal(QUAD_ACTIONS.qas19c, 'qas19c')}>
-                    <span className={getInputClass('qas19c')}>c. VHF --------------------------------- AS REQUIRED</span>
+                    <span className={getInputClass('qas19c')}>c. VHF -------------------------------- AS REQUIRED</span>
                     </div>
                     <div style={quadSubStepStyle} data-step-key="qas19d" onClick={() => openChecklistModal(QUAD_ACTIONS.qas19d, 'qas19d')}>
                     <span className={getInputClass('qas19d')}>d. VOR -------------------------------- AS REQUIRED</span>
@@ -408,10 +435,12 @@ export const getQuadDivs = ({getInputClass, openChecklistModal, openNWCModal}) =
                     <span className={getInputClass('qas19e')}>e. Transponder and FLT NO ------------------- SET</span>
                     </div>
                     <div style={quadSubStepStyle} data-step-key="qas19f" onClick={() => openChecklistModal(QUAD_ACTIONS.qas19f, 'qas19f')}>
-                    <span className={getInputClass('qas19f')}>f. FMS --------------------------------- AS REQUIRED</span>
+                    <span className={getInputClass('qas19f')} style={{flex: 1, textAlign: 'right'}}>f. FMS ------------------------- AS REQUIRED</span>
+                    {renderNWCButton('qas19f')}
                     </div>
                     <div style={quadSubStepStyle} data-step-key="qas19g" onClick={() => openChecklistModal(QUAD_ACTIONS.qas19g, 'qas19g')}>
-                    <span className={getInputClass('qas19g')}>g. Altitude, G, speed, fuel flags - AS REQUIRED</span>
+                    <span className={getInputClass('qas19g')} style={{flex: 1, textAlign: 'right'}}>g. Altitude, G, speed, fuel flags - AS REQUIRED</span>
+                    {renderNWCButton('qas19g')}
                     </div>
                     <div style={{...quadStepStyle, fontSize: asFontSize}} data-step-key="qas20" onClick={() => openChecklistModal(QUAD_ACTIONS.qas20, 'qas20')}>
                     <span className={getInputClass('qas20')}>20. Flight instruments ---------- CHECK</span>
@@ -436,6 +465,7 @@ export const getQuadDivs = ({getInputClass, openChecklistModal, openNWCModal}) =
         <div style={quadHeaderStyle}>TAXI</div>
         <div style={quadStepStyle} data-step-key="qtaxi1" onClick={() => openChecklistModal(QUAD_ACTIONS.qtaxi1, 'qtaxi1')}>
           <span className={getInputClass('qtaxi1')}>1. Transponder ---------- AS REQUIRED</span>
+          {renderNWCButton('qtaxi1')}
         </div>
         <div style={quadStepStyle} data-step-key="qtaxi2" onClick={() => openChecklistModal(QUAD_ACTIONS.qtaxi2, 'qtaxi2')}>
           <span className={getInputClass('qtaxi2')}>2. Heading and turn and slip indicators ---------- CHECK</span>
@@ -449,15 +479,18 @@ export const getQuadDivs = ({getInputClass, openChecklistModal, openNWCModal}) =
         <div style={quadHeaderStyle}>OVERSPEED GOVERNOR CHECK</div>
         <div style={quadStepStyle} data-step-key="qogc1" onClick={() => openChecklistModal(QUAD_ACTIONS.qogc1, 'qogc1')}>
           <span className={getInputClass('qogc1')}>1. Brakes ---------- HOLD AS REQUIRED</span>
+          {renderNWCButton('qogc1')}
         </div>
         <div style={quadStepStyle} data-step-key="qogc2" onClick={() => openChecklistModal(QUAD_ACTIONS.qogc2, 'qogc2')}>
           <span className={getInputClass('qogc2')}>2. PCL ---------- IDLE</span>
         </div>
         <div style={quadStepStyle} data-step-key="qogc3" onClick={() => openChecklistModal(QUAD_ACTIONS.qogc3, 'qogc3')}>
           <span className={getInputClass('qogc3')}>3. PMU switch ---------- OFF</span>
+          {renderNWCButton('qogc3')}
         </div>
         <div style={quadStepStyle} data-step-key="qogc4" onClick={() => openChecklistModal(QUAD_ACTIONS.qogc4, 'qogc4')}>
           <span className={getInputClass('qogc4')}>4. PCL ---------- ADVANCE AND VERIFY NP STABILIZES at 100±2%</span>
+          {renderNWCButton('qogc4')}
         </div>
         <div style={quadStepStyle} data-step-key="qogc5" onClick={() => openChecklistModal(QUAD_ACTIONS.qogc5, 'qogc5')}>
           <span className={getInputClass('qogc5')}>5. PCL ---------- ADVANCE AT LEAST AN ADDITIONAL 5% TORQUE AND VERIFY NP STABILIZES AT 100±2%</span>
@@ -504,6 +537,7 @@ export const getQuadDivs = ({getInputClass, openChecklistModal, openNWCModal}) =
         </div>
         <div style={quadStepStyle} data-step-key="qbto10" onClick={() => openChecklistModal(QUAD_ACTIONS.qbto10, 'qbto10')}>
           <span className={getInputClass('qbto10')}>10. Seat safety pin ---------- REMOVED AND STOWED (BOTH)</span>
+          {renderNWCButton('qbto10')}
         </div>
         <div style={quadStepStyle} data-step-key="qbto11" onClick={() => openChecklistModal(QUAD_ACTIONS.qbto11, 'qbto11')}>
           <span className={getInputClass('qbto11')}>11. ISS mode selector ---------- AS REQUIRED</span>
@@ -523,6 +557,7 @@ export const getQuadDivs = ({getInputClass, openChecklistModal, openNWCModal}) =
         </div>
         <div style={quadStepStyle} data-step-key="qlc3" onClick={() => openChecklistModal(QUAD_ACTIONS.qlc3, 'qlc3')}>
           <span className={getInputClass('qlc3')}>3. PROBES ANTI-ICE switch ---------- ON</span>
+          {renderNWCButton('qlc3')}
         </div>
         <div style={quadStepStyle} data-step-key="qlc4" onClick={() => openChecklistModal(QUAD_ACTIONS.qlc4, 'qlc4')}>
           <span className={getInputClass('qlc4')}>4. Nosewheel steering ---------- OFF</span>
@@ -539,9 +574,11 @@ export const getQuadDivs = ({getInputClass, openChecklistModal, openNWCModal}) =
         <div style={quadHeaderStyle}>AFTER TAKEOFF</div>
         <div style={quadStepStyle} data-step-key="qat1" onClick={() => openChecklistModal(QUAD_ACTIONS.qat1, 'qat1')}>
           <span className={getInputClass('qat1')}>1. Gear ---------- AS REQUIRED</span>
+          {renderNWCButton('qat1')}
         </div>
         <div style={quadStepStyle} data-step-key="qat2" onClick={() => openChecklistModal(QUAD_ACTIONS.qat2, 'qat2')}>
           <span className={getInputClass('qat2')}>2. Flaps ---------- UP</span>
+          {renderNWCButton('qat2')}
         </div>
       </div>
     ),
@@ -555,12 +592,14 @@ export const getQuadDivs = ({getInputClass, openChecklistModal, openNWCModal}) =
         </div>
         <div style={quadStepStyle} data-step-key="qclimb2" onClick={() => openChecklistModal(QUAD_ACTIONS.qclimb2, 'qclimb2')}>
           <span className={getInputClass('qclimb2')}>2. DEFOG switch ---------- AS REQUIRED</span>
+          {renderNWCButton('qclimb2')}
         </div>
         <div style={quadStepStyle} data-step-key="qclimb3" onClick={() => openChecklistModal(QUAD_ACTIONS.qclimb3, 'qclimb3')}>
           <span className={getInputClass('qclimb3')}>3. Vent control lever ---------- AS REQUIRED</span>
         </div>
         <div style={quadStepStyle} data-step-key="qclimb4" onClick={() => openChecklistModal(QUAD_ACTIONS.qclimb4, 'qclimb4')}>
           <span className={getInputClass('qclimb4')}>4. Pressurization system ---------- CHECK</span>
+          {renderNWCButton('qclimb4')}
         </div>
       </div>
     ),
@@ -634,6 +673,7 @@ export const getQuadDivs = ({getInputClass, openChecklistModal, openNWCModal}) =
         <div style={quadHeaderStyle}>BEFORE LANDING</div>
         <div style={quadStepStyle} data-step-key="qbl1" onClick={() => openChecklistModal(QUAD_ACTIONS.qbl1, 'qbl1')}>
           <span className={getInputClass('qbl1')}>1. DEFOG switch ---------- OFF</span>
+          {renderNWCButton('qbl1')}
         </div>
         <div style={quadStepStyle} data-step-key="qbl2" onClick={() => openChecklistModal(QUAD_ACTIONS.qbl2, 'qbl2')}>
           <span className={getInputClass('qbl2')}>2. Engine instruments ---------- CHECK</span>
@@ -649,6 +689,7 @@ export const getQuadDivs = ({getInputClass, openChecklistModal, openNWCModal}) =
         </div>
         <div style={quadStepStyle} data-step-key="qbl6" onClick={() => openChecklistModal(QUAD_ACTIONS.qbl6, 'qbl6')}>
           <span className={getInputClass('qbl6')}>6. Speed brake ---------- RETRACTED</span>
+          {renderNWCButton('qbl6')}
         </div>
       </div>
     ),
@@ -705,9 +746,11 @@ export const getQuadDivs = ({getInputClass, openChecklistModal, openNWCModal}) =
         <div style={quadHeaderStyle}>AFTER LANDING</div>
         <div style={quadStepStyle} data-step-key="qal1" onClick={() => openChecklistModal(QUAD_ACTIONS.qal1, 'qal1')}>
           <span className={getInputClass('qal1')}>1. ISS mode selector ---------- SOLO OR CMD FWD</span>
+          {renderNWCButton('qal1')}
         </div>
         <div style={quadStepStyle} data-step-key="qal2" onClick={() => openChecklistModal(QUAD_ACTIONS.qal2, 'qal2')}>
           <span className={getInputClass('qal2')}>2. Seat safety pin ---------- INSTALL</span>
+          {renderNWCButton('qal2')}
         </div>
         <div style={quadStepStyle} data-step-key="qal3" onClick={() => openChecklistModal(QUAD_ACTIONS.qal3, 'qal3')}>
           <span className={getInputClass('qal3')}>3. PROBES ANTI-ICE switch ---------- OFF</span>
@@ -729,6 +772,7 @@ export const getQuadDivs = ({getInputClass, openChecklistModal, openNWCModal}) =
         </div>
         <div style={quadStepStyle} data-step-key="qal9" onClick={() => openChecklistModal(QUAD_ACTIONS.qal9, 'qal9')}>
           <span className={getInputClass('qal9')}>9. BLEED AIR INFLOW switch ---------- OFF</span>
+          {renderNWCButton('qal9')}
         </div>
       </div>
     ),
@@ -739,6 +783,7 @@ export const getQuadDivs = ({getInputClass, openChecklistModal, openNWCModal}) =
         <div style={quadHeaderStyle}>ENGINE SHUTDOWN</div>
         <div style={quadStepStyle} data-step-key="qesd1" onClick={() => openChecklistModal(QUAD_ACTIONS.qesd1, 'qesd1')}>
           <span className={getInputClass('qesd1')}>1. PARKING BRAKE ---------- SET</span>
+          {renderNWCButton('qesd1')}
         </div>
         <div style={quadStepStyle} data-step-key="qesd2" onClick={() => openChecklistModal(QUAD_ACTIONS.qesd2, 'qesd2')}>
           <span className={getInputClass('qesd2')}>2. Landing and taxi lights ---------- OFF</span>
@@ -763,12 +808,15 @@ export const getQuadDivs = ({getInputClass, openChecklistModal, openNWCModal}) =
         </div>
         <div style={quadStepStyle} data-step-key="qesd9" onClick={() => openChecklistModal(QUAD_ACTIONS.qesd9, 'qesd9')}>
           <span className={getInputClass('qesd9')}>9. OBOGS ---------- OFF</span>
+          {renderNWCButton('qesd9')}
         </div>
         <div style={quadStepStyle} data-step-key="qesd10" onClick={() => openChecklistModal(QUAD_ACTIONS.qesd10, 'qesd10')}>
           <span className={getInputClass('qesd10')}>10. PCL ---------- IDLE &gt;60 SECONDS, THEN OFF</span>
+          {renderNWCButton('qesd10')}
         </div>
         <div style={quadStepStyle} data-step-key="qesd11" onClick={() => openChecklistModal(QUAD_ACTIONS.qesd11, 'qesd11')}>
           <span className={getInputClass('qesd11')}>11. CANOPY ---------- OPEN (AS REQUIRED)</span>
+          {renderNWCButton('qesd11')}
         </div>
         <div style={quadStepStyle} data-step-key="qesd12" onClick={() => openChecklistModal(QUAD_ACTIONS.qesd12, 'qesd12')}>
           <span className={getInputClass('qesd12')}>12. PMU STATUS message ---------- EXTINGUISHED</span>
@@ -778,9 +826,11 @@ export const getQuadDivs = ({getInputClass, openChecklistModal, openNWCModal}) =
         </div>
         <div style={quadStepStyle} data-step-key="qesd14" onClick={() => openChecklistModal(QUAD_ACTIONS.qesd14, 'qesd14')}>
           <span className={getInputClass('qesd14')}>14. Gust lock ---------- ENGAGE (AS REQUIRED)</span>
+          {renderNWCButton('qesd14')}
         </div>
         <div style={quadStepStyle} data-step-key="qesd15" onClick={() => openChecklistModal(QUAD_ACTIONS.qesd15, 'qesd15')}>
           <span className={getInputClass('qesd15')}>15. Interior/exterior lights ---------- OFF</span>
+          {renderNWCButton('qesd15')}
         </div>
         <div style={quadStepStyle} data-step-key="qesd16" onClick={() => openChecklistModal(QUAD_ACTIONS.qesd16, 'qesd16')}>
           <span className={getInputClass('qesd16')}>16. GEN, BAT, and AUX BAT switches ---------- OFF</span>
@@ -794,9 +844,9 @@ export const getQuadDivs = ({getInputClass, openChecklistModal, openNWCModal}) =
 export const QUAD_ANSWERS = {
   // COCKPIT (ALL FLIGHTS)
   qco1: ["Strap in ---------- COMPLETE"],
-  qco2: ["BAT\u200B switch ---------- ON", "VOLTS"],
+  qco2: ["BAT\u200B switch ---------- ON", "\u200BVOLTS"],
   qco3: ["Regulator anti-suffocation valve ---------- CHECK"],
-  qco4: ["External Power ---------- AS REQUIRED", "VOLTS"],
+  qco4: ["External Power ---------- AS REQUIRED", "\u200BVOLTS"],
   qco5: ["Sea\u200Bt height ---------- ADJUST"],
   qco6: ["Rudder pedals ---------- ADJUST"],
   qco7: ["Flight controls ---------- CHECK"],
@@ -843,14 +893,14 @@ export const QUAD_ANSWERS = {
   qhias9: [""],
 
   // ENGINE START (AUTO)
-  qestart1: ["Canopy ---------- CLOSED AND LATCHED", "EICAS", "Master Warning"],
-  qestart2: ["anti-coll light", "nav light"],
-  qestart3: ["EICAS", "pmu"],
-  qestart4: ["PCL ---------- ADVANCE TO START POSITION", "EICAS"],
+  qestart1: ["Canopy ---------- CLOSED AND LATCHED", "\u200BEICAS", "\u200BMaster Warning"],
+  qestart2: ["Navigation and anti-collision lights ---------- AS REQUIRED","\u200Banti-coll light", "\u200Bnav light"],
+  qestart3: ["PMU FAIL/PMU STATUS message ---------- EXTINGUISHED","\u200BEICAS", "\u200Bpmu"],
+  qestart4: ["PCL ---------- ADVANCE TO START POSITION", "\u200BEICAS"],
   qestart5: ["Pro\u200Bp\u200Beller area ---------- CLEAR"],
   qestart6: ["STARTER switch ---------- AUTO/RESET"],
-  qestart7: ["Hyd Press", "ITT", "N1", "EICAS", "Fuel Flow"],
-  qestart8: ["PCL", "N1", "ITT"],
+  qestart7: ["Engine Start ---------- MONITOR","\u200BHyd Press", "\u200BITT", "\u200BN1", "\u200BEICAS", "\u200BFuel Flow"],
+  qestart8: ["PCL ---------- ADVANCE PAST TWO CLICKS, THEN IDLE, AT OR ABOVE 60% N\u200B1","\u200BPCL", "\u200BN1", "\u200BITT"],
   qestart9: ["External power ---------- DISCONNECTED"],
 
   // MOTORING RUN PROCEDURE
@@ -869,7 +919,7 @@ export const QUAD_ANSWERS = {
   qas6: ["AVIONICS MASTER switch ---------- ON"],
   qas7: ["OBOGS supply lever ---------- ON"],
   qas8: ["Oxyg\u200Ben mask ---------- ON AND SECURE"],
-  qas9: ["concentration", "OBOGS pressure", "flow i"],
+  qas9: ["OBOGS ---------- CHECK","\u200Bconcentration", "\u200BOBOGS pressure", "\u200Bflow i"],
   qas10: ["Anti-G test ---------- CHECK"],
   qas11: ["System test panel ---------- CHECK"],
   qas11a: ["Lamp test ", "Gear", "Gea\u200Br Light", "FD\u200BR", "Master Warning", "Fire Light", "Master Caution", "COM1", "COM2", "EICAS"],
@@ -880,7 +930,7 @@ export const QUAD_ANSWERS = {
   qas11f: ["OVR G audio switch ---------- CHECK"],
   qas11g: ["BINGO FUEL audio switch ---------- CHECK"],
   qas12: ["Speed brake ---------- CHECK", "EICAS"],
-  qas13: ["Flaps ---------- CHECK", "Flap Indicator", "EICAS"],
+  qas13: ["Flaps ---------- CHECK", "\u200BFlap Indicator", "\u200BEICAS"],
   qas14: ["TRI\u200BM AID switch ---------- ON", "EICAS"],
   qas15: ["Nosewheel steering ---------- ON", "EICAS"],
   qas16: ["PARKING BRAKE ---------- RELEASE"],
@@ -893,7 +943,7 @@ export const QUAD_ANSWERS = {
   qas19d: ["VOR -------------------------------- AS REQUIRED"],
   qas19e: ["Transponder and FLT NO ------------------- SET"],
   qas19f: ["FMS --------------------------------- AS REQUIRED"],
-  qas19g: ["Altitud\u200Be, G, spee\u200Bd, fue\u200Bl flags - AS REQUIRED", "G Reset", "Bingo Set", "System Button"],
+  qas19g: ["Altitud\u200Be, G, spee\u200Bd, fue\u200Bl flags - AS REQUIRED", "\u200BG Reset", "\u200BBingo Set", "\u200BSystem Button"],
   qas20: ["Flight instruments ---------- CHECK"],
   qas21: ["Altimeters ---------- SET AND CHECK", 'altimete2r'],
   qas22: ["EICAS display ---------- CHECK"],
@@ -906,8 +956,8 @@ export const QUAD_ANSWERS = {
   // OVERSPEED GOVERNOR CHECK
   qogc1: ["Brakes ---------- HOLD AS REQUIRED"],
   qogc2: ["PCL ---------- IDLE", "N1"],
-  qogc3: ["PMU switch ---------- OFF", "N1", "Master Warning", "Master Caution"],
-  qogc4: ["PCL", "N\u200BP"],
+  qogc3: ["PMU switch ---------- OFF", "\u200BN1", "\u200BMaster Warning", "\u200BMaster Caution"],
+  qogc4: ["PCL ---------- ADVANCE AND VERIFY NP STABILIZES at 100±2%","\u200BPCL", "\u200BN\u200BP"],
   qogc5: ["PCL", "TORQUE", "N\u200BP"],
   qogc6: ["PCL ---------- IDLE", "N1"],
   qogc7: ["PMU switch ---------- NORM", "N1", "N\u200BP"],
@@ -928,13 +978,13 @@ export const QUAD_ANSWERS = {
   // LINEUP CHECK
   qlc1: ["landing/", "taxi light", "anti-coll light"],
   qlc2: ["Transponder ---------- AS REQUIRED"],
-  qlc3: ["PROBES ANTI-ICE switch ---------- ON", "EICAS"],
+  qlc3: ["PROBES ANTI-ICE switch ---------- ON", "\u200BEICAS"],
   qlc4: ["Nosewheel steering ---------- OFF", "EICAS"],
   qlc5: ["EICAS display ---------- CHECK"],
 
   // AFTER TAKEOFF
-  qat1: ["Gear ---------- AS REQUIRED", "Altitude", "vsi"],
-  qat2: ["Flaps ---------- UP", "airspeed", "Gea\u200Br Light Gear"],
+  qat1: ["Gear ---------- AS REQUIRED", "\u200BAltitude", "\u200Bvsi"],
+  qat2: ["Flaps ---------- UP", "\u200Bairspeed", "\u200BGea\u200Br Light", "\u200BGear"],
 
   // CLIMB (PASSING 10,000 FEET)
   qclimb1: ["concentration", "Flow I"],
@@ -968,7 +1018,7 @@ export const QUAD_ANSWERS = {
   qbl3: ["Gear ---------- DOWN", "Gea\u200Br Light"],
   qbl4: ["Brakes ---------- CHECK, AS REQUIRED"],
   qbl5: ["FLAPS ---------- AS REQUIRED", "Flap Indicator"],
-  qbl6: ["EICAS", "PCL"],
+  qbl6: ["Speed brake ---------- RETRACTED","\u200BEICAS", "\u200BPCL"],
 
   // FULL STOP/TAXI BACK CHECKLIST
   qfstb1: ["PROBES ANTI-ICE switch ---------- OFF"],
@@ -1005,13 +1055,13 @@ export const QUAD_ANSWERS = {
   qesd6: ["AIR COND switch ---------- OFF"],
   qesd7: ["EVAP BLWR control ---------- OFF"],
   qesd8: ["Oxyg\u200Ben mask ---------- REMOVE"],
-  qesd9: ["supply", "OBOGS pressure", 'concentration'],
-  qesd10: ["PCL ---------- IDLE >60 SECONDS, THEN OFF", "ITT", "N1", "Fuel Flow"],
+  qesd9: ["OBOGS  ---------- OFF", "\u200Bsupply", "\u200BOBOGS pressure", '\u200Bconcentration'],
+  qesd10: ["PCL ---------- IDLE >60 SECONDS, THEN OFF", "\u200BITT", "\u200BN1", "\u200BFuel Flow"],
   qesd11: ["CANOPY ---------- OPEN (AS REQUIRED)"],
   qesd12: ["EICAS"],
   qesd13: ["FD\u200BR light ---------- EXTINGUISHED"],
   qesd14: ["Gust lock ---------- ENGAGE (AS REQUIRED)"],
-  qesd15: ["landing/", "taxi light", "anti-coll light", "nav light", 'floodLight', 'sideLight', 'instLight'],
+  qesd15: ["Interior/exterior lights ---------- OFF", "\u200Blanding/", "\u200Btaxi light", "\u200Banti-coll light", "\u200Bnav light", '\u200BfloodLight', '\u200BsideLight', '\u200BinstLight'],
   qesd16: ['BAT\u200B, ', 'GEN, ', 'AND AUX BAT SWITCHES - OFF']
 
   // // BEFORE LEAVING AIRCRAFT
@@ -1854,211 +1904,7 @@ export const QUAD_ACTIONS = {
 };
 
 export const QUAD_NWC = {
-  bei1: {
-    notes: [],
-    warnings: [
-      "When entering and exiting the cockpit, extreme caution must be exercised around the ejection control handle.",
-      "To preclude inadvertent seat firing, ensure ejection seat handle safety pins are installed and ejection seat handle safety pin warning streamer is free and clear of ejection seat handle before proceeding with inspection.",
-      "To prevent injury, ensure head is clear of canopy handle, latch hooks, and guide pins when entering or exiting cockpit.",
-      "Ensure seat safety pin warning streamer is free and clear of ejection seat handle."
-    ],
-    cautions: []
-  },
-  bei2: {
-    notes: [],
-    warnings: [
-      "Ensure the metal loop in the ejection handle is not frayed or broken."
-    ],
-    cautions: []
-  },
-  bei4: {
-    notes: [],
-    warnings: [],
-    cautions: [
-      "Failure to close and latch the CFS pin storage box prior to closing the canopy may damage the canopy when the canopy is closed."
-    ]
-  },
-  bei5: {
-    notes: [],
-    warnings: [
-      "With starter engaged (switch in AUTO or MAN), propeller will begin to rotate after electrical power application."
-    ],
-    cautions: []
-  },
-  bei9: {
-    notes: [],
-    warnings: [
-      "Both seats will eject if the ISS is in BOTH and an unpinned ejection handle is pulled, even if the other seat is pinned.",
-      "With the ISS mode selector set to CMD FWD, the crewmember in the rear cockpit initiates ejection of the rear seat only, and the crewmember in the front cockpit initiates ejection for both front and rear seats with the rear seat ejecting first even if the rear seat ejection handle safety pin is installed."
-    ],
-    cautions: []
-  },
-  bei12: {
-    notes: [],
-    warnings: [],
-    cautions: [
-      "Verify two audible clicks per PCL by moving the PCL slowly and the PCL in both cockpits are interconnected and move freely through the full range of motion. Verify positive idle-stop and no forward PCL movement is required to move aft past idle-stop to OFF."
-    ]
-  },
-  bei21: {
-    notes: [
-      "Typical EICAS messages which may be present on initial application of power are GEN, CANOPY, FUEL PX, OBOGS FAIL, PMU FAIL, OIL PX, IAC2 FAIL, L PHT INOP, R PHT INOP, PMU STATUS, STATUS BIT, and TAD OFF. Aural warning and EICAS messages OIL PX, PMU FAIL, and PMU STATUS should stop flashing when MASTER WARN/MASTER CAUTION switchlights are depressed."
-    ],
-    warnings: [],
-    cautions: []
-  },
-  bei26: {
-    notes: [],
-    warnings: [],
-    cautions: [
-      "Ensure ejection seat pan and side consoles are clear of all lap straps, cords, and connections prior to adjusting seat height to prevent possible damage to seat or equipment.",
-      "Secure shoulder straps to headrest before adjusting seat."
-    ]
-  },
-  bei28: {
-    notes: [],
-    warnings: [
-      "Actuation of a CFS initiator will cause detonator to fire plungers in the CFS donor assembly. These plungers will not cause detonation of the CFS explosive cords if the canopy is open, but will be in a position to initiate detonation when the canopy is closed."
-    ],
-    cautions: []
-  },
-  bei29c: {
-    notes: [],
-    warnings: [
-      "A jammed inertia reel will prevent proper shoulder harness operation and increase the risk of injury during ejection."
-    ],
-    cautions: [
-      "Ensure both parachute riser/inertia reel straps are pulled out slowly and simultaneously to their full extension. Attempting to test the locking ability of the straps may damage the harness reel velocity lock mechanism."
-    ]
-  },
-  bei29g: {
-    notes: [],
-    warnings: [
-      "Do not lift the MOR handle. Lifting the MOR handle can result in the initiation of the manual release sequence which can cause injury/death to personnel and/or damage to equipment."
-    ],
-    cautions: []
-  },
-  bei29i: {
-    notes: [],
-    warnings: [
-      "If ADU and radio beacon cables are not properly connected to the ejection seat the automatic function of the SSK will not function and the radio beacon will not automatically activate if ejection sequence is activated."
-    ],
-    cautions: []
-  },
-  bei29j: {
-    notes: [
-      "The emergency oxygen cylinder will be charged to 1800 psi minimum at 70 °F. However, indicated pressure is affected by temperature changes. To approximate acceptable bottle pressure, add or subtract 3.5 psi for each degree the temperature is above or below 70 °F."
-    ],
-    warnings: [],
-    cautions: []
-  },
-  bei30: {
-    notes: [],
-    warnings: [],
-    cautions: [
-      "Failure to stow the gust lock completely may prevent the flight controls from operating properly. Any attempt to actuate the flight controls with the gust lock not properly stowed may result in damage to the flight control assemblies. Ensure the gust lock is not impeded by the leather boot at the base of the control stick."
-    ]
-  },
-  ei1_3: {
-    notes: [],
-    warnings: [
-      "Ensure opposite aileron is clear prior to moving control surface. Movement of controls could cause injury."
-    ],
-    cautions: []
-  },
-  ei2_2i: {
-    notes: [],
-    warnings: [],
-    cautions: [
-      "Landing gear retraction with the nose gear jack pad not properly stowed may result in structural damage or landing gear malfunction."
-    ]
-  },
-  ei2_3b: {
-    notes: [],
-    warnings: [],
-    cautions: [
-      "If any circuit breaker is found open, consult with maintenance before flight."
-    ]
-  },
-  ei2_8c: {
-    notes: [],
-    warnings: [],
-    cautions: [
-      "Do not rotate the propeller by hand to reduce IOAT. Rotating the propeller without oil pressure can damage the engine. Slow and limited hand rotation of the propeller for inspection purposes is acceptable."
-    ]
-  },
-  ei5_6: {
-    notes: [
-      "Visually inspect nose gear spring strut for condition and serviceability. Ensure that none of the bolts are missing from the forward attachment bracket, that the bracket itself is not bent or twisted, and that there is no gap between the spring washers and the spring strut end cap or \"Bell\"."
-    ],
-    warnings: [],
-    cautions: []
-  },
-  ei5_8: {
-    notes: [],
-    warnings: [],
-    cautions: [
-      "Failure to ensure the system service bay access panel is securely latched and flush with the bottom of the aircraft can result in aircraft damage from panel opening and interfering with speed brake operation. If unusual force is necessary to close the latches, it is possible that one or more latches may open in flight resulting in aircraft damage."
-    ]
-  },
-  ei6_4: {
-    notes: [],
-    warnings: [],
-    cautions: [
-      "To avoid damaging the rudder trim tab and trim mechanism, do not push or pull on rudder trim tab when checking rudder movement."
-    ]
-  },
-  rc1a: {
-    notes: [],
-    warnings: [
-      "To prevent injury, make sure head is clear of canopy handle, latch hooks and guide pins when entering or exiting cockpit."
-    ],
-    cautions: []
-  },
-  rc3: {
-    notes: [],
-    warnings: [
-      "Whenever ejection for both seats is activated, there is a 0.37-second delay in front seat ejection after rear seat ejection.",
-      "When flying solo, the ISS mode selector shall be set to SOLO."
-    ],
-    cautions: []
-  },
-  rc14: {
-    notes: [],
-    warnings: [
-      "Failure to secure the rear seat oxygen regulator will result in the loss of ability to deactivate OBOGS from the front seat."
-    ],
-    cautions: []
-  },
-  rc16: {
-    notes: [],
-    warnings: [
-      "Failure to secure rear cockpit for solo flight may result in restriction of flight control movement."
-    ],
-    cautions: []
-  },
-  rc16a: {
-    notes: [],
-    warnings: [
-      "Make sure ejection seat pan and side consoles are clear of all lap straps, cords, and connections prior to lowering seat to prevent possible damage to seat or equipment."
-    ],
-    cautions: []
-  },
-  rc16de: {
-    notes: [],
-    warnings: [
-      "Failure to tighten the leg garters may result in inadvertent flight control interference with the oxygen hoses and comm cord."
-    ],
-    cautions: []
-  },
-  rc16i: {
-    notes: [
-      "The locking side of the control stick boot collar should face forward. If in any other position, putting the seat full down or full up may cause portions of the control stick to contact the ejection seat safety pin, inhibiting full aft stick travel."
-    ],
-    warnings: [],
-    cautions: []
-  },
-  c1: {
+  qco1: {
     notes: [
       "Prior to ingress, ensure that attachment shear ring in each leg restraint line is between snubber unit and leg restraint line floor bracket.",
       "Failure to route the lap straps under the anti-G hose may result in loss of air supply to anti-G suit, rendering anti-G suit inoperative."
@@ -2071,7 +1917,7 @@ export const QUAD_NWC = {
     ],
     cautions: []
   },
-  c2: {
+  qco2: {
     notes: [
       "Typical EICAS messages which may be present on initial application of power are GEN, CANOPY, FUEL PX, OBOGS FAIL, OIL PX, ADC FAIL, XPDR FAIL, IAC2 FAIL, EHYD PX LO, L PHT INOP, R PHT INOP, CHK ENG, RPT FWD, IRS DEGD, STATUS/BIT, and TAD OFF. Aural warning and EICAS messages should stop flashing when MASTER WARN/MASTER CAUTION switchlights are depressed.",
       "The evaporator blower may provide a burst of air at battery turn on. Avionics filter capacitors that may not deplete prior to re-energizing the battery switch may cause this. This is normal."
@@ -2079,7 +1925,7 @@ export const QUAD_NWC = {
     warnings: [],
     cautions: []
   },
-  c4: {
+  qco4: {
     notes: [
       "Using external power provides for lower ITT during engine starts and preserves battery life. Consider using external power if available. Also, consider using external power when motoring the engine."
     ],
@@ -2088,14 +1934,14 @@ export const QUAD_NWC = {
       "Do not connect external power if battery voltage is below 22.0 volts. Connecting external power could cause damage to the aircraft battery."
     ]
   },
-  c5: {
+  qco5: {
     notes: [],
     warnings: [],
     cautions: [
       "Make sure ejection seat pan and side consoles are clear of all lap straps, cords, and connections prior to adjusting seat height to prevent possible damage to seat or equipment."
     ]
   },
-  c6: {
+  qco6: {
     notes: [
       "Do not push rudder pedals while adjusting them."
     ],
@@ -2104,14 +1950,14 @@ export const QUAD_NWC = {
       "Use of excessive force while adjusting rudder pedals to full forward or full aft position may cause binding in the adjustment handle."
     ]
   },
-  c7: {
+  qco7: {
     notes: [],
     warnings: [
       "To prevent injury to ground crew, exercise caution when operating the speed brake or flight controls with ground crew present."
     ],
     cautions: []
   },
-  c22: {
+  qco22: {
     notes: [
       "Ensure parking brake is not inadvertently released by leg contact."
     ],
@@ -2120,28 +1966,28 @@ export const QUAD_NWC = {
     ],
     cautions: []
   },
-  c36: {
+  qco36: {
     notes: [
       "For positive cockpit ventilation, place the RAM AIR FLOW switch to the NORM or HI position. For best cockpit cooling at altitudes below 7,500 feet MSL, set RAM AIR FLOW switch to OFF. Set temperature controller as required."
     ],
     warnings: [],
     cautions: []
   },
-  es_ioat: {
+  qhias1: {
     notes: [
       "The EDM FAIL message indicates that the engine indicating system has accommodated a fault. Parameters with the EDM FAIL message which do not display red X's and/or missing pointers are functional and may be used normally."
     ],
     warnings: [],
     cautions: []
   },
-  es_ioat3: {
+  qhias3: {
     notes: [],
     warnings: [],
     cautions: [
       "Do not rotate the propeller by hand to reduce IOAT. Rotating the propeller without oil pressure can damage the engine. Slow and limited hand rotation of the propeller for inspection purposes is acceptable."
     ]
   },
-  es1: {
+  qestart1: {
     notes: [],
     warnings: [
       "Failure to properly latch the canopy could lead to canopy opening during flight, leading to a possible loss of control during flight and inability to eject.",
@@ -2153,28 +1999,28 @@ export const QUAD_NWC = {
       "Avoid applying abrupt and/or excessive force to the canopy locking handle at all times. Excessive force in any direction may damage the canopy locking mechanism."
     ]
   },
-  es2: {
+  qestart2: {
     notes: [
       "Anti-collision strobes may be left off if operation is distracting, such as for ground operations at night."
     ],
     warnings: [],
     cautions: []
   },
-  es3: {
+  qestart3: {
     notes: [],
     warnings: [],
     cautions: [
       "With the PMU STATUS caution, the PMU auto abort function may be unavailable. Do not continue Engine Start (AUTO) procedures."
     ]
   },
-  es4: {
+  qestart4: {
     notes: [],
     warnings: [],
     cautions: [
       "Failure to ensure the ST READY light remains illuminated may result in engine damage due to loss of the automatic shutdown feature."
     ]
   },
-  es6: {
+  qestart6: {
     notes: [
       "Engine sounds associated with compressor instability during start are acceptable as long as PMU allows the start to continue.",
       "Aural tones are inaudible during engine start until the engine's gas generator indication (N1) is above 50%."
@@ -2186,7 +2032,7 @@ export const QUAD_NWC = {
       "If the ST READY advisory goes out once the start switch is placed to Auto/Reset, the start should be terminated to prevent potential engine damage."
     ]
   },
-  es7: {
+  qestart7: {
     notes: [
       "With the PCL in any position other than OFF, moving the PCL to OFF or reselecting the starter switch to AUTO/RESET at any time during the start sequence will terminate the start. If a start is initiated with the PCL in OFF, the start may be aborted by reselecting AUTO/RESET on the starter switch."
     ],
@@ -2195,7 +2041,7 @@ export const QUAD_NWC = {
       "If a start attempt is aborted (PMU or manual abort), execute Motoring Run Procedure in Section III."
     ]
   },
-  es8: {
+  qestart8: {
     notes: [],
     warnings: [
       "When moving the PCL forward past IDLE, verify travel past idle by hearing two audible clicks as the PCL is moved forward. Improper position of the PCL short of the two audible clicks could result in inadvertent engine shutdown.",
@@ -2203,62 +2049,79 @@ export const QUAD_NWC = {
     ],
     cautions: []
   },
-  es9: {
+  qestart9: {
     notes: [],
     warnings: [
       "Ensure PCL, speed brake, and flight controls are not moved until ground crew is clear of aircraft."
     ],
     cautions: []
   },
-  bt5: {
+  qmrp4: {
+    notes: [
+      "Observe starter duty cycle cool-down period."
+    ],
+    warnings: [],
+    cautions: [
+      "STARTER switch is not spring-loaded from MANUAL to NORM."
+    ]
+  },
+  qas5: {
     notes: [
       "For best cockpit cooling, select AIR COND switch to ON, and RAM AIR FLOW switch to OFF. For positive cockpit ventilation below 7,500 feet MSL, place the RAM AIR FLOW switch to the NORM or HI position."
     ],
     warnings: [],
     cautions: []
   },
-  bt6: {
+  qas6: {
     notes: [
       "After turning ON the GENERATOR switch, allow approximately 10 seconds before turning ON the AVIONICS MASTER switch to allow battery amperage to stabilize."
     ],
     warnings: [],
     cautions: []
   },
-  bt9: {
+  qas9: {
     notes: [
       "After initial power-up, the OBOGS FAIL annunciator will be inhibited for 4 minutes during OBOGS monitor warmup."
     ],
     warnings: [],
     cautions: []
   },
-  bt12: {
+  qas13: {
     notes: [],
     warnings: [
       "To prevent injury to ground crew, exercise caution when operating the speed brake or flight controls with ground crew present."
     ],
     cautions: []
   },
-  bt19f: {
+  qas19f: {
     notes: [
-      "The Flight NO. on the FMS ROUTE page is transmitted as the aircraft call sign by the transponder.",
+      "The Flight NO. on the FMS ROUTE page is transmitted as the aircraft call sign by the transponder."
+    ],
+    warnings: [],
+    cautions: []
+  },
+  qas19g:{
+    notes:[
+      
       "The built-in test (BIT) feature provides an adequate test of the navigation equipment. The BIT does not provide a test of the antenna. The antenna may be checked by confirming reception of a local VOR/LOC signal by a positive ident.",
       "UHF reception may be degraded by blanking of the UHF antenna. This has been noted frequently when the aircraft is headed directly toward or away from the transmitting station. This may occur on all UHF frequencies until a fix is identified and implemented."
     ],
     warnings: [],
     cautions: []
   },
-  t: {
+  qtaxi1: {
     notes: [],
     warnings: [
       "Failure of the nose wheel steering system may prevent the pilot from changing nose wheel direction without disengaging the system. If the nose wheel steering system fails to respond to pilot input, disengage nose wheel steering and use differential braking to maintain directional control while stopping the aircraft. Do not taxi with a known directional control problem.",
-      "Taking off with a known failure of the nose wheel steering system may cause the nose wheel not to be centered upon retraction, resulting in damage to the aircraft and potential controllability issues on the subsequent landing.",
+      "Taking off with a known failure of the nose wheel steering system may cause the nose wheel not to be centered upon retraction, resulting in damage to the aircraft and potential controllability issues on the subsequent landing."
+    ],
+    cautions: [
       "Minimum radius turns are possible through use of power, full rudder, and differential braking. To preclude unnecessary wear to nose wheel steering and tire, disengage nose wheel steering prior to executing sharp turns with differential braking. To re-engage nose wheel steering, actuate the nose wheel steering switch prior to applying opposite rudder. Failure to do so may result in nose wheel steering not engaging.",
       "To prevent ground resonance within the propeller, stabilized operation of the propeller in the 62-80% NP range is prohibited on the ground.",
       "If brake pressure appears to fade during application, or brakes are not responding as expected, fully release brakes then re-apply. Both crew members must fully release brakes for this to be effective."
-    ],
-    cautions: []
+    ]
   },
-  ogc: {
+  qogc1: {
     notes: [
       "Any fault discovered during this check is reason for ground abort. Complete this check in a non-congested area. Monitor oil temperature, and attempt to park facing into the wind for extended ground operations.",
       "If conditions permit, park aircraft facing into the wind prior to beginning overspeed governor check to enhance oil cooling and reduce engine operating temperatures."
@@ -2266,16 +2129,16 @@ export const QUAD_NWC = {
     warnings: [],
     cautions: []
   },
-  ogc3: {
+  qogc3: {
     notes: [
       "It is acceptable for N1 to make little or no change when turning off the PMU as long as it is in limits."
     ],
     warnings: [],
     cautions: []
   },
-  ogc4: {
+  qogc4: {
     notes: [
-      "The PIU governing tolerance is 1002%.",
+      "The PIU governing tolerance is 100 ± 2%.",
       "At higher density altitudes, less torque may be required to achieve 100% NP."
     ],
     warnings: [],
@@ -2283,28 +2146,30 @@ export const QUAD_NWC = {
       "Advancing the PCL prior to engine stabilizing with PMU OFF or too rapidly may cause high ITT and engine overtemperature."
     ]
   },
-  lc3: {
+  qbto10: {
+    notes:["The rear cockpit ejection seat safety pin will be removed with the ISS mode selector in the CMD FWD position during all sorties when non-rated personnel occupy the rear seat."],
+    warnings: [
+      "Prior to pulling ejection seat safety pin, ensure safety streamer is free and clear of ejection seat handle."
+    ],
+    cautions: []
+  },
+  qlc3: {
     notes: [],
     warnings: [],
     cautions: [
       "Prolonged use of pitot and AOA heat while on the ground will damage the pitot and AOA heating elements."
     ]
   },
-  to: {
-    notes: [],
-    warnings: [],
-    cautions: [
-      "Avoid wake turbulence. The aircraft is particularly susceptible to wake turbulence. The vortex-produced rolling moment can exceed the aileron authority of the aircraft. Allow a minimum of 2 minutes before takeoff behind any larger type aircraft or helicopter. Attempt to remain above and upwind of the preceding aircraft's flight path. Wake turbulence will be most pronounced during conditions of calm, or near calm, surface winds."
-    ]
-  },
-  ato1: {
+  qat1: {
     notes: [
+      "If climbout obstacles are a factor, rotate to 15° nose high on takeoff, raise gear, and maintain VOBS takeoff speed until clear of obstacles. Raise flaps when clear of obstacles (Figure A3-8)",
+      "If remaining in the terminal area, this checklist should be accomplished in conjunction with the Before Landing checklist.",
       "The gear may be raised once a positive rate of climb is established. If remaining in the pattern, the pilot may leave the gear down, but must observe the maximum gear extended speed in Section V."
     ],
     warnings: [],
     cautions: []
   },
-  ato2: {
+  qat2: {
     notes: [
       "If the flaps are set to LDG and the gear is raised, the gear warning horn will sound and cannot be canceled. Select flaps TO or UP to cancel the horn.",
       "To avoid excessive stick forces, trim nose down as aircraft accelerates to climb speed."
@@ -2312,76 +2177,37 @@ export const QUAD_NWC = {
     warnings: [],
     cautions: []
   },
-  c10_2: {
+  qclimb2: {
     notes: [
       "With canopy defog ON, expect an increase in ITT of up to 40 °C for a given PCL setting. At high power settings, this may exceed engine ITT limitations. The PCL should be retarded to maintain operating limits. Cockpit noise will also increase. Performance will decrease with defog on. A DUCT TEMP indication is likely at climb or cruise power with canopy defog ON and cockpit temperature controller set to AUTO or MANUAL HOT. Refer to Environmental Systems Duct Overtemp procedure in Section III."
     ],
     warnings: [],
     cautions: []
   },
-  c10_4: {
+  qclimb4: {
     notes: [
       "If readings other than 3.6±0.2 psi are encountered at or above 18,069 feet PA, notify maintenance."
     ],
     warnings: [],
     cautions: []
   },
-  d: {
+  qbl1: {
     notes: [
-      "For positive cockpit ventilation, place the RAM AIR FLOW switch to the NORM or HI position. For best cockpit cooling at altitudes below 7,500 feet MSL, set RAM AIR FLOW switch to OFF. Set temperature controller as required."
+      "Prior to landing, set pressurization switch to DUMP if landing field elevation is above 7500 feet MSL."
+
     ],
     warnings: [],
     cautions: []
   },
-  ia_gps: {
-    notes: [],
-    warnings: [
-      "The GPS always displays distance to the active waypoint. During GPS approaches, this distance may not be the same as the published DME distance on the instrument approach procedure."
-    ],
-    cautions: []
-  },
-  bl: {
+  qbl6: {
     notes: [
-      "If climbout obstacles are a factor, rotate to 15° nose high on takeoff, raise gear, and maintain VOBS takeoff speed until clear of obstacles. Raise flaps when clear of obstacles (Figure A3-8)",
-      "If remaining in the terminal area, this checklist should be accomplished in conjunction with the Before Landing checklist."
+      "Setting flaps to TO or LDG automatically retracts the speed brake.",
+      "If conditions require, the pilot may select defog during climbout from missed approach, go around/waveoff, or touch and go."
     ],
     warnings: [],
     cautions: []
   },
-  nl: {
-    notes: [
-      "For heavy weight conditions, approach speed will be greater than those indicated in Figure 2-8 and Figure 2-9. Fly base and final with no less than an \"on speed\" AOA indication."
-    ],
-    warnings: [],
-    cautions: [
-      "Excessive pitch near the ground can result in scraping the tail on the runway.",
-      "To avoid possible contact of ventral fin with runway, do not allow the aircraft to develop excessive sink rates or allow excessive nose-high pitch attitudes during landing. No-flap landings with excessive sink rates greatly increase the likelihood of tail strikes.",
-      "Most blown tires occur prior to tire spin-up or below 40 knots. Holding excessive brake pressure as the aircraft slows below 20 knots may result in locking the brakes and blown tires."
-    ]
-  },
-  nl_shimmy: {
-    notes: [],
-    warnings: [
-      "Engaging nose wheel steering during shimmy may damage the actuator and result in a steering \"hard over\" event and loss of directional control. Do not engage nose wheel steering during landing rollout in attempt to dampen nose wheel shimmy.",
-      "If one brake fails, use the other brake and rudder/ailerons to aid in maintaining directional control. If both cockpits are occupied, the pilot with effective brakes shall assume braking authority. If directional control cannot be maintained, execute Aircraft Departs Prepared Surface procedure.",
-      "Neutralize rudder pedals prior to engaging nose wheel steering to avoid excessive swerve when nose wheel steering is selected."
-    ],
-    cautions: []
-  },
-  mb: {
-    notes: [
-      "All stopping distances computed from Appendix A are based on maximum braking. Maximum braking is very difficult to achieve. Variables such as brake and tire condition, pilot technique, etc., may increase computed landing distances."
-    ],
-    warnings: [
-      "The aircraft is not equipped with anti-skid or anti-lock protection. Do not apply wheel brakes until the aircraft is firmly on the ground and the weight is fully on the wheels. If a wheel brake locks up before the weight of the aircraft is fully on the wheels, the brake may not release even with the full weight of the aircraft on the wheel. The result may be a blown tire and possible degradation of directional control on the ground.",
-      "After a landing which required maximum effort braking and if overheated brakes are suspected, do not taxi into or park in a congested area until the brakes have had sufficient time to cool. Do not set parking brake.",
-      "If brake pressure appears to fade during application, or brakes are not responding as expected, fully release brakes, then re-apply. Both crewmembers must fully release brakes for this to be effective."
-    ],
-    cautions: [
-      "Most blown tires occur prior to tire spin-up or below 40 knots. Holding excessive brake pressure as the aircraft slows below 20 knots may result in locking the brakes and blown tires."
-    ]
-  },
-  al1: {
+  qal1: {
     notes: [],
     warnings: [
       "Both seats will eject if the ISS is in BOTH and an unpinned ejection handle is pulled, even if the other seat is pinned.",
@@ -2389,7 +2215,7 @@ export const QUAD_NWC = {
     ],
     cautions: []
   },
-  al2: {
+  qal2: {
     notes: [],
     warnings: [
       "Ensure ejection seat safety pin is fully inserted to preclude inadvertent seat actuation.",
@@ -2397,14 +2223,14 @@ export const QUAD_NWC = {
     ],
     cautions: []
   },
-  al9: {
+  qal9: {
     notes: [],
     warnings: [
       "After a landing which required maximum effort braking and if overheated brakes are suspected, do not taxi into or park in a congested area until the brakes have had sufficient time to cool. Do not set the parking brake."
     ],
     cautions: []
   },
-  fstb8: {
+  qfstb8: {
     notes: [
       "If the flaps are set to LDG and the gear is raised, the gear warning horn will sound and cannot be canceled. Select flaps TO or UP to cancel the horn.",
       "To avoid excessive stick forces, trim nose down as aircraft accelerates to climb speed."
@@ -2412,93 +2238,48 @@ export const QUAD_NWC = {
     warnings: [],
     cautions: []
   },
-  esd: {
+  qesd1: {
     notes: [
       "Allow ITT to stabilize at idle for at least 1 minute prior to shutdown."
     ],
-    warnings: [],
-    cautions: []
-  },
-  esd1: {
-    notes: [],
     warnings: [],
     cautions: [
       "Do not set parking brake when hot brakes are suspected."
     ]
   },
-  esd9: {
+  qesd9: {
     notes: [],
     warnings: [],
     cautions: [
       "Failure to deactivate both OBOGS regulators will result in a drain on the battery even with all other electrical switches and controls off. This load will discharge the aircraft battery."
     ]
   },
-  esd10: {
+  qesd10: {
     notes: [],
     warnings: [
       "When shutting the engine down, verify the PCL is fully in the OFF position to preclude engine damage. If the PCL is left in an intermediate position, fuel flow may continue and cause serious engine damage due to over temperature."
     ],
     cautions: []
   },
-  esd11: {
+  qesd11: {
     notes: [],
     warnings: [],
     cautions: [
       "Exposure of the cockpit interior to rain and moisture may cause early degradation of avionics, interior corrosion, and prevent critical ejection and CFS components from functioning properly. The aircrew should delay opening the canopy until rain has ceased or ensure that the canopy is opened under cover if it is safe to do so. Exposure of the cockpit interior to rain and/or moisture shall be reported to maintenance."
     ]
   },
-  esd14: {
+  qesd14: {
     notes: [],
     warnings: [],
     cautions: [
       "Make sure the rudder is locked in place. The rudder must be displaced to the left after the gust lock is engaged."
     ]
   },
-  esd15: {
+  qesd15: {
     notes: [
       "Ensure that the propeller has stopped prior to securing the exterior strobes and/or navigation lights."
     ],
     warnings: [],
     cautions: []
-  },
-  bla1: {
-    notes: [],
-    warnings: [],
-    cautions: [
-      "Failure to close and latch the CFS pin storage box prior to closing the canopy may damage the canopy when the canopy is closed."
-    ]
-  },
-  bla4: {
-    notes: [],
-    warnings: [],
-    cautions: [
-      "Damage may occur to oxygen hose if stowed with loop facing aft and in contact with the canopy strut."
-    ]
-  },
-  bla6: {
-    notes: [],
-    warnings: [],
-    cautions: [
-      "To prevent possible damage to aircraft due to unattended movement, ensure aircraft is secured with wheel chocks or is properly tied down before releasing the parking brake."
-    ]
-  },
-  bla9: {
-    notes: [],
-    warnings: [
-      "To prevent injury, ensure head is clear of canopy handle, latch hooks, and guide pins when entering or exiting cockpit.",
-      "Secure shoulder straps to headrest before adjusting seat.",
-      "Ensure ejection seat pan and side consoles are clear of all lap straps, cords, and connections prior to adjusting seat height to prevent possible damage to seat or equipment.",
-      "After unbuckling the lap straps, ensure it does not fall onto the side console or emergency oxygen control handle causing damage.",
-      "Avoid applying abrupt and/or excessive force to the canopy locking handle at all times. Excessive force in any direction may damage the canopy locking mechanism.",
-      "To avoid accidental activation of the canopy fracturing system, ensure the area around the CFS handle is clear prior to exiting the cockpit."
-    ],
-    cautions: []
-  },
-  sfp1: {
-    notes: [],
-    warnings: [],
-    cautions: [
-      "To prevent possible damage to aircraft due to unattended movement, ensure aircraft is secured with wheel chocks or is properly tied down before releasing the parking brake."
-    ]
   }
 };

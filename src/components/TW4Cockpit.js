@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef} from 'react';
-import {getEPDivs, EP_LENGTHS, EP_ANSWERS} from './EPDivsData';
-import {getQuadDivs, QUAD_LENGTHS, QUAD_ANSWERS, QUAD_ACTIONS} from './QuadfoldData';
+import {getEPDivs, EP_LENGTHS, EP_ANSWERS, EP_NWC, EP_FULL_LENGTHS, EP_FULL_ANSWERS, EP_TITLES, EP_FULL_TITLES} from './EPDivsData';
+import {getQuadDivs, QUAD_LENGTHS, QUAD_ANSWERS, QUAD_ACTIONS, QUAD_TITLES, QUAD_NWC} from './QuadfoldData';
 
 function TW4Cockpit() {
   // Layout width parameters - adjust these to test different configurations
@@ -32,9 +32,14 @@ function TW4Cockpit() {
   const [showChecklistModal, setShowChecklistModal] = useState(false);
   const [checklistModalContent, setChecklistModalContent] = useState(null);
   const [autoExpanded, setAutoExpanded] = useState(false);
+  const [autoNWC, setAutoNWC] = useState(false);
+  const [showNWCModal, setShowNWCModal] = useState(false);
+  const [nwcModalContent, setNwcModalContent] = useState(null);
+  const [showEPNavDropdown, setShowEPNavDropdown] = useState(false);
 
   const modalBaseContentRef = useRef(null);
   const modalStepKeyRef = useRef(null);
+  const prevCheckResultsRef = useRef({});
 
   useEffect(() => {
     if(isRandom) {
@@ -42,6 +47,21 @@ function TW4Cockpit() {
       setCurrentIndexArray(shuffleIndices(20));
     }
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showEPNavDropdown && !event.target.closest('.checklist-counter')) {
+        setShowEPNavDropdown(false);
+      }
+    };
+
+    if (showEPNavDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [showEPNavDropdown]);
 
   useEffect(() => {
     if (showChecklistModal && modalBaseContentRef.current && modalStepKeyRef.current) {
@@ -83,6 +103,8 @@ function TW4Cockpit() {
       }
     }
   }, [checkResults, autoExpanded, showChecklistModal, currentDivKey]);
+
+
 
   // Dictionary mapping clickable area IDs to their control arrays
   const clickableControls = {
@@ -309,6 +331,7 @@ function TW4Cockpit() {
     if(nextKey){return{nextEmptyField: nextKey, emptyNum: null};}
     const results = checkResults;
     let currentKey = divMap[currentDivKey][0][currentIndexArray[currentIndex]].key;
+    console.log(currentKey)
     const allFields = Object.keys(inputAnswers).filter(key => key.startsWith(currentKey));
     // Find the first non-empty field
     let nextEmptyField = null;
@@ -407,6 +430,7 @@ function TW4Cockpit() {
 
   const giveHint = (matchingKeys = null, nextKey = null) =>{
     const {nextEmptyField, emptyNum} = findNextEmpty(nextKey);
+    console.log(nextEmptyField)
     setActiveHints({});
     if(!nextEmptyField){return}
     let correctAnswer = inputAnswers[nextEmptyField].join('').toLowerCase();
@@ -461,6 +485,78 @@ function TW4Cockpit() {
     }
   }
 
+  const openNWCModal = (stepKey) => {
+    const nwcData = EP_NWC[stepKey] || QUAD_NWC[stepKey];
+    if (!nwcData) return;
+
+    // Get the answer text for this step
+    const stepAnswer = inputAnswers[stepKey] || '';
+
+    const renderNWCContent = () => {
+      const content = [];
+
+      // Render Warnings
+      nwcData.warnings.forEach((warning, idx) => {
+        content.push(
+          <div key={`warning-${idx}`} style={{
+            backgroundColor: '#e6d4d4ff',
+            padding: '10px',
+            marginBottom: '10px',
+            borderRadius: '4px',
+            border: '2px solid #ef5350',
+            boxShadow: '4px 4px 8px rgba(0, 0, 0, 0.3)',
+            fontSize: '11px'
+          }}>
+            <strong style={{fontSize: '12px'}}>WARNING:</strong> {warning}
+          </div>
+        );
+      });
+
+      // Render Cautions
+      nwcData.cautions.forEach((caution, idx) => {
+        content.push(
+          <div key={`caution-${idx}`} style={{
+            backgroundColor: 'white',
+            padding: '10px',
+            marginBottom: '10px',
+            borderRadius: '4px',
+            border: '3px dashed #ef5350',
+            fontSize: '11px'
+          }}>
+            <strong>CAUTION:</strong> {caution}
+          </div>
+        );
+      });
+
+      // Render Notes
+      nwcData.notes.forEach((note, idx) => {
+        content.push(
+          <div key={`note-${idx}`} style={{
+            backgroundColor: 'white',
+            color: 'black',
+            padding: '10px',
+            marginBottom: '10px',
+            borderRadius: '4px',
+            border: '4px solid #ef5350',
+            fontSize: '11px'
+          }}>
+            <strong>NOTE:</strong> {note}
+          </div>
+        );
+      });
+
+      return <div>{content}</div>;
+    };
+
+    setNwcModalContent({ content: renderNWCContent(), stepAnswer });
+    setShowNWCModal(true);
+  }
+
+  const closeNWCModal = () => {
+    setShowNWCModal(false);
+    setNwcModalContent(null);
+  }
+
   const getStepText = (key) => {
     const element = document.querySelector(`[data-step-key="${key}"]`);
     if (element) {
@@ -486,24 +582,78 @@ function TW4Cockpit() {
     }
   };
 
+  const toggleAutoNWC = () => {
+    setAutoNWC(!autoNWC);
+  };
+
   //EP div structures retrieval
   const epDivs = getEPDivs({
     epsData: inputData,
     handleEPsChange: handleInputsChange,
-    getInputClass
+    getInputClass,
+    openNWCModal,
+    fullMode: false
+  });
+
+  //Full EP div structures retrieval (includes non-memory items)
+  const fullEpDivs = getEPDivs({
+    epsData: inputData,
+    handleEPsChange: handleInputsChange,
+    getInputClass,
+    openNWCModal,
+    fullMode: true
   });
 
   //Quad div structures retrieval
   const quadDivs = getQuadDivs({
     getInputClass,
-    openChecklistModal
+    openChecklistModal, 
+    openNWCModal
   });
 
   //Map div elements to key for retrival
   const divMap = {
     'epDivs': [epDivs, EP_ANSWERS, EP_LENGTHS],
+    'fullEpDivs': [fullEpDivs, EP_FULL_ANSWERS, EP_FULL_LENGTHS],
     'quadDivs': [quadDivs, QUAD_ANSWERS, QUAD_LENGTHS]
   };
+
+    // Auto NWC logic: automatically show NWC when a step is completed via clicking controls
+  useEffect(() => {
+    if (!autoNWC || (currentDivKey !== 'epDivs' && currentDivKey !== 'fullEpDivs')) return;
+
+    // Get all step keys for the current EP/checklist
+    const currentKey = divMap[currentDivKey][0][currentIndexArray[currentIndex]].key;
+    const currentEPFields = Object.keys(inputAnswers).filter(key => key.startsWith(currentKey));
+
+    // Find steps that just became 'checked' or 'correct' (from clicking controls)
+    const prevResults = prevCheckResultsRef.current;
+    const newlyCompletedSteps = Object.keys(checkResults).filter(key => {
+      // Only consider steps from the current EP
+      if (!currentEPFields.includes(key)) return false;
+
+      const currentStatus = checkResults[key];
+      const prevStatus = prevResults[key];
+
+      // Step is newly completed if it's now 'checked' or 'correct' and wasn't before
+      return (currentStatus === 'checked' || currentStatus === 'correct') &&
+             (prevStatus !== 'checked' && prevStatus !== 'correct');
+    });
+
+    if (newlyCompletedSteps.length > 0) {
+      const lastCompletedStep = newlyCompletedSteps[newlyCompletedSteps.length - 1];
+
+      // Check if this step has NWC data
+      if (EP_NWC[lastCompletedStep]) {
+        setTimeout(() => {
+          openNWCModal(lastCompletedStep);
+        }, 600);
+      }
+    }
+
+    // Update the ref for next comparison
+    prevCheckResultsRef.current = {...checkResults};
+  }, [checkResults, autoNWC, currentDivKey, currentIndex, currentIndexArray, divMap, inputAnswers]);
 
   return (
     <>
@@ -1150,6 +1300,35 @@ function TW4Cockpit() {
                     </div>
                   </div>
                 )}
+
+                {/* NWC Modal Overlay */}
+                {showNWCModal && nwcModalContent && (
+                  <div style={{position: 'absolute', top: 0, left: `-${LAYOUT_GAP}`, right: `-${LAYOUT_GAP}`,
+                    bottom: '-20px', backgroundColor: 'rgba(0, 0, 0, 0.7)', display: 'flex',
+                    alignItems: 'flex-start', justifyContent: 'center', zIndex: 100, paddingTop: '10px',
+                    paddingLeft: LAYOUT_GAP, paddingRight: LAYOUT_GAP, paddingBottom: '50px', overflowY: 'auto'}}
+                    onClick={closeNWCModal}
+                  >
+                    <div
+                      style={{width: '100%', maxWidth: '600px', maxHeight: '90%', position: 'relative',
+                        backgroundColor: 'white', borderRadius: '8px', padding: '20px', overflowY: 'auto'}}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <button
+                        onClick={closeNWCModal}
+                        style={{position: 'absolute', top: '8px', right: '8px', fontSize: '24px',
+                          background: 'transparent', border: 'none', cursor: 'pointer', color: '#333', zIndex: 101,
+                          padding: '0 8px', lineHeight: '1', fontWeight: 'bold'}}
+                      >
+                        &times;
+                      </button>
+                      <h2 style={{marginTop: 0, marginBottom: '20px', fontSize: '14px', textAlign: 'center', fontWeight: 'bold'}}>
+                        {nwcModalContent.stepAnswer}
+                      </h2>
+                      {nwcModalContent.content}
+                    </div>
+                  </div>
+                )}
                 </div>
                 <div className="navigation-buttons">
                   <button onClick={() => {
@@ -1162,8 +1341,77 @@ function TW4Cockpit() {
                     disabled={currentIndex === 0}>
                     Previous
                   </button>
-                  <span className="ep-counter" style={{minWidth: '61px'}}>
+                  <span
+                    className="checklist-counter"
+                    style={{
+                      minWidth: '61px',
+                      cursor: 'pointer',
+                      textDecoration: 'underline',
+                      position: 'relative'
+                    }}
+                    onClick={() => {
+                      setShowEPNavDropdown(!showEPNavDropdown);
+                    }}
+                  >
                     {currentIndex + 1} of {currentIndexArray.length}
+                    {showEPNavDropdown && (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          top: '100%',
+                          left: '50%',
+                          transform: 'translateX(-50%)',
+                          backgroundColor: 'white',
+                          border: '2px solid #333',
+                          borderRadius: '4px',
+                          boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+                          zIndex: 1000,
+                          marginTop: '5px',
+                          minWidth: '300px',
+                          maxHeight: '400px',
+                          overflowY: 'auto'
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {(currentDivKey === 'epDivs' ? EP_TITLES : currentDivKey === 'fullEpDivs' ? EP_FULL_TITLES : QUAD_TITLES).map((title, idx) => (
+                          <div
+                            key={idx}
+                            style={{
+                              padding: '8px 12px',
+                              cursor: 'pointer',
+                              borderBottom: idx < (currentDivKey === 'epDivs' ? EP_TITLES : currentDivKey === 'fullEpDivs' ? EP_FULL_TITLES : QUAD_TITLES).length - 1 ? '1px solid #ddd' : 'none',
+                              backgroundColor: currentIndexArray[currentIndex] === idx ? '#e3f2fd' : 'white',
+                              fontSize: '11px',
+                              fontWeight: currentIndexArray[currentIndex] === idx ? 'bold' : 'normal'
+                            }}
+                            onMouseEnter={(e) => {
+                              if (currentIndexArray[currentIndex] !== idx) {
+                                e.target.style.backgroundColor = '#f5f5f5';
+                              }
+                            }}
+                            onMouseLeave={(e) => {
+                              if (currentIndexArray[currentIndex] !== idx) {
+                                e.target.style.backgroundColor = 'white';
+                              }
+                            }}
+                            onClick={() => {
+                              // Switch to sequential mode and navigate to selected checklist
+                              setisRandom(false);
+                              const sequentialArray = Array.from({length: inputLengths.length}, (_, i) => i);
+                              setCurrentIndexArray(sequentialArray);
+                              setCurrentIndex(idx);
+                              setCheckResults(emptyResults());
+                              setActiveHints({});
+                              setAutoExpanded(false);
+                              closeChecklistModal();
+                              setShowEPNavDropdown(false);
+                            }}
+                          >
+                            {idx + 1}. {title}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </span>
                   <button onClick={() => {
                     setCurrentIndex(currentIndex+1);
@@ -1300,7 +1548,7 @@ function TW4Cockpit() {
             </div>
         </div>
         <div className="button-row" style={{ justifyContent: 'center', marginTop: '0px' }}>
-          {currentDivKey === 'epDivs' &&<button style={{minWidth: '147px'}} onClick={() => {
+          {(currentDivKey === 'epDivs' || currentDivKey === 'fullEpDivs') &&<button style={{minWidth: '147px'}} onClick={() => {
             setisRandom(!isRandom);
             refreshIndices(divMap[currentDivKey][0], !isRandom);
             setInputData({});
@@ -1310,8 +1558,22 @@ function TW4Cockpit() {
           <button onClick={() => giveHint()}>Hint</button>
           <button onClick={nextAnswer}>Next Answer/Skip</button>
           <button onClick={allAnswers}>All Answers</button>
-          {currentDivKey === 'epDivs' && <button onClick={checkAnswers}>Check</button>}
+          {(currentDivKey === 'epDivs' || currentDivKey === 'fullEpDivs') && <button onClick={checkAnswers}>Check</button>}
           <button onClick={resetAnswers}>Reset</button>
+          {(currentDivKey === 'epDivs' || currentDivKey === 'fullEpDivs') && (
+            <button
+              onClick={toggleAutoNWC}
+              style={{
+                backgroundColor: autoNWC ? '#4CAF50' : '#f0f0f0',
+                color: autoNWC ? 'white' : 'black',
+                fontWeight: autoNWC ? 'bold' : 'normal',
+                border: autoNWC ? '2px solid #45a049' : '1px solid #ccc',
+                boxShadow: autoNWC ? 'inset 0 2px 4px rgba(0,0,0,0.2)' : 'none'
+              }}
+            >
+              Auto NWC
+            </button>
+          )}
           {currentDivKey === 'quadDivs' && (
             <button
               onClick={toggleAutoExpanded}
@@ -1333,7 +1595,7 @@ function TW4Cockpit() {
             top: '75%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            width: '100px',
+            width: '220px',
             height: '2px',
             backgroundColor: '#333',
             zIndex: 0
@@ -1356,6 +1618,27 @@ function TW4Cockpit() {
                 borderRadius: '50%',
                 border: '2px solid #333',
                 backgroundColor: currentDivKey === 'epDivs' ? '#333' : '#fff',
+                transition: 'background-color 0.2s'
+              }}></div>
+            </div>
+
+            <div
+              style={{display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer'}}
+              onClick={() => {
+                setCurrentDivKey('fullEpDivs');
+                refreshIndices(divMap['fullEpDivs'][0], isRandom);
+                setInputAnswers(divMap['fullEpDivs'][1]);
+                setInputLengths(divMap['fullEpDivs'][2]);
+                resetAnswers();
+              }}
+            >
+              <span style={{fontSize: '14px', marginBottom: '5px'}}>Full EPs</span>
+              <div style={{
+                width: '20px',
+                height: '20px',
+                borderRadius: '50%',
+                border: '2px solid #333',
+                backgroundColor: currentDivKey === 'fullEpDivs' ? '#333' : '#fff',
                 transition: 'background-color 0.2s'
               }}></div>
             </div>

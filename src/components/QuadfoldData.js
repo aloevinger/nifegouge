@@ -48,7 +48,36 @@ const quadSubStepStyle = {
   cursor: 'pointer'
 };
 
-export const getQuadDivs = ({getInputClass, openChecklistModal}) => {
+const nwcButtonStyle = {
+  backgroundColor: '#000000ff',
+  color: 'white',
+  border: 'none',
+  padding: '0px 0px',
+  fontSize: '8px',
+  fontWeight: 'bold',
+  borderRadius: '3px',
+  cursor: 'pointer',
+  marginLeft: '2px',
+  minWidth: '20px',
+  height: '20px'
+};
+
+export const getQuadDivs = ({getInputClass, openChecklistModal, openNWCModal}) => {
+  // Helper function to render NWC button if data exists for the step
+    const renderNWCButton = (stepKey) => {
+      if (openNWCModal && QUAD_NWC[stepKey]) {
+        return (
+          <button
+            style={{...nwcButtonStyle, marginLeft: 'auto'}}
+            onClick={() => openNWCModal(stepKey)}
+            title="View Notes, Warnings, and Cautions"
+          >
+            NWC
+          </button>
+        );
+      }
+      return null;
+    };
 
   return [
     // 0. COCKPIT (ALL FLIGHTS)
@@ -999,6 +1028,27 @@ export const QUAD_ANSWERS = {
 
 export const QUAD_LENGTHS = [37, 8, 9, 5, 37, 2, 7, 11, 5, 2, 4, 6, 3, 5, 6, 13, 9, 16]; //,9
 
+export const QUAD_TITLES = [
+  "COCKPIT (ALL FLIGHTS)",
+  "HIGH IOAT AT START (>80° C)",
+  "ENGINE START (AUTO)",
+  "MOTORING RUN PROCEDURE",
+  "BEFORE TAXI",
+  "TAXI",
+  "OVERSPEED GOVERNOR CHECK",
+  "BEFORE TAKEOFF",
+  "LINEUP CHECK",
+  "AFTER TAKEOFF",
+  "CLIMB (PASSING 10,000 FEET)",
+  "OPERATIONS CHECK",
+  "PRE-STALL, SPIN, AND AEROBATIC CHECKS",
+  "DESCENT",
+  "BEFORE LANDING",
+  "FULL STOP/TAXI BACK CHECKLIST",
+  "AFTER LANDING",
+  "ENGINE SHUTDOWN"
+];
+
 // Helper function to generate action bubbles
 const createActionBubbles = (bubbles, fontSizer = '11px') => (
   <div style={{display: 'flex', flexDirection: 'column', gap: '8px', width: '100%'}}>
@@ -1801,4 +1851,654 @@ export const QUAD_ACTIONS = {
     [{text: "Place the Generator, Battery and Aux Battery switches to OFF."}],
     [{bold: true, text: '"Off"', center: true}]
   ])
+};
+
+export const QUAD_NWC = {
+  bei1: {
+    notes: [],
+    warnings: [
+      "When entering and exiting the cockpit, extreme caution must be exercised around the ejection control handle.",
+      "To preclude inadvertent seat firing, ensure ejection seat handle safety pins are installed and ejection seat handle safety pin warning streamer is free and clear of ejection seat handle before proceeding with inspection.",
+      "To prevent injury, ensure head is clear of canopy handle, latch hooks, and guide pins when entering or exiting cockpit.",
+      "Ensure seat safety pin warning streamer is free and clear of ejection seat handle."
+    ],
+    cautions: []
+  },
+  bei2: {
+    notes: [],
+    warnings: [
+      "Ensure the metal loop in the ejection handle is not frayed or broken."
+    ],
+    cautions: []
+  },
+  bei4: {
+    notes: [],
+    warnings: [],
+    cautions: [
+      "Failure to close and latch the CFS pin storage box prior to closing the canopy may damage the canopy when the canopy is closed."
+    ]
+  },
+  bei5: {
+    notes: [],
+    warnings: [
+      "With starter engaged (switch in AUTO or MAN), propeller will begin to rotate after electrical power application."
+    ],
+    cautions: []
+  },
+  bei9: {
+    notes: [],
+    warnings: [
+      "Both seats will eject if the ISS is in BOTH and an unpinned ejection handle is pulled, even if the other seat is pinned.",
+      "With the ISS mode selector set to CMD FWD, the crewmember in the rear cockpit initiates ejection of the rear seat only, and the crewmember in the front cockpit initiates ejection for both front and rear seats with the rear seat ejecting first even if the rear seat ejection handle safety pin is installed."
+    ],
+    cautions: []
+  },
+  bei12: {
+    notes: [],
+    warnings: [],
+    cautions: [
+      "Verify two audible clicks per PCL by moving the PCL slowly and the PCL in both cockpits are interconnected and move freely through the full range of motion. Verify positive idle-stop and no forward PCL movement is required to move aft past idle-stop to OFF."
+    ]
+  },
+  bei21: {
+    notes: [
+      "Typical EICAS messages which may be present on initial application of power are GEN, CANOPY, FUEL PX, OBOGS FAIL, PMU FAIL, OIL PX, IAC2 FAIL, L PHT INOP, R PHT INOP, PMU STATUS, STATUS BIT, and TAD OFF. Aural warning and EICAS messages OIL PX, PMU FAIL, and PMU STATUS should stop flashing when MASTER WARN/MASTER CAUTION switchlights are depressed."
+    ],
+    warnings: [],
+    cautions: []
+  },
+  bei26: {
+    notes: [],
+    warnings: [],
+    cautions: [
+      "Ensure ejection seat pan and side consoles are clear of all lap straps, cords, and connections prior to adjusting seat height to prevent possible damage to seat or equipment.",
+      "Secure shoulder straps to headrest before adjusting seat."
+    ]
+  },
+  bei28: {
+    notes: [],
+    warnings: [
+      "Actuation of a CFS initiator will cause detonator to fire plungers in the CFS donor assembly. These plungers will not cause detonation of the CFS explosive cords if the canopy is open, but will be in a position to initiate detonation when the canopy is closed."
+    ],
+    cautions: []
+  },
+  bei29c: {
+    notes: [],
+    warnings: [
+      "A jammed inertia reel will prevent proper shoulder harness operation and increase the risk of injury during ejection."
+    ],
+    cautions: [
+      "Ensure both parachute riser/inertia reel straps are pulled out slowly and simultaneously to their full extension. Attempting to test the locking ability of the straps may damage the harness reel velocity lock mechanism."
+    ]
+  },
+  bei29g: {
+    notes: [],
+    warnings: [
+      "Do not lift the MOR handle. Lifting the MOR handle can result in the initiation of the manual release sequence which can cause injury/death to personnel and/or damage to equipment."
+    ],
+    cautions: []
+  },
+  bei29i: {
+    notes: [],
+    warnings: [
+      "If ADU and radio beacon cables are not properly connected to the ejection seat the automatic function of the SSK will not function and the radio beacon will not automatically activate if ejection sequence is activated."
+    ],
+    cautions: []
+  },
+  bei29j: {
+    notes: [
+      "The emergency oxygen cylinder will be charged to 1800 psi minimum at 70 °F. However, indicated pressure is affected by temperature changes. To approximate acceptable bottle pressure, add or subtract 3.5 psi for each degree the temperature is above or below 70 °F."
+    ],
+    warnings: [],
+    cautions: []
+  },
+  bei30: {
+    notes: [],
+    warnings: [],
+    cautions: [
+      "Failure to stow the gust lock completely may prevent the flight controls from operating properly. Any attempt to actuate the flight controls with the gust lock not properly stowed may result in damage to the flight control assemblies. Ensure the gust lock is not impeded by the leather boot at the base of the control stick."
+    ]
+  },
+  ei1_3: {
+    notes: [],
+    warnings: [
+      "Ensure opposite aileron is clear prior to moving control surface. Movement of controls could cause injury."
+    ],
+    cautions: []
+  },
+  ei2_2i: {
+    notes: [],
+    warnings: [],
+    cautions: [
+      "Landing gear retraction with the nose gear jack pad not properly stowed may result in structural damage or landing gear malfunction."
+    ]
+  },
+  ei2_3b: {
+    notes: [],
+    warnings: [],
+    cautions: [
+      "If any circuit breaker is found open, consult with maintenance before flight."
+    ]
+  },
+  ei2_8c: {
+    notes: [],
+    warnings: [],
+    cautions: [
+      "Do not rotate the propeller by hand to reduce IOAT. Rotating the propeller without oil pressure can damage the engine. Slow and limited hand rotation of the propeller for inspection purposes is acceptable."
+    ]
+  },
+  ei5_6: {
+    notes: [
+      "Visually inspect nose gear spring strut for condition and serviceability. Ensure that none of the bolts are missing from the forward attachment bracket, that the bracket itself is not bent or twisted, and that there is no gap between the spring washers and the spring strut end cap or \"Bell\"."
+    ],
+    warnings: [],
+    cautions: []
+  },
+  ei5_8: {
+    notes: [],
+    warnings: [],
+    cautions: [
+      "Failure to ensure the system service bay access panel is securely latched and flush with the bottom of the aircraft can result in aircraft damage from panel opening and interfering with speed brake operation. If unusual force is necessary to close the latches, it is possible that one or more latches may open in flight resulting in aircraft damage."
+    ]
+  },
+  ei6_4: {
+    notes: [],
+    warnings: [],
+    cautions: [
+      "To avoid damaging the rudder trim tab and trim mechanism, do not push or pull on rudder trim tab when checking rudder movement."
+    ]
+  },
+  rc1a: {
+    notes: [],
+    warnings: [
+      "To prevent injury, make sure head is clear of canopy handle, latch hooks and guide pins when entering or exiting cockpit."
+    ],
+    cautions: []
+  },
+  rc3: {
+    notes: [],
+    warnings: [
+      "Whenever ejection for both seats is activated, there is a 0.37-second delay in front seat ejection after rear seat ejection.",
+      "When flying solo, the ISS mode selector shall be set to SOLO."
+    ],
+    cautions: []
+  },
+  rc14: {
+    notes: [],
+    warnings: [
+      "Failure to secure the rear seat oxygen regulator will result in the loss of ability to deactivate OBOGS from the front seat."
+    ],
+    cautions: []
+  },
+  rc16: {
+    notes: [],
+    warnings: [
+      "Failure to secure rear cockpit for solo flight may result in restriction of flight control movement."
+    ],
+    cautions: []
+  },
+  rc16a: {
+    notes: [],
+    warnings: [
+      "Make sure ejection seat pan and side consoles are clear of all lap straps, cords, and connections prior to lowering seat to prevent possible damage to seat or equipment."
+    ],
+    cautions: []
+  },
+  rc16de: {
+    notes: [],
+    warnings: [
+      "Failure to tighten the leg garters may result in inadvertent flight control interference with the oxygen hoses and comm cord."
+    ],
+    cautions: []
+  },
+  rc16i: {
+    notes: [
+      "The locking side of the control stick boot collar should face forward. If in any other position, putting the seat full down or full up may cause portions of the control stick to contact the ejection seat safety pin, inhibiting full aft stick travel."
+    ],
+    warnings: [],
+    cautions: []
+  },
+  c1: {
+    notes: [
+      "Prior to ingress, ensure that attachment shear ring in each leg restraint line is between snubber unit and leg restraint line floor bracket.",
+      "Failure to route the lap straps under the anti-G hose may result in loss of air supply to anti-G suit, rendering anti-G suit inoperative."
+    ],
+    warnings: [
+      "To prevent possible injury during ejection or emergency ground egress, adjust leg restraint garters and leg restraint lines to reduce slack and ensure tight fit around top of boot.",
+      "A jammed inertia reel will prevent proper shoulder harness operation and increase the risk of injury during ejection.",
+      "Failure to ensure ejection handle is in the upright position and harness straps are clear of the handle will result in an inability to initiate ejection.",
+      "Failure to release the emergency oxygen hose from the elastic sidewall strap during strap-in may result in the loss of the emergency oxygen system after ejection."
+    ],
+    cautions: []
+  },
+  c2: {
+    notes: [
+      "Typical EICAS messages which may be present on initial application of power are GEN, CANOPY, FUEL PX, OBOGS FAIL, OIL PX, ADC FAIL, XPDR FAIL, IAC2 FAIL, EHYD PX LO, L PHT INOP, R PHT INOP, CHK ENG, RPT FWD, IRS DEGD, STATUS/BIT, and TAD OFF. Aural warning and EICAS messages should stop flashing when MASTER WARN/MASTER CAUTION switchlights are depressed.",
+      "The evaporator blower may provide a burst of air at battery turn on. Avionics filter capacitors that may not deplete prior to re-energizing the battery switch may cause this. This is normal."
+    ],
+    warnings: [],
+    cautions: []
+  },
+  c4: {
+    notes: [
+      "Using external power provides for lower ITT during engine starts and preserves battery life. Consider using external power if available. Also, consider using external power when motoring the engine."
+    ],
+    warnings: [],
+    cautions: [
+      "Do not connect external power if battery voltage is below 22.0 volts. Connecting external power could cause damage to the aircraft battery."
+    ]
+  },
+  c5: {
+    notes: [],
+    warnings: [],
+    cautions: [
+      "Make sure ejection seat pan and side consoles are clear of all lap straps, cords, and connections prior to adjusting seat height to prevent possible damage to seat or equipment."
+    ]
+  },
+  c6: {
+    notes: [
+      "Do not push rudder pedals while adjusting them."
+    ],
+    warnings: [],
+    cautions: [
+      "Use of excessive force while adjusting rudder pedals to full forward or full aft position may cause binding in the adjustment handle."
+    ]
+  },
+  c7: {
+    notes: [],
+    warnings: [
+      "To prevent injury to ground crew, exercise caution when operating the speed brake or flight controls with ground crew present."
+    ],
+    cautions: []
+  },
+  c22: {
+    notes: [
+      "Ensure parking brake is not inadvertently released by leg contact."
+    ],
+    warnings: [
+      "Failure to ensure parking brake is properly set will result in aircraft creep upon engine start."
+    ],
+    cautions: []
+  },
+  c36: {
+    notes: [
+      "For positive cockpit ventilation, place the RAM AIR FLOW switch to the NORM or HI position. For best cockpit cooling at altitudes below 7,500 feet MSL, set RAM AIR FLOW switch to OFF. Set temperature controller as required."
+    ],
+    warnings: [],
+    cautions: []
+  },
+  es_ioat: {
+    notes: [
+      "The EDM FAIL message indicates that the engine indicating system has accommodated a fault. Parameters with the EDM FAIL message which do not display red X's and/or missing pointers are functional and may be used normally."
+    ],
+    warnings: [],
+    cautions: []
+  },
+  es_ioat3: {
+    notes: [],
+    warnings: [],
+    cautions: [
+      "Do not rotate the propeller by hand to reduce IOAT. Rotating the propeller without oil pressure can damage the engine. Slow and limited hand rotation of the propeller for inspection purposes is acceptable."
+    ]
+  },
+  es1: {
+    notes: [],
+    warnings: [
+      "Failure to properly latch the canopy could lead to canopy opening during flight, leading to a possible loss of control during flight and inability to eject.",
+      "Failure to close the canopy prior to engine start may result in injury or damage to the aircraft due to exhaust and propwash.",
+      "To prevent injury or damage to canopy, ensure canopy rail and locking lever are clear prior to closing canopy. Ensure canopy handle is in the open position prior to closing the canopy to prevent damage to the locking mechanism.",
+      "Ensure minimum adequate canopy/helmet clearance by placing closed fist on top of helmet when adjusting seat height. Excessive seat height (helmet above canopy breakers) can result in fatal injury upon ejection."
+    ],
+    cautions: [
+      "Avoid applying abrupt and/or excessive force to the canopy locking handle at all times. Excessive force in any direction may damage the canopy locking mechanism."
+    ]
+  },
+  es2: {
+    notes: [
+      "Anti-collision strobes may be left off if operation is distracting, such as for ground operations at night."
+    ],
+    warnings: [],
+    cautions: []
+  },
+  es3: {
+    notes: [],
+    warnings: [],
+    cautions: [
+      "With the PMU STATUS caution, the PMU auto abort function may be unavailable. Do not continue Engine Start (AUTO) procedures."
+    ]
+  },
+  es4: {
+    notes: [],
+    warnings: [],
+    cautions: [
+      "Failure to ensure the ST READY light remains illuminated may result in engine damage due to loss of the automatic shutdown feature."
+    ]
+  },
+  es6: {
+    notes: [
+      "Engine sounds associated with compressor instability during start are acceptable as long as PMU allows the start to continue.",
+      "Aural tones are inaudible during engine start until the engine's gas generator indication (N1) is above 50%."
+    ],
+    warnings: [],
+    cautions: [
+      "Abort engine start if anything abnormal occurs during the start sequence, or severe damage could occur to the engine.",
+      "Abort engine start if the PCL is inadvertently moved before N1 reaches 60%.",
+      "If the ST READY advisory goes out once the start switch is placed to Auto/Reset, the start should be terminated to prevent potential engine damage."
+    ]
+  },
+  es7: {
+    notes: [
+      "With the PCL in any position other than OFF, moving the PCL to OFF or reselecting the starter switch to AUTO/RESET at any time during the start sequence will terminate the start. If a start is initiated with the PCL in OFF, the start may be aborted by reselecting AUTO/RESET on the starter switch."
+    ],
+    warnings: [],
+    cautions: [
+      "If a start attempt is aborted (PMU or manual abort), execute Motoring Run Procedure in Section III."
+    ]
+  },
+  es8: {
+    notes: [],
+    warnings: [
+      "When moving the PCL forward past IDLE, verify travel past idle by hearing two audible clicks as the PCL is moved forward. Improper position of the PCL short of the two audible clicks could result in inadvertent engine shutdown.",
+      "During ground operation and after the engine is started, if the PCL is inadvertently moved to cutoff and the engine is shutting down, do not attempt to relight the engine by moving the PCL to idle or severe damage could occur to the engine."
+    ],
+    cautions: []
+  },
+  es9: {
+    notes: [],
+    warnings: [
+      "Ensure PCL, speed brake, and flight controls are not moved until ground crew is clear of aircraft."
+    ],
+    cautions: []
+  },
+  bt5: {
+    notes: [
+      "For best cockpit cooling, select AIR COND switch to ON, and RAM AIR FLOW switch to OFF. For positive cockpit ventilation below 7,500 feet MSL, place the RAM AIR FLOW switch to the NORM or HI position."
+    ],
+    warnings: [],
+    cautions: []
+  },
+  bt6: {
+    notes: [
+      "After turning ON the GENERATOR switch, allow approximately 10 seconds before turning ON the AVIONICS MASTER switch to allow battery amperage to stabilize."
+    ],
+    warnings: [],
+    cautions: []
+  },
+  bt9: {
+    notes: [
+      "After initial power-up, the OBOGS FAIL annunciator will be inhibited for 4 minutes during OBOGS monitor warmup."
+    ],
+    warnings: [],
+    cautions: []
+  },
+  bt12: {
+    notes: [],
+    warnings: [
+      "To prevent injury to ground crew, exercise caution when operating the speed brake or flight controls with ground crew present."
+    ],
+    cautions: []
+  },
+  bt19f: {
+    notes: [
+      "The Flight NO. on the FMS ROUTE page is transmitted as the aircraft call sign by the transponder.",
+      "The built-in test (BIT) feature provides an adequate test of the navigation equipment. The BIT does not provide a test of the antenna. The antenna may be checked by confirming reception of a local VOR/LOC signal by a positive ident.",
+      "UHF reception may be degraded by blanking of the UHF antenna. This has been noted frequently when the aircraft is headed directly toward or away from the transmitting station. This may occur on all UHF frequencies until a fix is identified and implemented."
+    ],
+    warnings: [],
+    cautions: []
+  },
+  t: {
+    notes: [],
+    warnings: [
+      "Failure of the nose wheel steering system may prevent the pilot from changing nose wheel direction without disengaging the system. If the nose wheel steering system fails to respond to pilot input, disengage nose wheel steering and use differential braking to maintain directional control while stopping the aircraft. Do not taxi with a known directional control problem.",
+      "Taking off with a known failure of the nose wheel steering system may cause the nose wheel not to be centered upon retraction, resulting in damage to the aircraft and potential controllability issues on the subsequent landing.",
+      "Minimum radius turns are possible through use of power, full rudder, and differential braking. To preclude unnecessary wear to nose wheel steering and tire, disengage nose wheel steering prior to executing sharp turns with differential braking. To re-engage nose wheel steering, actuate the nose wheel steering switch prior to applying opposite rudder. Failure to do so may result in nose wheel steering not engaging.",
+      "To prevent ground resonance within the propeller, stabilized operation of the propeller in the 62-80% NP range is prohibited on the ground.",
+      "If brake pressure appears to fade during application, or brakes are not responding as expected, fully release brakes then re-apply. Both crew members must fully release brakes for this to be effective."
+    ],
+    cautions: []
+  },
+  ogc: {
+    notes: [
+      "Any fault discovered during this check is reason for ground abort. Complete this check in a non-congested area. Monitor oil temperature, and attempt to park facing into the wind for extended ground operations.",
+      "If conditions permit, park aircraft facing into the wind prior to beginning overspeed governor check to enhance oil cooling and reduce engine operating temperatures."
+    ],
+    warnings: [],
+    cautions: []
+  },
+  ogc3: {
+    notes: [
+      "It is acceptable for N1 to make little or no change when turning off the PMU as long as it is in limits."
+    ],
+    warnings: [],
+    cautions: []
+  },
+  ogc4: {
+    notes: [
+      "The PIU governing tolerance is 1002%.",
+      "At higher density altitudes, less torque may be required to achieve 100% NP."
+    ],
+    warnings: [],
+    cautions: [
+      "Advancing the PCL prior to engine stabilizing with PMU OFF or too rapidly may cause high ITT and engine overtemperature."
+    ]
+  },
+  lc3: {
+    notes: [],
+    warnings: [],
+    cautions: [
+      "Prolonged use of pitot and AOA heat while on the ground will damage the pitot and AOA heating elements."
+    ]
+  },
+  to: {
+    notes: [],
+    warnings: [],
+    cautions: [
+      "Avoid wake turbulence. The aircraft is particularly susceptible to wake turbulence. The vortex-produced rolling moment can exceed the aileron authority of the aircraft. Allow a minimum of 2 minutes before takeoff behind any larger type aircraft or helicopter. Attempt to remain above and upwind of the preceding aircraft's flight path. Wake turbulence will be most pronounced during conditions of calm, or near calm, surface winds."
+    ]
+  },
+  ato1: {
+    notes: [
+      "The gear may be raised once a positive rate of climb is established. If remaining in the pattern, the pilot may leave the gear down, but must observe the maximum gear extended speed in Section V."
+    ],
+    warnings: [],
+    cautions: []
+  },
+  ato2: {
+    notes: [
+      "If the flaps are set to LDG and the gear is raised, the gear warning horn will sound and cannot be canceled. Select flaps TO or UP to cancel the horn.",
+      "To avoid excessive stick forces, trim nose down as aircraft accelerates to climb speed."
+    ],
+    warnings: [],
+    cautions: []
+  },
+  c10_2: {
+    notes: [
+      "With canopy defog ON, expect an increase in ITT of up to 40 °C for a given PCL setting. At high power settings, this may exceed engine ITT limitations. The PCL should be retarded to maintain operating limits. Cockpit noise will also increase. Performance will decrease with defog on. A DUCT TEMP indication is likely at climb or cruise power with canopy defog ON and cockpit temperature controller set to AUTO or MANUAL HOT. Refer to Environmental Systems Duct Overtemp procedure in Section III."
+    ],
+    warnings: [],
+    cautions: []
+  },
+  c10_4: {
+    notes: [
+      "If readings other than 3.6±0.2 psi are encountered at or above 18,069 feet PA, notify maintenance."
+    ],
+    warnings: [],
+    cautions: []
+  },
+  d: {
+    notes: [
+      "For positive cockpit ventilation, place the RAM AIR FLOW switch to the NORM or HI position. For best cockpit cooling at altitudes below 7,500 feet MSL, set RAM AIR FLOW switch to OFF. Set temperature controller as required."
+    ],
+    warnings: [],
+    cautions: []
+  },
+  ia_gps: {
+    notes: [],
+    warnings: [
+      "The GPS always displays distance to the active waypoint. During GPS approaches, this distance may not be the same as the published DME distance on the instrument approach procedure."
+    ],
+    cautions: []
+  },
+  bl: {
+    notes: [
+      "If climbout obstacles are a factor, rotate to 15° nose high on takeoff, raise gear, and maintain VOBS takeoff speed until clear of obstacles. Raise flaps when clear of obstacles (Figure A3-8)",
+      "If remaining in the terminal area, this checklist should be accomplished in conjunction with the Before Landing checklist."
+    ],
+    warnings: [],
+    cautions: []
+  },
+  nl: {
+    notes: [
+      "For heavy weight conditions, approach speed will be greater than those indicated in Figure 2-8 and Figure 2-9. Fly base and final with no less than an \"on speed\" AOA indication."
+    ],
+    warnings: [],
+    cautions: [
+      "Excessive pitch near the ground can result in scraping the tail on the runway.",
+      "To avoid possible contact of ventral fin with runway, do not allow the aircraft to develop excessive sink rates or allow excessive nose-high pitch attitudes during landing. No-flap landings with excessive sink rates greatly increase the likelihood of tail strikes.",
+      "Most blown tires occur prior to tire spin-up or below 40 knots. Holding excessive brake pressure as the aircraft slows below 20 knots may result in locking the brakes and blown tires."
+    ]
+  },
+  nl_shimmy: {
+    notes: [],
+    warnings: [
+      "Engaging nose wheel steering during shimmy may damage the actuator and result in a steering \"hard over\" event and loss of directional control. Do not engage nose wheel steering during landing rollout in attempt to dampen nose wheel shimmy.",
+      "If one brake fails, use the other brake and rudder/ailerons to aid in maintaining directional control. If both cockpits are occupied, the pilot with effective brakes shall assume braking authority. If directional control cannot be maintained, execute Aircraft Departs Prepared Surface procedure.",
+      "Neutralize rudder pedals prior to engaging nose wheel steering to avoid excessive swerve when nose wheel steering is selected."
+    ],
+    cautions: []
+  },
+  mb: {
+    notes: [
+      "All stopping distances computed from Appendix A are based on maximum braking. Maximum braking is very difficult to achieve. Variables such as brake and tire condition, pilot technique, etc., may increase computed landing distances."
+    ],
+    warnings: [
+      "The aircraft is not equipped with anti-skid or anti-lock protection. Do not apply wheel brakes until the aircraft is firmly on the ground and the weight is fully on the wheels. If a wheel brake locks up before the weight of the aircraft is fully on the wheels, the brake may not release even with the full weight of the aircraft on the wheel. The result may be a blown tire and possible degradation of directional control on the ground.",
+      "After a landing which required maximum effort braking and if overheated brakes are suspected, do not taxi into or park in a congested area until the brakes have had sufficient time to cool. Do not set parking brake.",
+      "If brake pressure appears to fade during application, or brakes are not responding as expected, fully release brakes, then re-apply. Both crewmembers must fully release brakes for this to be effective."
+    ],
+    cautions: [
+      "Most blown tires occur prior to tire spin-up or below 40 knots. Holding excessive brake pressure as the aircraft slows below 20 knots may result in locking the brakes and blown tires."
+    ]
+  },
+  al1: {
+    notes: [],
+    warnings: [
+      "Both seats will eject if the ISS is in BOTH and an unpinned ejection handle is pulled, even if the other seat is pinned.",
+      "With the ISS mode selector set to CMD FWD, the crewmember in the rear cockpit initiates ejection of the rear seat only, and the crewmember in the front cockpit initiates ejection for both front and rear seats with the rear seat ejecting first even if the rear seat ejection handle safety pin is installed."
+    ],
+    cautions: []
+  },
+  al2: {
+    notes: [],
+    warnings: [
+      "Ensure ejection seat safety pin is fully inserted to preclude inadvertent seat actuation.",
+      "In the event of a dropped ejection seat safety pin, do not use the CFS handle safety pin to attempt to safe the ejection seat. The ejection seat safety pin and the CFS handle safety pin are not interchangeable. Using the CFS handle safety pin in place of the ejection seat safety pin could result in inadvertent seat actuation."
+    ],
+    cautions: []
+  },
+  al9: {
+    notes: [],
+    warnings: [
+      "After a landing which required maximum effort braking and if overheated brakes are suspected, do not taxi into or park in a congested area until the brakes have had sufficient time to cool. Do not set the parking brake."
+    ],
+    cautions: []
+  },
+  fstb8: {
+    notes: [
+      "If the flaps are set to LDG and the gear is raised, the gear warning horn will sound and cannot be canceled. Select flaps TO or UP to cancel the horn.",
+      "To avoid excessive stick forces, trim nose down as aircraft accelerates to climb speed."
+    ],
+    warnings: [],
+    cautions: []
+  },
+  esd: {
+    notes: [
+      "Allow ITT to stabilize at idle for at least 1 minute prior to shutdown."
+    ],
+    warnings: [],
+    cautions: []
+  },
+  esd1: {
+    notes: [],
+    warnings: [],
+    cautions: [
+      "Do not set parking brake when hot brakes are suspected."
+    ]
+  },
+  esd9: {
+    notes: [],
+    warnings: [],
+    cautions: [
+      "Failure to deactivate both OBOGS regulators will result in a drain on the battery even with all other electrical switches and controls off. This load will discharge the aircraft battery."
+    ]
+  },
+  esd10: {
+    notes: [],
+    warnings: [
+      "When shutting the engine down, verify the PCL is fully in the OFF position to preclude engine damage. If the PCL is left in an intermediate position, fuel flow may continue and cause serious engine damage due to over temperature."
+    ],
+    cautions: []
+  },
+  esd11: {
+    notes: [],
+    warnings: [],
+    cautions: [
+      "Exposure of the cockpit interior to rain and moisture may cause early degradation of avionics, interior corrosion, and prevent critical ejection and CFS components from functioning properly. The aircrew should delay opening the canopy until rain has ceased or ensure that the canopy is opened under cover if it is safe to do so. Exposure of the cockpit interior to rain and/or moisture shall be reported to maintenance."
+    ]
+  },
+  esd14: {
+    notes: [],
+    warnings: [],
+    cautions: [
+      "Make sure the rudder is locked in place. The rudder must be displaced to the left after the gust lock is engaged."
+    ]
+  },
+  esd15: {
+    notes: [
+      "Ensure that the propeller has stopped prior to securing the exterior strobes and/or navigation lights."
+    ],
+    warnings: [],
+    cautions: []
+  },
+  bla1: {
+    notes: [],
+    warnings: [],
+    cautions: [
+      "Failure to close and latch the CFS pin storage box prior to closing the canopy may damage the canopy when the canopy is closed."
+    ]
+  },
+  bla4: {
+    notes: [],
+    warnings: [],
+    cautions: [
+      "Damage may occur to oxygen hose if stowed with loop facing aft and in contact with the canopy strut."
+    ]
+  },
+  bla6: {
+    notes: [],
+    warnings: [],
+    cautions: [
+      "To prevent possible damage to aircraft due to unattended movement, ensure aircraft is secured with wheel chocks or is properly tied down before releasing the parking brake."
+    ]
+  },
+  bla9: {
+    notes: [],
+    warnings: [
+      "To prevent injury, ensure head is clear of canopy handle, latch hooks, and guide pins when entering or exiting cockpit.",
+      "Secure shoulder straps to headrest before adjusting seat.",
+      "Ensure ejection seat pan and side consoles are clear of all lap straps, cords, and connections prior to adjusting seat height to prevent possible damage to seat or equipment.",
+      "After unbuckling the lap straps, ensure it does not fall onto the side console or emergency oxygen control handle causing damage.",
+      "Avoid applying abrupt and/or excessive force to the canopy locking handle at all times. Excessive force in any direction may damage the canopy locking mechanism.",
+      "To avoid accidental activation of the canopy fracturing system, ensure the area around the CFS handle is clear prior to exiting the cockpit."
+    ],
+    cautions: []
+  },
+  sfp1: {
+    notes: [],
+    warnings: [],
+    cautions: [
+      "To prevent possible damage to aircraft due to unattended movement, ensure aircraft is secured with wheel chocks or is properly tied down before releasing the parking brake."
+    ]
+  }
 };

@@ -702,11 +702,12 @@ function TW4Cockpit() {
               <div style={{lineHeight: '1.6'}}>
                 <h3 style={{fontSize: '14px', marginTop: '15px'}}>How It Works</h3>
                 <ul>
-                  <li>Each checklist step can be completed by clicking the correct control or button, including skip</li>
-                  <li>For EPs you can also type answers directly into the input fields</li>
+                  <li>Each checklist step can be completed by clicking the correct control or button, including the skip button</li>
+                  <li>For EPs, you can also type answers directly into the input fields</li>
                   <li><strong>Full EPs</strong> are the critical memory EPs including non memory items. Some items do not have a corresponding control and must be skipped</li>
                   <li>Clicking a correct control will automatically fill the entire step</li>
-                  <li>Clicking on steps in the quadfold will reveal the corresponding expanded checklist item. </li>
+                  <li>Clicking on steps in the quadfold will reveal the corresponding expanded checklist item</li>
+                  <li>Clicking on the ## of ## indicator will display a dropdown from which a specific checklist can be selected</li>
                   <li>A <span style={{backgroundColor: '#f8d0d0'}}>red</span> step means the incorrect control was clicked or inputted. EPs are verbatim!</li>
                   <li>A <span style={{backgroundColor: '#faf6be'}}>yellow</span> step means a part of the correct controls have been clicked or inputted</li>
                   <li>A <span style={{backgroundColor: '#d0f0d0'}}>green</span> or <span style={{backgroundColor: '#d0f3f8'}}>blue</span> step means the correct controls have been clicked or inputted</li>

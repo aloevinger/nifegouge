@@ -17,7 +17,6 @@ function TW4Limits() {
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
     console.log(shuffled)
-    shuffled[0] = 'prohib10';
     return shuffled;
   };
 
@@ -166,8 +165,12 @@ function TW4Limits() {
       let normalizedUser = normalizedUserAnswer.toString().trim().toLowerCase();
       let normalizedCorrect = correctAnswer.toString().toLowerCase();
 
-      normalizedUser = !isNaN(parseFloat(normalizedUser)) ? parseFloat(normalizedUser) : normalizedUser;
-      normalizedCorrect = !isNaN(parseFloat(normalizedCorrect)) ? parseFloat(normalizedCorrect) : normalizedCorrect;
+      // Only convert to float if the ENTIRE string is numeric
+      const isUserNumeric = /^-?\d+\.?\d*$/.test(normalizedUser);
+      const isCorrectNumeric = /^-?\d+\.?\d*$/.test(normalizedCorrect);
+
+      normalizedUser = isUserNumeric ? parseFloat(normalizedUser) : normalizedUser;
+      normalizedCorrect = isCorrectNumeric ? parseFloat(normalizedCorrect) : normalizedCorrect;
 
       if (normalizedUser === normalizedCorrect) {
         return 'correct';

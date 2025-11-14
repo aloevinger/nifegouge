@@ -2845,3 +2845,11 @@ textarea.incorrect-answer {
       background-color: rgba(255, 255, 0, 0.5);
     }
   }
+
+  /* Hint styling for input fields - does not use absolute positioning */
+  .correct-answer-hint-input {
+    background-color: rgba(255, 255, 0, 0.4) !important;
+    border: 2px solid rgba(200, 200, 0, 0.8) !important;
+    box-shadow: 0 0 10px rgba(255, 255, 0, 0.6);
+    animation: hintPulse 2s ease-in-out infinite;
+  }

@@ -5,6 +5,21 @@ function TW4Limits() {
 
   const [limitsData, setLimitsData] = useState({});
   const [checkResults, setCheckResults] = useState({});
+  const [isRandomMode, setIsRandomMode] = useState(false);
+  const [currentLimitIndex, setCurrentLimitIndex] = useState(0);
+  const [limitIndices, setLimitIndices] = useState([]);
+
+  // Helper function to shuffle array (for randomized order)
+  const shuffleIndices = (arr) => {
+    const shuffled = [...arr];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    console.log(shuffled)
+    shuffled[0] = 'prohib10';
+    return shuffled;
+  };
 
   // T-6B Limits Answer Keys
   const limitsAnswers = {
@@ -124,54 +139,131 @@ function TW4Limits() {
     maxFuelFlow: '799'
   };
 
+  // Helper function to check if an answer is correct
+  const isCorrectAnswer = (userAnswer, field) => {
+    // Normalize user answer
+    let normalizedUserAnswer = userAnswer.replace(/[,\-–;()/ ]/g, '');
+
+    // Get correct answer from limitsAnswers
+    let correctAnswer = Array.isArray(limitsAnswers[field]) ? limitsAnswers[field].join('') : limitsAnswers[field];
+    correctAnswer = correctAnswer.replace(/[,\-–;()/ ]/g, '');
+
+    // Check if it's a range answer (e.g., "871-1000")
+    const isRange = /\d\s*(to|-)\s*-?\d/.test(correctAnswer);
+
+    if (isRange) {
+      let normalizedUser = normalizedUserAnswer.toString().replace(/\s+/g, '').replace(/to/i, '-');
+      let normalizedCorrect = correctAnswer.replace(/\s+/g, '').replace(/to/i, '-');
+
+      if (normalizedUser === normalizedCorrect) {
+        return 'correct';
+      } else if (normalizedUserAnswer === '') {
+        return '';
+      } else {
+        return 'incorrect';
+      }
+    } else {
+      let normalizedUser = normalizedUserAnswer.toString().trim().toLowerCase();
+      let normalizedCorrect = correctAnswer.toString().toLowerCase();
+
+      normalizedUser = !isNaN(parseFloat(normalizedUser)) ? parseFloat(normalizedUser) : normalizedUser;
+      normalizedCorrect = !isNaN(parseFloat(normalizedCorrect)) ? parseFloat(normalizedCorrect) : normalizedCorrect;
+
+      if (normalizedUser === normalizedCorrect) {
+        return 'correct';
+      } else if (normalizedUserAnswer === '') {
+        return '';
+      } else {
+        return 'incorrect';
+      }
+    }
+  };
+
   const handleLimitsChange = (field, value) => {
     setLimitsData(prev => ({ ...prev, [field]: value }));
+
+    // In random mode, check if answer is correct and auto-advance
+    if (isRandomMode && field === limitIndices[currentLimitIndex]) {
+      const result = isCorrectAnswer(value, field);
+
+      if (result === 'correct') {
+        setCheckResults(prev => ({ ...prev, [field]: 'correct' }));
+        // Auto-advance after short delay
+        setTimeout(() => {
+          advanceToNextLimit();
+        }, 300);
+        return;
+      }
+    }
+
     setCheckResults(prev => ({ ...prev, [field]: '' }));
+  };
+
+  const startRandomMode = () => {
+    // Get all field keys
+    const allFields = Object.keys(limitsAnswers);
+
+    // Filter out already-correct fields
+    const incompleteFields = allFields.filter(field => checkResults[field] !== 'correct');
+
+    // Shuffle the incomplete fields
+    const shuffled = shuffleIndices(incompleteFields);
+
+    setLimitIndices(shuffled);
+    setCurrentLimitIndex(0);
+    setIsRandomMode(true);
+
+    // Scroll to first field after state updates
+    setTimeout(() => {
+      // Find the highlighted input (it will have the correct-answer-hint-input class)
+      const element = document.querySelector('.correct-answer-hint-input');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        element.focus();
+        if (element.select) {
+          element.select(); // Select all text in the input
+        }
+      }
+    }, 100);
+  };
+
+  const stopRandomMode = () => {
+    setIsRandomMode(false);
+    setLimitIndices([]);
+    setCurrentLimitIndex(0);
+  };
+
+  const advanceToNextLimit = () => {
+    const nextIndex = currentLimitIndex + 1;
+
+    if (nextIndex >= limitIndices.length) {
+      // Reached the end, stop random mode
+      stopRandomMode();
+      return;
+    }
+
+    setCurrentLimitIndex(nextIndex);
+
+    // Scroll to next field
+    setTimeout(() => {
+      // Find the highlighted input (it will have the correct-answer-hint-input class)
+      const element = document.querySelector('.correct-answer-hint-input');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        element.focus();
+        if (element.select) {
+          element.select(); // Select all text in the input
+        }
+      }
+    }, 100);
   };
 
   const checkAnswers = () => {
     const results = {};
-    const answers = limitsAnswers;
-    const data = limitsData;
 
-    Object.keys(answers).forEach(key => {
-      //Find input answer and correct answer and remove , - . ( ) ; and spaces
-      let userAnswer = data[key] || '';
-      userAnswer = userAnswer.replace(/[,\-–;()/ ]/g, '');
-      let correctAnswer = Array.isArray(answers[key]) ? answers[key].join('') : answers[key];
-      correctAnswer = correctAnswer.replace(/[,\-–;()/ ]/g, '');
-      
-      //Regex expression to determine if the answer is a range. ## - ## or ## to ##
-      const isRange = /\d\s*(to|-)\s*-?\d/.test(correctAnswer);
-      
-      if (isRange) {
-        let normalizedUser = userAnswer.toString().replace(/\s+/g, '').replace(/to/i, '-');
-        let normalizedCorrect = correctAnswer.replace(/\s+/g, '').replace(/to/i, '-');
-
-        if (normalizedUser === normalizedCorrect) {
-          results[key] = 'correct';
-        } else if (userAnswer === '') {
-          results[key] = '';
-        } else {
-          results[key] = 'incorrect';
-        }
-      } else {
-        let normalizedUser = userAnswer.toString().trim().toLowerCase();
-        let normalizedCorrect = correctAnswer.toString().toLowerCase();
-        
-        console.log(normalizedCorrect, normalizedUser)
-        normalizedUser = !isNaN(parseFloat(normalizedUser)) ? parseFloat(normalizedUser) : normalizedUser;
-        normalizedCorrect = !isNaN(parseFloat(normalizedCorrect)) ? parseFloat(normalizedCorrect) : normalizedCorrect;
-        console.log(normalizedCorrect, normalizedUser);
-
-        if (normalizedUser === normalizedCorrect) {
-          results[key] = 'correct';
-        } else if (normalizedUser === '') {
-          results[key] = '';
-        }else {
-          results[key] = 'incorrect';
-        }
-      }
+    Object.keys(limitsAnswers).forEach(key => {
+      const userAnswer = limitsData[key] || '';
+      results[key] = isCorrectAnswer(userAnswer, key);
     });
 
     setCheckResults(results);
@@ -183,7 +275,35 @@ function TW4Limits() {
   };
 
   const nextAnswer = () => {
-    // Find the first key in limitsAnswers that doesn't have data in limitsData
+    // In random mode, fill the currently highlighted cell
+    if (isRandomMode) {
+      if (currentLimitIndex >= limitIndices.length) {
+        return false; // No more fields in random mode
+      }
+
+      const currentField = limitIndices[currentLimitIndex];
+
+      // Fill it with the correct answer
+      setLimitsData(prev => ({
+        ...prev,
+        [currentField]: limitsAnswers[currentField]
+      }));
+
+      // Mark it as correct
+      setCheckResults(prev => ({
+        ...prev,
+        [currentField]: 'correct'
+      }));
+
+      // Advance to next limit after short delay
+      setTimeout(() => {
+        advanceToNextLimit();
+      }, 300);
+
+      return true;
+    }
+
+    // Normal mode: find the first key in limitsAnswers that doesn't have data in limitsData
     const emptyKey = Object.keys(limitsAnswers).find(key => !limitsData[key]);
     if (!emptyKey){
       return false; // All answers are filled
@@ -223,6 +343,10 @@ function TW4Limits() {
   };
 
   const getInputClass = (field) => {
+    // Highlight current field in random mode
+    if (isRandomMode && limitIndices[currentLimitIndex] === field) {
+      return 'correct-answer-hint-input';
+    }
     if (checkResults[field] === 'correct') return 'correct-answer';
     if (checkResults[field] === 'incorrect') return 'incorrect-answer';
     return '';
@@ -742,11 +866,34 @@ function TW4Limits() {
               </div>
             </div>
           </div>
+        {isRandomMode && (
+          <div style={{ textAlign: 'center', marginTop: '10px', fontSize: '16px', fontWeight: 'bold' }}>
+            Random Mode: Limit {currentLimitIndex + 1} of {limitIndices.length}
+          </div>
+        )}
         <div className="button-row" style={{ justifyContent: 'center', marginTop: '20px' }}>
           <button onClick={nextAnswer}>Next Answer</button>
           <button onClick={allAnswers}>All Answers</button>
           <button onClick={checkAnswers}>Check Answers</button>
           <button onClick={resetAnswers}>Reset</button>
+          <button
+            onClick={() => {
+              if (isRandomMode) {
+                stopRandomMode();
+              } else {
+                startRandomMode();
+              }
+            }}
+            style={{
+              backgroundColor: isRandomMode ? '#4CAF50' : '#f0f0f0',
+              color: isRandomMode ? 'white' : 'black',
+              fontWeight: isRandomMode ? 'bold' : 'normal',
+              border: isRandomMode ? '2px solid #45a049' : '1px solid #ccc',
+              boxShadow: isRandomMode ? 'inset 0 2px 4px rgba(0,0,0,0.2)' : 'none'
+            }}
+          >
+            Random Mode
+          </button>
         </div>
       </div>
     </>

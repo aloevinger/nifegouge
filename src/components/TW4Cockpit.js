@@ -1571,7 +1571,7 @@ function TW4Cockpit() {
             resetAnswers();}}>
             {isRandom ? "Random " : "Sequential "} Order
           </button>}
-          <button onClick={() => giveHint()}>Hint</button>
+          <button onClick={() => giveHint()}>Hint?</button>
           <button onClick={nextAnswer}>Next Answer/Skip</button>
           <button onClick={allAnswers}>All Answers</button>
           {(currentDivKey === 'epDivs' || currentDivKey === 'fullEpDivs') && <button onClick={checkAnswers}>Check</button>}

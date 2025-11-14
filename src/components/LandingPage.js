@@ -1,0 +1,35 @@
+import React from 'react';
+
+function LandingPage({ onSelectMode }) {
+  return (
+    <div className="landing-page">
+      <div className="landing-header">
+        <h1>Welcome to <span className="pink-text">pinksheetmafia.com</span></h1>
+        <p className="landing-explainer">
+          This is a free, community-built, open-source resource designed to make naval aviation training less stressful.
+          Select your school below to access study materials, interactive cockpits, checklists, and more.
+        </p>
+      </div>
+
+      <div className="landing-buttons">
+        <div
+          className="landing-button"
+          onClick={() => onSelectMode('NIFE')}
+        >
+          <img src="/images/c172.jpg" alt="NIFE - Cessna 172" />
+          <div className="landing-button-label">NIFE</div>
+        </div>
+
+        <div
+          className="landing-button"
+          onClick={() => onSelectMode('TW4 Primary')}
+        >
+          <img src="/images/t6b.JPG" alt="TW4 Primary - T-6B Texan II" />
+          <div className="landing-button-label">TW4 Primary</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default LandingPage;

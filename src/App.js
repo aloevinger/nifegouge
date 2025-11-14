@@ -10,9 +10,11 @@ import TW4About from './components/TW4About.js';
 import TW4Cockpit from './components/TW4Cockpit.js';
 import TW4Limits from './components/TW4Limits.js';
 import TW4Briefs from './components/TW4Briefs.js';
+import NIFEAbout from './components/NIFEAbout.js';
+import LandingPage from './components/LandingPage.js';
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('about');
+  const [currentPage, setCurrentPage] = useState('landing');
   const [mode, setMode] = useState('NIFE');
 
   const handleModeToggle = (newMode) => {
@@ -20,10 +22,15 @@ function App() {
     setCurrentPage('about');
   };
 
+  const handleLandingSelection = (selectedMode) => {
+    setMode(selectedMode);
+    setCurrentPage('about');
+  };
+
   return (
     <div>
-      {/* Navigation Bar */}
-      <div className="navbar">
+      {/* Navigation Bar - hidden on landing page */}
+      {currentPage !== 'landing' && <div className="navbar">
         {/* Mode Toggle */}
         <div className="page-toggle-container">
           <span className={mode === 'NIFE' ? 'active' : ''} onClick={() => handleModeToggle('NIFE')}>
@@ -148,54 +155,12 @@ function App() {
             </>
           )}
         </div>
-      </div>
+      </div>}
 
       {/* Page Content */}
       <div>
-        {currentPage === 'about' && mode === 'NIFE' && (
-          <div className="page-container">
-            <h1 className="about-title">
-              Welcome to <em>pinksheetmafia.com</em>
-            </h1>
-
-            <p className="about-text">
-              This is a free, community-built, open-source resource designed to make NIFE less stressful.
-              Here you'll find problem generators and solvers (primarily for Navigation, plus Weather and FR&R), eps and limits practice/told cards for flight stage,
-              as well as curated gouge documents/links and high-quality practice questions, all submitted and vetted by
-              students who have successfully made it through NIFE.
-            </p>
-
-            <p className="about-text">
-              The NIFE project is complete for now. I've personally written about 450 questions and 15 documents. Going forward,
-              any corrections or new content will be left up to the current NIFE community.
-              If you spot issues or have ideas for new features, please reach out at
-              pinksheetmafia@gmail.com.
-            </p>
-
-            <p className="about-text">
-              The value of this resource depends on the community:
-            </p>
-            <ul className="about-list">
-              <li>Submit questions, docs, and links you think will help future students.</li>
-              <li>Edit or downvote outdated or incorrect content.</li>
-              <li>
-                If you're comfortable with code, contribute directly via our{' '}
-                <a
-                  href="https://github.com/aloevinger/nifegouge"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="about-link"
-                >
-                  open-source GitHub repo
-                </a>.
-              </li>
-            </ul>
-
-            <p className="about-text">
-              Thanks,<br/>ENS Loevinger
-            </p>
-          </div>
-        )}
+        {currentPage === 'landing' && <LandingPage onSelectMode={handleLandingSelection} />}
+        {currentPage === 'about' && mode === 'NIFE' && <NIFEAbout />}
         {currentPage === 'about' && mode === 'TW4 Primary' && <TW4About />}
         {currentPage === 'questions' && mode === 'NIFE' && <Questions />}
         {currentPage === 'docs' && mode === 'NIFE' && <Docs />}

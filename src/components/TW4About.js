@@ -26,14 +26,14 @@ function TW4About() {
       </h1>
 
       <p className="about-text">
-        This section is dedicated to TW4 Primary training resources
+        This section is dedicated to TW4 Primary training resources (sorry Whiting)
       </p>
 
       <h2 className="about-subtitle" style={{fontSize: '18px', marginTop: '20px', marginBottom: '10px'}}>Cockpit Interactive</h2>
       <p className="about-text">
         The Cockpit section features a virtual interactive T-6 cockpit poster that serves as a comprehensive training tool for Emergency Procedures (EPs) and Quadfold checklists.
         By clicking through actual cockpit controls and following procedural flows, you can gain spatial awareness for where the controls are and start developing flow. 
-        Integrated Notes Warnings Cautions, expanded checklist items, and non memory item allows for easy access to supplementary material.
+        Integrated Notes Warnings Cautions, expanded checklist items, and non-memory items allow for easy access to supplementary material.
         Please refer to the instructions button on the top left for a more thorough explanation of how to use the virtual cockpit. 
       </p>
 
@@ -45,14 +45,26 @@ function TW4About() {
 
       <h2 className="about-subtitle" style={{fontSize: '18px', marginTop: '20px', marginBottom: '10px'}}>Briefs</h2>
       <p className="about-text">
-        The Briefs page allows you to practice you Natops brief for both Fam and Form. Clicking on a briefing item will reveal the associated
+        The Briefs page allows you to practice the NATOPS brief for both Fam and Form. Clicking on a briefing item will reveal the associated
         expanded brief item in case you need a refresher or want to learn what is expected of you. 
       </p>
 
       <p className="about-text" style={{marginTop: '20px', fontStyle: 'italic'}}>
-        This is a work in progress. More pages and content will be added over time. If you see
+        This is a work in progress. More pages and content will be added over time. If you see any bugs please reach out personally or at pinksheetmafia@gmail.com
       </p>
 
+      <p className="about-text">
+                If you're comfortable with code, contribute directly via our{' '}
+                <a
+                  href="https://github.com/aloevinger/nifegouge"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="about-link"
+                >
+                  open-source GitHub repo
+                </a>.
+      </p>
+      
       <p className="about-text">
         Thanks,<br/>ENS Loevinger
       </p>

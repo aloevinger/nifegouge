@@ -1398,7 +1398,8 @@ function TW4Cockpit() {
                               borderBottom: idx < (currentDivKey === 'epDivs' ? EP_TITLES : currentDivKey === 'fullEpDivs' ? EP_FULL_TITLES : QUAD_TITLES).length - 1 ? '1px solid #ddd' : 'none',
                               backgroundColor: currentIndexArray[currentIndex] === idx ? '#e3f2fd' : 'white',
                               fontSize: '11px',
-                              fontWeight: currentIndexArray[currentIndex] === idx ? 'bold' : 'normal'
+                              fontWeight: currentIndexArray[currentIndex] === idx ? 'bold' : 'normal',
+                              textAlign: 'center'
                             }}
                             onMouseEnter={(e) => {
                               if (currentIndexArray[currentIndex] !== idx) {
@@ -1603,80 +1604,104 @@ function TW4Cockpit() {
             </button>
           )}
         </div>
-        <div style={{display: 'flex', justifyContent: 'center', marginTop: '0px', position: 'relative'}}>
-          <div style={{
-            position: 'absolute',
-            top: '75%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '220px',
-            height: '2px',
-            backgroundColor: '#333',
-            zIndex: 0
-          }}></div>
-          <div style={{display: 'flex', gap: '60px', alignItems: 'center', justifyContent: 'center', position: 'relative', zIndex: 1}}>
-            <div
-              style={{display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer'}}
-              onClick={() => {
-                setCurrentDivKey('epDivs');
-                refreshIndices(divMap['epDivs'][0], isRandom);
-                setInputAnswers(divMap['epDivs'][1]);
-                setInputLengths(divMap['epDivs'][2]);
-                resetAnswers();
-              }}
-            >
-              <span style={{fontSize: '14px', marginBottom: '5px'}}>EPs</span>
+        <div style={{display: 'flex', justifyContent: 'center', marginTop: '10px'}}>
+          <div style={{position: 'relative', height: '60px', width: '300px'}}>
+            {/* Labels and circles container */}
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', width: '100%'}}>
+              {/* Line */}
               <div style={{
-                width: '20px',
-                height: '20px',
-                borderRadius: '50%',
-                border: '2px solid #333',
-                backgroundColor: currentDivKey === 'epDivs' ? '#333' : '#fff',
-                transition: 'background-color 0.2s'
+                position: 'absolute',
+                top: '32px',
+                left: '10px',
+                right: '10px',
+                height: '2px',
+                backgroundColor: '#333'
               }}></div>
-            </div>
-
-            <div
-              style={{display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer'}}
-              onClick={() => {
-                setCurrentDivKey('fullEpDivs');
-                refreshIndices(divMap['fullEpDivs'][0], isRandom);
-                setInputAnswers(divMap['fullEpDivs'][1]);
-                setInputLengths(divMap['fullEpDivs'][2]);
-                resetAnswers();
-              }}
-            >
-              <span style={{fontSize: '14px', marginBottom: '5px'}}>Full EPs</span>
-              <div style={{
-                width: '20px',
-                height: '20px',
-                borderRadius: '50%',
-                border: '2px solid #333',
-                backgroundColor: currentDivKey === 'fullEpDivs' ? '#333' : '#fff',
-                transition: 'background-color 0.2s'
-              }}></div>
-            </div>
-
-            <div
-              style={{display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer'}}
-              onClick={() => {
-                setCurrentDivKey('quadDivs');
-                setisRandom(false);
-                refreshIndices(divMap['quadDivs'][0], false);
-                setInputAnswers(divMap['quadDivs'][1]);
-                setInputLengths(divMap['quadDivs'][2]);
-                resetAnswers();
-              }}
-            >
-              <span style={{fontSize: '14px', marginBottom: '5px'}}>Quadfold</span>
-              <div style={{
-                width: '20px',
-                height: '20px',
-                borderRadius: '50%',
-                border: '2px solid #333',
-                backgroundColor: currentDivKey === 'quadDivs' ? '#333' : '#fff',
-                transition: 'background-color 0.2s'
-              }}></div>
+              {/* EPs */}
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                  position: 'absolute',
+                  left: '-2px'
+                }}
+                onClick={() => {
+                  setCurrentDivKey('epDivs');
+                  refreshIndices(divMap['epDivs'][0], isRandom);
+                  setInputAnswers(divMap['epDivs'][1]);
+                  setInputLengths(divMap['epDivs'][2]);
+                  resetAnswers();
+                }}
+              >
+                <span style={{fontSize: '14px', marginBottom: '5px'}}>EPs</span>
+                <div style={{
+                  width: '20px',
+                  height: '20px',
+                  borderRadius: '50%',
+                  border: '2px solid #333',
+                  backgroundColor: currentDivKey === 'epDivs' ? '#333' : '#fff',
+                  transition: 'background-color 0.2s'
+                }}></div>
+              </div>
+              {/* Full EPs */}
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                  position: 'absolute',
+                  left: '126px'
+                }}
+                onClick={() => {
+                  setCurrentDivKey('fullEpDivs');
+                  refreshIndices(divMap['fullEpDivs'][0], isRandom);
+                  setInputAnswers(divMap['fullEpDivs'][1]);
+                  setInputLengths(divMap['fullEpDivs'][2]);
+                  resetAnswers();
+                }}
+              >
+                <span style={{fontSize: '14px', marginBottom: '5px'}}>Full EPs</span>
+                <div style={{
+                  width: '20px',
+                  height: '20px',
+                  borderRadius: '50%',
+                  border: '2px solid #333',
+                  backgroundColor: currentDivKey === 'fullEpDivs' ? '#333' : '#fff',
+                  transition: 'background-color 0.2s'
+                }}></div>
+              </div>
+              {/* Quadfold */}
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                  position: 'absolute',
+                  right: '-18px'
+                }}
+                onClick={() => {
+                  setCurrentDivKey('quadDivs');
+                  setisRandom(false);
+                  refreshIndices(divMap['quadDivs'][0], false);
+                  setInputAnswers(divMap['quadDivs'][1]);
+                  setInputLengths(divMap['quadDivs'][2]);
+                  resetAnswers();
+                }}
+              >
+                <span style={{fontSize: '14px', marginBottom: '5px'}}>Quadfold</span>
+                <div style={{
+                  width: '20px',
+                  height: '20px',
+                  borderRadius: '50%',
+                  border: '2px solid #333',
+                  backgroundColor: currentDivKey === 'quadDivs' ? '#333' : '#fff',
+                  transition: 'background-color 0.2s'
+                }}></div>
+              </div>
             </div>
           </div>
         </div>

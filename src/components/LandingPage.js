@@ -1,6 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 function LandingPage({ onSelectMode }) {
+  // Preload images to prevent mobile display issues
+  useEffect(() => {
+    const imagesToPreload = [
+      '/images/c172.jpg',
+      '/images/t6b.jpg'
+    ];
+
+    imagesToPreload.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
+
   return (
     <div className="landing-page">
       <div className="landing-header">
@@ -24,7 +37,7 @@ function LandingPage({ onSelectMode }) {
           className="landing-button"
           onClick={() => onSelectMode('TW4 Primary')}
         >
-          <img src="/images/t6b.JPG" alt="TW4 Primary - T-6B Texan II" />
+          <img src="/images/t6b.jpg" alt="TW4 Primary - T-6B Texan II" />
           <div className="landing-button-label">TW4 Primary</div>
         </div>
       </div>

@@ -2920,6 +2920,10 @@ textarea.incorrect-answer {
     object-fit: cover;
     filter: grayscale(100%);
     transition: filter 0.4s ease;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    will-change: filter;
+    backface-visibility: hidden;
   }
 
   .landing-button:hover img {

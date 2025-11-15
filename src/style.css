@@ -2899,6 +2899,8 @@ textarea.incorrect-answer {
   }
 
   .landing-button {
+    appearance: none;
+    -webkit-appearance: none;
     position: relative;
     width: 400px;
     height: 300px;
@@ -2909,9 +2911,16 @@ textarea.incorrect-answer {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
 
-  .landing-button:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+  /* Hover effects only for devices with hover capability (desktops) */
+  @media (hover: hover) and (pointer: fine) {
+    .landing-button:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+    }
+
+    .landing-button:hover img {
+      filter: grayscale(0%);
+    }
   }
 
   .landing-button img {
@@ -2926,8 +2935,15 @@ textarea.incorrect-answer {
     backface-visibility: hidden;
   }
 
-  .landing-button:hover img {
-    filter: grayscale(0%);
+  /* Touch/tap effect for mobile devices */
+  @media (hover: none) and (pointer: coarse) {
+    .landing-button:active {
+      transform: scale(0.98);
+    }
+
+    .landing-button:active img {
+      filter: grayscale(0%);
+    }
   }
 
   .landing-button-label {

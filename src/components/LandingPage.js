@@ -29,6 +29,7 @@ function LandingPage({ onSelectMode }) {
           className="landing-button"
           onClick={() => onSelectMode('NIFE')}
         >
+          <div className="landing-button-fallback">NIFE</div>
           <img src="/images/c172.jpg" alt="NIFE - Cessna 172" />
           <div className="landing-button-label">NIFE</div>
         </div>
@@ -37,6 +38,7 @@ function LandingPage({ onSelectMode }) {
           className="landing-button"
           onClick={() => onSelectMode('TW4 Primary')}
         >
+          <div className="landing-button-fallback">TW4 Primary</div>
           <img src="/images/t6b.jpg" alt="TW4 Primary - T-6B Texan II" />
           <div className="landing-button-label">TW4 Primary</div>
         </div>

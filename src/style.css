@@ -2902,13 +2902,34 @@ textarea.incorrect-answer {
     appearance: none;
     -webkit-appearance: none;
     position: relative;
-    width: 400px;
-    height: 300px;
+    width: 400px !important;
+    height: 300px !important;
     border-radius: 12px;
     overflow: hidden;
     cursor: pointer;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    display: block;
+  }
+
+  .landing-button-fallback {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    font-weight: 700;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    z-index: 1;
+    pointer-events: none;
   }
 
   /* Hover effects only for devices with hover capability (desktops) */
@@ -2924,6 +2945,9 @@ textarea.incorrect-answer {
   }
 
   .landing-button img {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -2933,6 +2957,8 @@ textarea.incorrect-answer {
     transform: translateZ(0);
     will-change: filter;
     backface-visibility: hidden;
+    z-index: 2;
+    pointer-events: none;
   }
 
   /* Touch/tap effect for mobile devices */
@@ -2959,6 +2985,8 @@ textarea.incorrect-answer {
     text-align: center;
     text-transform: uppercase;
     letter-spacing: 2px;
+    z-index: 3;
+    pointer-events: none;
   }
 
   /* Responsive design for landing page */
@@ -2973,6 +3001,10 @@ textarea.incorrect-answer {
       max-width: 400px;
     }
 
+    .landing-button-fallback {
+      font-size: 36px;
+    }
+
     .landing-header h1 {
       font-size: 36px;
     }
@@ -2980,4 +3012,370 @@ textarea.incorrect-answer {
     .landing-explainer {
       font-size: 16px;
     }
+  }
+
+  /* Course Rules Map Styles */
+  .course-rules-map-container {
+    position: relative;
+    width: 100%;
+    height: 600px;
+    margin: 20px 0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .course-rules-legend {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    max-width: 200px;
+  }
+
+  .course-rules-legend h3 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+    font-size: 14px;
+  }
+
+  .legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    margin-right: 10px;
+    border: 1px solid #333;
+  }
+
+  .course-rules-mode-selector {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .course-rules-mode-selector button {
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    border: 2px solid #4CAF50;
+    background-color: white;
+    color: #4CAF50;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .course-rules-mode-selector button:hover {
+    background-color: #f0f0f0;
+  }
+
+  .course-rules-mode-selector button.active {
+    background-color: #4CAF50;
+    color: white;
+  }
+
+  .course-rules-controls {
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .toggle-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .toggle-buttons button {
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 2px solid #ccc;
+    background-color: white;
+    color: #333;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .toggle-buttons button:hover {
+    background-color: #f0f0f0;
+    border-color: #888;
+  }
+
+  .toggle-buttons button.active {
+    background-color: #4CAF50;
+    color: white;
+    border-color: #4CAF50;
+  }
+
+  .layer-checklist {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .layer-checklist h3 {
+    margin: 0 0 15px 0;
+    font-size: 18px;
+    text-align: center;
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin: 8px 0;
+    background-color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .checkbox-label:hover {
+    background-color: #f0f0f0;
+  }
+
+  .checkbox-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    cursor: pointer;
+  }
+
+  .checkbox-color {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    margin-right: 12px;
+    border: 2px solid #333;
+  }
+
+  .dropdown-controls {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .dropdown-controls label {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .dropdown-controls select {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+    border: 2px solid #ccc;
+    border-radius: 6px;
+    background-color: white;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+
+  .quiz-mode {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .quiz-mode h3 {
+    text-align: center;
+    margin: 0 0 20px 0;
+    font-size: 18px;
+  }
+
+  .quiz-question {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .quiz-question p {
+    margin: 10px 0;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .quiz-question button {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin: 15px 0;
+    transition: background-color 0.2s ease;
+  }
+
+  .quiz-question button:hover:not(:disabled) {
+    background-color: #45a049;
+  }
+
+  .quiz-question button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+
+  .quiz-hint {
+    font-style: italic;
+    color: #666;
+    font-size: 14px !important;
+  }
+
+  .quiz-complete {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .quiz-complete p {
+    font-size: 18px;
+    color: #4CAF50;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+
+  .quiz-complete button {
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .quiz-complete button:hover {
+    background-color: #45a049;
+  }
+
+  /* Mobile responsive for course rules */
+  @media (max-width: 768px) {
+    .course-rules-map-container {
+      height: 400px;
+    }
+
+    .course-rules-legend {
+      font-size: 12px;
+      padding: 10px;
+      max-width: 150px;
+    }
+
+    .course-rules-mode-selector button {
+      padding: 8px 16px;
+      font-size: 12px;
+    }
+
+    .toggle-buttons button {
+      padding: 10px 16px;
+      font-size: 12px;
+    }
+  }
+
+  /* Hierarchical Tree View Styles */
+  .layer-tree {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .layer-tree h3 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .tree-container {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px;
+    max-height: 500px;
+    overflow-y: auto;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 13px;
+  }
+
+  .tree-item {
+    margin: 0;
+  }
+
+  .tree-folder-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2px 4px;
+    min-height: 22px;
+    line-height: 22px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .tree-folder-row:hover {
+    background-color: #e8e8e8;
+  }
+
+  .tree-left {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .tree-icon {
+    width: 14px;
+    min-width: 14px;
+    display: inline-block;
+    text-align: center;
+    font-size: 9px;
+    color: #666;
+    cursor: pointer;
+    margin-right: 4px;
+    flex-shrink: 0;
+  }
+
+  .tree-label {
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #333;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .tree-feature {
+    color: #666;
+    font-size: 12px;
+  }
+
+  .tree-checkbox {
+    cursor: pointer;
+    margin: 0;
+    margin-left: 8px;
+    flex-shrink: 0;
   }

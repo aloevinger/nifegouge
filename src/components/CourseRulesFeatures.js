@@ -1223,7 +1223,7 @@ export const crFeatures = {
       "If two-way radio communication is not established with Waldron Tower by the _______, or Waldron Tower reports that the pattern is full and denies entry, turn right and fly ______ along the center of the intracoastal waterway.  Maintain _____ MSL and contact Corpus Approach (CH ____)."
     ],
     answers : [
-      ["Camel Humps", "30", "Shrimp Ponds", "1000'", "200", "Shrimp Ponds", "Cooling Ponds", "Yorktown Bridge", "Flour Bluff Water Tower"]
+      ["Camel Humps", "30", "Shrimp Ponds", "1000'", "200", "Shrimp Ponds", "Cooling Ponds", "Yorktown Bridge", "Flour Bluff Water Tower"],
       ["Shrimp Ponds", "south", "1000'", "8"]
     ],
     dependentNode: ["Point-Arrivals-78", "Point-Arrivals-81", "Point-Arrivals-82", "Point-Arrivals-83", "Point-Arrivals-84"],
@@ -1289,7 +1289,7 @@ export const crFeatures = {
       "If two-way radio communication is not established with Waldron Tower by the _______, or Waldron Tower reports that the pattern is full and denies entry, turn right and fly ______ along the center of the intracoastal waterway.  Maintain _____ MSL and contact Corpus Approach (CH ____)."
     ],
     answers : [
-      ["Camel Humps", "30", "Shrimp Ponds", "Shrimp Ponds", "Waldron Power Plant", "Waldron Power Plant"],
+      ["Camel Humps", "30", "Shrimp Ponds", "1000'", "200", "Shrimp Ponds", "Shrimp Ponds", "Waldron Power Plant", "Waldron Power Plant"],
       ["Shrimp Ponds", "south", "1000'", "8"]
     ],
     dependentNode: ["Point-Arrivals-78", "Point-Arrivals-79", "Point-Arrivals-81"],

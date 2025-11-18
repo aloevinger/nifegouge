@@ -420,8 +420,8 @@ function TW4CourseRules() {
 
   // Pure Random Quiz Functions
   const initializeRandomPool = (folderFilter = '') => {
-    // Create a pool of all individual questions from all features
-    const allQuestions = [];
+    // Create a pool of all features that have questions
+    const allFeatures = [];
 
     Object.entries(crFeatures).forEach(([id, feature]) => {
       // Must have questions
@@ -435,17 +435,12 @@ function TW4CourseRules() {
         }
       }
 
-      // Add each question from this feature to the pool
-      feature.questions.forEach((question, questionIndex) => {
-        allQuestions.push({
-          featureId: id,
-          questionIndex: questionIndex
-        });
-      });
+      // Add feature to pool
+      allFeatures.push(id);
     });
 
     // Shuffle the pool using Fisher-Yates algorithm
-    const shuffled = [...allQuestions];
+    const shuffled = [...allFeatures];
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
@@ -467,7 +462,7 @@ function TW4CourseRules() {
       return null;
     }
 
-    // Get current question from the pool
+    // Get current feature from the pool
     let index = currentQuestionIndex;
 
     // If we've reached the end, reshuffle
@@ -482,12 +477,12 @@ function TW4CourseRules() {
       setCurrentQuestionIndex(0);
     }
 
-    const currentQuestion = (providedPool || randomQuestionPool)[index];
-    setCurrentRandomFeature(currentQuestion.featureId);
-    setCurrentRandomQuestionIndex(currentQuestion.questionIndex);
+    const currentFeatureId = (providedPool || randomQuestionPool)[index];
+    setCurrentRandomFeature(currentFeatureId);
+    setCurrentRandomQuestionIndex(0); // Always start at first question
     setRevealedAnswerIndices([]);
 
-    return currentQuestion.featureId;
+    return currentFeatureId;
   };
 
   const parseQuestionWithBlanks = (questionText, answers, questionIndex, revealedIndices) => {
@@ -552,30 +547,38 @@ function TW4CourseRules() {
   };
 
   const nextRandomQuestion = () => {
-    // Move to next question in the pool
-    const nextIndex = currentQuestionIndex + 1;
+    if (!currentRandomFeature || !crFeatures[currentRandomFeature]) return;
 
-    // If we've reached the end, reshuffle
-    if (nextIndex >= randomQuestionPool.length) {
-      const reshuffled = [...randomQuestionPool];
-      for (let i = reshuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [reshuffled[i], reshuffled[j]] = [reshuffled[j], reshuffled[i]];
-      }
-      setRandomQuestionPool(reshuffled);
-      setCurrentQuestionIndex(0);
+    const feature = crFeatures[currentRandomFeature];
+    if (!feature.questions || feature.questions.length === 0) return;
 
-      const nextQuestion = reshuffled[0];
-      setCurrentRandomFeature(nextQuestion.featureId);
-      setCurrentRandomQuestionIndex(nextQuestion.questionIndex);
+    // Check if there are more questions in the current feature
+    if (currentRandomQuestionIndex < feature.questions.length - 1) {
+      // Move to next question in same feature
+      setCurrentRandomQuestionIndex(prev => prev + 1);
       setRevealedAnswerIndices([]);
     } else {
-      setCurrentQuestionIndex(nextIndex);
+      // Move to next feature in pool
+      const nextIndex = currentQuestionIndex + 1;
 
-      const nextQuestion = randomQuestionPool[nextIndex];
-      setCurrentRandomFeature(nextQuestion.featureId);
-      setCurrentRandomQuestionIndex(nextQuestion.questionIndex);
-      setRevealedAnswerIndices([]);
+      // If we've reached the end, reshuffle
+      if (nextIndex >= randomQuestionPool.length) {
+        const reshuffled = [...randomQuestionPool];
+        for (let i = reshuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [reshuffled[i], reshuffled[j]] = [reshuffled[j], reshuffled[i]];
+        }
+        setRandomQuestionPool(reshuffled);
+        setCurrentQuestionIndex(0);
+        setCurrentRandomFeature(reshuffled[0]);
+        setCurrentRandomQuestionIndex(0);
+        setRevealedAnswerIndices([]);
+      } else {
+        setCurrentQuestionIndex(nextIndex);
+        setCurrentRandomFeature(randomQuestionPool[nextIndex]);
+        setCurrentRandomQuestionIndex(0);
+        setRevealedAnswerIndices([]);
+      }
     }
   };
 
@@ -1452,7 +1455,7 @@ function TW4CourseRules() {
                 {/* Question with Blanks */}
                 <div style={{ marginBottom: '15px', padding: '15px', background: 'white', borderRadius: '4px', border: '1px solid #ddd' }}>
                   <strong style={{ display: 'block', marginBottom: '10px' }}>
-                    Question {currentRandomQuestionIndex + 1}:
+                    Question {currentRandomQuestionIndex + 1} of {crFeatures[currentRandomFeature].questions.length}:
                   </strong>
                   <div
                     style={{ lineHeight: '1.8', fontSize: '14px' }}

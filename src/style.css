@@ -2880,7 +2880,11 @@ textarea.incorrect-answer {
   }
 
   .pink-text {
-    color: #E9B5D5;
+    background: linear-gradient(135deg, #E9B5D5 0%, #ffd6f0 30%, #E9B5D5 60%, #c297b8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
   }
 
   .landing-explainer {

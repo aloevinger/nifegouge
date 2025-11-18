@@ -49,8 +49,14 @@ function TW4About() {
         expanded brief item in case you need a refresher or want to learn what is expected of you. 
       </p>
 
+      <h2 className="about-subtitle" style={{fontSize: '18px', marginTop: '20px', marginBottom: '10px'}}>Course Rules</h2>
+      <p className="about-text">
+        The Course Rules page integrates an interactive course rule map with official text to help you build visual intuition while studying. You can build hypothetical flight paths and test yourself on associated     
+        course rules as you progress, quiz yourself on specific areas, or freely explore the Corpus Christi area's course rules.
+      </p>
+
       <p className="about-text" style={{marginTop: '20px', fontStyle: 'italic'}}>
-        This is a work in progress. More pages and content will be added over time. If you see any bugs please reach out personally or at pinksheetmafia@gmail.com
+        This is a work in progress. More pages and content will be added over time. If you see any bugs PLEASE reach out personally at 818-209-2151 or at pinksheetmafia@gmail.com
       </p>
 
       <p className="about-text">

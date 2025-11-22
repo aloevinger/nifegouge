@@ -9,15 +9,106 @@ function TW4Limits() {
   const [currentLimitIndex, setCurrentLimitIndex] = useState(0);
   const [limitIndices, setLimitIndices] = useState([]);
 
-  // Helper function to shuffle array (for randomized order)
+  // Helper function to shuffle array with constraints
   const shuffleIndices = (arr) => {
-    const shuffled = [...arr];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    // Define groups that should appear together
+    const groups = [
+      // Notes
+      ['note21', 'note22'], ['note41', 'note42'], ['note51', 'note52', 'note53'],
+      ['note61', 'note62', 'note63'], ['note81', 'note82', 'note83'], ['note101', 'note102', 'note103'],
+      // Operating limits table
+      ['takeoffOilPressMin', 'takeoffOilPressMax'], ['takeoffOilTempMin', 'takeoffOilTempMax'],
+      ['idleTorqueMin', 'idleTorqueMax'], ['idleN1GroundBottom', 'idleN1GroundTop'], ['idleNpGroundBottom', 'idleNpGroundTop'],
+      ['idleOilTempGroundMin', 'idleOilTempGroundMax'], ['idleOilTempFlightMin', 'idleOilTempFlightMax'], ['idleOilTempCautionMin', 'idleOilTempCautionMax'],
+      ['startITT5sec', 'startITTTime'], ['transientTorque5secMin', 'transientTorque5secMax', 'transientTorqueTime'],
+      ['transientITT20sec', 'transientITTTime'], ['transientNp20sec', 'transientNpTime'],
+      ['transientOilPressMin', 'transientOilPressMax'], ['transientOilTemp10minMin', 'transientOilTemp10minMax', 'transientOilTempTime'],
+      // Acceleration limits
+      ['symCleanPos', 'symCleanNeg'], ['symGearFlapsPos', 'symGearFlapsNeg'],
+      ['asymCleanPos', 'asymCleanNeg'], ['asymGearFlapsPos', 'asymGearFlapsNeg'],
+      // Other
+      ['vmo', 'mmo'], ['iceFeet', 'iceType'], ['cockpitPress', 'cockpitPressTol'], ['hydCautionMin', 'hydCautionMax'],
+      ['negOne', 'bankAngleChange']
+    ];
+
+    // Extract prohibited maneuvers in order
+    const prohibitedManeuvers = [];
+    const remaining = [];
+
+    for (const item of arr) {
+      if (item.startsWith('prohib')) {
+        prohibitedManeuvers.push(item);
+      } else {
+        remaining.push(item);
+      }
     }
-    console.log(shuffled)
-    return shuffled;
+
+    // Sort prohibited maneuvers to ensure they're in order
+    prohibitedManeuvers.sort((a, b) => {
+      const numA = parseInt(a.replace('prohib', ''));
+      const numB = parseInt(b.replace('prohib', ''));
+      return numA - numB;
+    });
+
+    // Process remaining items into groups and singles
+    const groupedItems = [];
+    const processed = new Set();
+
+    // First, extract all groups
+    for (const group of groups) {
+      const presentItems = group.filter(item => remaining.includes(item));
+      if (presentItems.length > 0) {
+        groupedItems.push(presentItems);
+        presentItems.forEach(item => processed.add(item));
+      }
+    }
+
+    // Add remaining singles
+    for (const item of remaining) {
+      if (!processed.has(item)) {
+        groupedItems.push([item]);
+      }
+    }
+
+    // Shuffle the groups (not the items within groups)
+    for (let i = groupedItems.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [groupedItems[i], groupedItems[j]] = [groupedItems[j], groupedItems[i]];
+    }
+
+    // Insert prohibited maneuvers between groups (before flattening)
+    const result = [];
+    let prohibIndex = 0;
+
+    if (prohibitedManeuvers.length > 0) {
+      // Determine positions to insert prohibited maneuvers (at group boundaries)
+      const totalSlots = groupedItems.length + prohibitedManeuvers.length;
+      const prohibPositions = [];
+
+      // Distribute prohibited maneuvers throughout the groups
+      const interval = Math.floor(totalSlots / prohibitedManeuvers.length);
+      for (let i = 0; i < prohibitedManeuvers.length; i++) {
+        prohibPositions.push(Math.floor(Math.random() * (interval + 1)) + (i * interval));
+      }
+
+      // Build final array by inserting prohibited maneuvers between groups
+      let groupIndex = 0;
+      for (let i = 0; i < totalSlots; i++) {
+        if (prohibPositions.includes(i) && prohibIndex < prohibitedManeuvers.length) {
+          result.push(prohibitedManeuvers[prohibIndex]);
+          prohibIndex++;
+        } else if (groupIndex < groupedItems.length) {
+          result.push(...groupedItems[groupIndex]);
+          groupIndex++;
+        }
+      }
+    } else {
+      // No prohibited maneuvers, just flatten groups
+      result.push(...groupedItems.flat());
+    }
+
+    console.log(result);
+    return result;
   };
 
   // T-6B Limits Answer Keys

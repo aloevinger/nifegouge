@@ -731,6 +731,7 @@ function TW4Cockpit() {
 
                 <h3 style={{fontSize: '14px', marginTop: '15px'}}>Buttons & Controls</h3>
                 <ul>
+                  <li><strong>Simple/Full Mode</strong> Toggle to remove/add cockpit poster and associated buttons</li>
                   <li><strong>NWC Buttons:</strong> Small buttons on individual steps that display Notes, Warnings, and Cautions relevant to that step. <span style={{fontSize: '11px'}}>Note: NWCs from a checklist's preamble are included in the first step</span></li>
                   <li><strong>Hint:</strong> Highlights controls related to the current step</li>
                   <li><strong>Next Answer/Skip:</strong> Reveals and fills the next unanswered/unchecked step</li>

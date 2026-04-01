@@ -691,7 +691,7 @@ function TW4Cockpit() {
               minWidth: '100px'
             }}
           >
-            {cockpitMode === 'full' ? 'Full Mode' : 'Simple Mode'}
+            {cockpitMode === 'full' ? 'Simple Mode' : 'Full Mode'}
           </button>
         </div>
 

@@ -1320,7 +1320,7 @@ function TW4Cockpit() {
                 <div style={{
                   width: '100%',
                   alignItems: 'center',
-                  minHeight: cockpitMode === 'simplified' ? '500px' : '350px',
+                  minHeight: '350px',
                   margin: '0 auto',
                   position: 'relative'
                 }}>

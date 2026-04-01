@@ -36,6 +36,7 @@ function TW4Cockpit() {
   const [showNWCModal, setShowNWCModal] = useState(false);
   const [nwcModalContent, setNwcModalContent] = useState(null);
   const [showEPNavDropdown, setShowEPNavDropdown] = useState(false);
+  const [cockpitMode, setCockpitMode] = useState('full'); // 'full' or 'simplified'
 
   const modalBaseContentRef = useRef(null);
   const modalStepKeyRef = useRef(null);
@@ -676,7 +677,22 @@ function TW4Cockpit() {
             Instructions
           </button>
           <h1 style={{fontSize: '20px', margin: '15px 0'}}>T-6B INTERACTIVE COCKPIT</h1>
-          <div style={{width: '100px'}}></div> {/* Spacer to balance the button */}
+          <button
+            onClick={() => setCockpitMode(cockpitMode === 'full' ? 'simplified' : 'full')}
+            style={{
+              padding: '8px 16px',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              backgroundColor: cockpitMode === 'full' ? '#01202C' : '#003B4F',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              minWidth: '100px'
+            }}
+          >
+            {cockpitMode === 'full' ? 'Full Mode' : 'Simple Mode'}
+          </button>
         </div>
 
         {/* Instructions Modal */}
@@ -739,6 +755,7 @@ function TW4Cockpit() {
             {/* EPS LAYOUT WITH SIDE CONTROLS */}
             <div style={{display: 'flex', gap: LAYOUT_GAP, alignItems: 'flex-start', justifyContent: 'center'}}>
               {/* LEFT CONTROLS */}
+              {cockpitMode === 'full' && (
               <div style={{display: 'flex', flexDirection: 'column', gap: '0px', width: SIDE_CONTROLS_WIDTH, flexShrink: 1, minWidth: '80px'}}>
                 {/* Left Panel Image with clickable overlay */}
                 <div style={{position: 'relative', width: '100%'}}>
@@ -870,9 +887,19 @@ function TW4Cockpit() {
                   />
                 </div>
               </div>
+              )}
 
               {/* CENTER - EPS CONTENT */}
-              <div style={{flex: `0 1 ${CENTER_CONTENT_WIDTH}`, width: CENTER_CONTENT_WIDTH, alignItems: 'center', flexShrink: 1, minWidth: '300px'}}>
+              <div style={{
+                flex: cockpitMode === 'simplified' ? '1' : `0 1 ${CENTER_CONTENT_WIDTH}`,
+                width: cockpitMode === 'simplified' ? '100%' : CENTER_CONTENT_WIDTH,
+                maxWidth: cockpitMode === 'simplified' ? '1200px' : CENTER_CONTENT_WIDTH,
+                alignItems: 'center',
+                flexShrink: 1,
+                minWidth: '300px'
+              }}>
+                {cockpitMode === 'full' && (
+                <>
                 <div style={{position: 'relative', width: '100%'}}>
                   <img src="/images/croptop.png" alt="Top Control" style={{width: '100%', height: 'auto', display: 'block', minWidth: 0}} />
                   <div
@@ -1287,8 +1314,16 @@ function TW4Cockpit() {
                     </div>
                   </div>
                 </div>
+                </>
+                )}
 
-                <div style={{width: '100%', alignItems: 'center', minHeight: '350px', margin: '0 auto', position: 'relative'}}>
+                <div style={{
+                  width: '100%',
+                  alignItems: 'center',
+                  minHeight: cockpitMode === 'simplified' ? '500px' : '350px',
+                  margin: '0 auto',
+                  position: 'relative'
+                }}>
                 {/*The actual damn checklist*/}
                 {divMap[currentDivKey][0][currentIndexArray[currentIndex]]}
 
@@ -1353,6 +1388,7 @@ function TW4Cockpit() {
                     setActiveHints({});
                     setAutoExpanded(false);
                     closeChecklistModal();
+                    closeNWCModal();
                   }}
                     disabled={currentIndex === 0}>
                     Previous
@@ -1436,6 +1472,7 @@ function TW4Cockpit() {
                     setActiveHints({});
                     setAutoExpanded(false);
                     closeChecklistModal();
+                    closeNWCModal();
                   }}
                     disabled={currentIndex === currentIndexArray.length - 1}>
                     Next
@@ -1444,6 +1481,7 @@ function TW4Cockpit() {
               </div>
 
               {/* RIGHT CONTROLS */}
+              {cockpitMode === 'full' && (
               <div style={{display: 'flex', flexDirection: 'column', gap: '0px', width: SIDE_CONTROLS_WIDTH, flexShrink: 1, minWidth: '80px'}}>
 
                 {/* Right Panel Image with clickable overlay */}
@@ -1562,6 +1600,7 @@ function TW4Cockpit() {
                   />
                 </div>
               </div>
+              )}
             </div>
         </div>
         <div className="button-row" style={{ justifyContent: 'center', marginTop: '0px' }}>
@@ -1572,7 +1611,7 @@ function TW4Cockpit() {
             resetAnswers();}}>
             {isRandom ? "Random " : "Sequential "} Order
           </button>}
-          <button onClick={() => giveHint()}>Hint?</button>
+          {cockpitMode === 'full' && <button onClick={() => giveHint()}>Hint?</button>}
           <button onClick={nextAnswer}>Next Answer/Skip</button>
           <button onClick={allAnswers}>All Answers</button>
           {(currentDivKey === 'epDivs' || currentDivKey === 'fullEpDivs') && <button onClick={checkAnswers}>Check</button>}

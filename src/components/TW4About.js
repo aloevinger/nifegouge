@@ -32,11 +32,11 @@ function TW4About() {
         This section is dedicated to TW4 Primary training resources (sorry Whiting)
       </p>
 
-      <h2 className="about-subtitle" style={{fontSize: '18px', marginTop: '20px', marginBottom: '10px'}}>Cockpit Interactive</h2>
+      <h2 className="about-subtitle" style={{fontSize: '18px', marginTop: '20px', marginBottom: '10px'}}>Interactive Cockpit/EPs</h2>
       <p className="about-text">
         The Cockpit section features a virtual interactive T-6 cockpit poster that serves as a comprehensive training tool for Emergency Procedures (EPs) and Quadfold checklists.
         By clicking through actual cockpit controls and following procedural flows, you can gain spatial awareness for where the controls are and start developing flow. 
-        Integrated Notes Warnings Cautions, expanded checklist items, and non-memory items allow for easy access to supplementary material.
+        Integrated Notes Warnings Cautions, expanded checklist items, and non-memory items allow for easy access to supplementary material. Or use Simple Mode to just review EPs and NWCs without the cockpit.
         Please refer to the instructions button on the top left for a more thorough explanation of how to use the virtual cockpit. 
       </p>
 

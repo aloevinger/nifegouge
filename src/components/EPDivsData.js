@@ -1067,8 +1067,7 @@ export const EP_NWC = {
   },
   efdf1: {
     notes: [
-      "If experiencing uncommanded power changes/loss of power/uncommanded propeller feather or compressor stalls, refer to appropriate procedure.",
-      "Zoom results with an engine still producing a usable torque (>6%) will be several hundred to several thousand feet higher in altitude gained."
+      "If experiencing uncommanded power changes/loss of power/uncommanded propeller feather or compressor stalls, refer to appropriate procedure."
     ],
     warnings: [],
     cautions: []

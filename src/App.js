@@ -124,6 +124,16 @@ function App() {
           {mode === 'TW4 Primary' && (
             <>
             <a
+              href="#cockpit"
+              onClick={(e) => {
+                e.preventDefault();
+                setCurrentPage('cockpit');
+              }}
+              className={currentPage === 'cockpit' ? 'active' : ''}
+            >
+              EPs/Cockpit
+            </a>
+            <a
               href="#limits"
               onClick={(e) => {
                 e.preventDefault();
@@ -132,16 +142,6 @@ function App() {
               className={currentPage === 'limits' ? 'active' : ''}
             >
               Limits
-            </a>
-            <a
-              href="#cockpit"
-              onClick={(e) => {
-                e.preventDefault();
-                setCurrentPage('cockpit');
-              }}
-              className={currentPage === 'cockpit' ? 'active' : ''}
-            >
-              Cockpit
             </a>
             <a
               href="#briefs"

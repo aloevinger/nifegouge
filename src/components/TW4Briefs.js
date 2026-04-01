@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 function TW4Briefs() {
   const [expandedItems, setExpandedItems] = useState({});
   const [currentBrief, setCurrentBrief] = useState('fam'); // 'fam' or 'forms'
+  const [showUsefulLinks, setShowUsefulLinks] = useState(false);
   const briefTitle = currentBrief === 'fam'
     ? 'T-6B MISSION/NATOPS BRIEFING GUIDE FOR FAM, VNAV, and INAV STAGES'
     : 'T-6B MISSION/NATOPS BRIEFING GUIDE FOR FORM AND CAPSTONE STAGES';
@@ -1039,6 +1040,68 @@ function TW4Briefs() {
         <button onClick={() => expandAll(activeBrief)}>Expand All</button>
         <button onClick={collapseAll}>Collapse All</button>
         <button onClick={() => setCurrentBrief(currentBrief === 'fam' ? 'forms' : 'fam')}>{toggleButtonText}</button>
+      </div>
+
+      {/* USEFUL LINKS SECTION */}
+      <div style={{marginBottom: '5px'}}>
+        <h2
+          onClick={() => setShowUsefulLinks(!showUsefulLinks)}
+          style={{
+            fontSize: '12px',
+            fontWeight: 'bold',
+            marginBottom: '4px',
+            backgroundColor: '#ddd',
+            padding: '4px',
+            border: '1px solid #000',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px'
+          }}
+        >
+          <span style={{fontSize: '10px', color: '#666'}}>
+            {showUsefulLinks ? '▼' : '▶'}
+          </span>
+          <span style={{textDecoration: 'underline'}}>QUICK LINKS</span>
+        </h2>
+
+        {showUsefulLinks && (
+          <div style={{
+            padding: '5px',
+            border: '1px solid #ccc',
+            backgroundColor: '#f9f9f9',
+            fontSize: '11px',
+            lineHeight: '1.6'
+          }}>
+            <ul style={{listStyleType: 'none', padding: 0, margin: 0}}>
+              <li style={{marginBottom: '0px'}}>
+                <a href="https://aviationweather.gov" target="_blank" rel="noopener noreferrer" style={{color: '#01202C', textDecoration: 'underline'}}>
+                  Aviation Weather
+                </a>
+              </li>
+              <li style={{marginBottom: '0px'}}>
+                <a href="https://notams.aim.faa.gov/notamSearch/nsapp.html#/" target="_blank" rel="noopener noreferrer" style={{color: '#01202C', textDecoration: 'underline'}}>
+                  NOTAMs
+                </a>
+              </li>
+              <li style={{marginBottom: '0px'}}>
+                <a href="https://tfr.faa.gov/tfr3/?page=map" target="_blank" rel="noopener noreferrer" style={{color: '#01202C', textDecoration: 'underline'}}>
+                  TFRs
+                </a>
+              </li>
+              <li style={{marginBottom: '0px'}}>
+                <a href="https://www.usahas.com/" target="_blank" rel="noopener noreferrer" style={{color: '#01202C', textDecoration: 'underline'}}>
+                  BASH
+                </a>
+              </li>
+              <li style={{marginBottom: '0px'}}>
+                <a href="https://tsharp.navsea.cloud.navy.mil/" target="_blank" rel="noopener noreferrer" style={{color: '#01202C', textDecoration: 'underline'}}>
+                  TSHARP
+                </a>
+              </li>
+            </ul>
+          </div>
+        )}
       </div>
 
       {currentBrief === 'fam' ? (

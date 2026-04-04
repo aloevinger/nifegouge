@@ -13,6 +13,7 @@ import TW4Briefs from './components/TW4Briefs.js';
 import NIFEAbout from './components/NIFEAbout.js';
 import LandingPage from './components/LandingPage.js';
 import CourseRules from './components/TW4CourseRules.js';
+import Systems from './components/T6BHydraulicDiagram.js';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('landing');
@@ -163,6 +164,16 @@ function App() {
             >
               Course Rules
             </a>
+            <a
+              href="#systems"
+              onClick={(e) => {
+                e.preventDefault();
+                setCurrentPage('systems');
+              }}
+              className={currentPage === 'systems' ? 'active' : ''}
+            >
+              Systems
+            </a>
             </>
           )}
         </div>
@@ -183,6 +194,7 @@ function App() {
         {currentPage === 'limits' && mode === 'TW4 Primary' && <TW4Limits />}
         {currentPage === 'briefs' && mode === 'TW4 Primary' && <TW4Briefs />}
         {currentPage === 'courserules' && mode === 'TW4 Primary' && <CourseRules />}
+        {currentPage === 'systems' && mode === 'TW4 Primary' && <Systems />}
       </div>
     </div>
   );

@@ -164,6 +164,16 @@ function App() {
             >
               Course Rules
             </a>
+            <a
+              href="#systems"
+              onClick={(e) => {
+                e.preventDefault();
+                setCurrentPage('systems');
+              }}
+              className={currentPage === 'systems' ? 'active' : ''}
+            >
+              Systems
+            </a>
             </>
           )}
         </div>

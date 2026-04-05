@@ -19,11 +19,12 @@ const KEYFRAMES = `
 
 // ── Color constants ──────────────────────────────────────────────────
 const C = {
-  supply:   '#378ADD',
+  supply:   '#ea4343',
   emerg:    '#EF9F27',
-  ret:      '#888780',
+  ret:      '#ccf38e',
+  sel:      '#7e5ffbc5',
   bg:       '#080f18',
-  box:      'rgba(12,22,36,0.95)',
+  box:      '#0c1624f2',
   stroke:   '#2e3e52',
   text:     '#c8d8e8',
   muted:    '#6a8a9a',
@@ -42,26 +43,27 @@ const T = {
 };
 
 // ── Animated flow path ───────────────────────────────────────────────
-function F({ d, v = 'supply', paused = false, emergPaused = false }) {
+function F({ d, v = 'supply', paused = false, emergPaused = false, highlighted = false }) {
   const cfg = {
     supply: { pipeColor: '#C34937', fluidColor: C.supply,  pipeWidth: 4, fluidWidth: 2,   strokeDasharray: '8 4', animation: 'hydFlowS 1s linear infinite' },
     emerg:  { pipeColor: '#F8F36D', fluidColor: C.emerg,   pipeWidth: 4, fluidWidth: 2,   strokeDasharray: '6 4', animation: 'hydFlowE 1.2s linear infinite' },
     ret:    { pipeColor: '#62A061', fluidColor: C.ret,     pipeWidth: 4, fluidWidth: 1.5, strokeDasharray: '5 5', animation: 'hydFlowR 1.6s linear infinite' },
-    sel:    { pipeColor: '#592976', fluidColor: C.ret,     pipeWidth: 4, fluidWidth: 2,   strokeDasharray: '8 4', animation: 'hydFlowR 1.2s linear infinite' },
+    sel:    { pipeColor: '#592976', fluidColor: C.sel,     pipeWidth: 4, fluidWidth: 2,   strokeDasharray: '8 4', animation: 'hydFlowR 1.6s linear infinite' },
     elec:   { fluidColor: C.text,   fluidWidth: 2, strokeDasharray: '8 4' },
     man:    { fluidColor: C.text,   fluidWidth: 2, strokeDasharray: '5 5' },
   };
   const c = cfg[v];
+  const isPaused = (paused && v !== 'emerg') || (emergPaused && v === 'emerg');
   const fluidStyle = {
-    stroke: c.fluidColor, strokeWidth: c.fluidWidth,
-    strokeDasharray: c.strokeDasharray, animation: c.animation, fill: 'none',
+    stroke: c.fluidColor, strokeWidth: highlighted ? c.fluidWidth + 1.5 : c.fluidWidth,
+    strokeDasharray: c.strokeDasharray, fill: 'none',
+    animation: highlighted ? c.animation.replace(/[\d.]+s/, t => `${parseFloat(t) * 0.5}s`) : c.animation,
   };
-  if (paused && v !== 'emerg') { fluidStyle.animationPlayState = 'paused'; fluidStyle.opacity = 0.3; }
-  if (emergPaused && v === 'emerg') { fluidStyle.animationPlayState = 'paused'; fluidStyle.opacity = 0.3; }
+  if (isPaused) { fluidStyle.animationPlayState = 'paused'; fluidStyle.opacity = 0.3; }
   return (
     <g>
-      <path d={d} stroke={c.pipeColor} strokeWidth={c.pipeWidth} fill="none"
-        opacity={(paused && v !== 'emerg') || (emergPaused && v === 'emerg') ? 0.3 : 0.6} />
+      <path d={d} stroke={c.pipeColor} strokeWidth={highlighted ? c.pipeWidth + 1 : c.pipeWidth} fill="none"
+        opacity={isPaused ? 0.3 : highlighted ? 1.0 : 0.6} />
       <path d={d} style={fluidStyle} />
     </g>
   );
@@ -348,10 +350,10 @@ function BriefingModal({ tab, onClose }) {
     <div
       onClick={onClose}
       style={{
-        position: 'absolute', inset: 0, zIndex: 100,
+        position: 'fixed', inset: 0, zIndex: 100,
         background: 'rgba(4,10,20,0.82)',
-        display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
-        padding: '24px 16px',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '16px',
         backdropFilter: 'blur(2px)',
       }}
     >
@@ -438,6 +440,13 @@ export default function T6BHydraulicDiagram() {
   const dragJustEnded = useRef(false);
 
   const [emerGrPulled, setEmerGrPulled] = useState(false);
+  const [emerHighlight, setEmerHighlight] = useState(false);
+  const emerHighlightTimer = useRef(null);
+  const [flapHighlight, setFlapHighlight] = useState(false);
+  const flapHighlightTimer = useRef(null);
+  const [sbOutHighlight, setSbOutHighlight] = useState(false);
+  const [sbInHighlight,  setSbInHighlight]  = useState(false);
+  const sbHighlightTimer = useRef(null);
   const emerAnimRef = useRef(null);
 
   useEffect(() => {
@@ -593,7 +602,13 @@ export default function T6BHydraulicDiagram() {
   // When handle pulled, actual flap position (dial + accumulator) only ratchets toward LDG.
   const setFlapSafe = (pos) => {
     setSelectorPos(pos);
+    if (hydPsi < 1800) return;
     if (emerGrPulled && FLAP_ORDER[pos] <= FLAP_ORDER[flapPos]) return;
+    if (emerGrPulled && FLAP_ORDER[pos] > FLAP_ORDER[flapPos]) {
+      setFlapHighlight(true);
+      clearTimeout(flapHighlightTimer.current);
+      flapHighlightTimer.current = setTimeout(() => setFlapHighlight(false), 2000);
+    }
     setFlapPos(pos);
     if (pos === 'TO' || pos === 'LDG') setSbDeployed(false);
   };
@@ -659,10 +674,17 @@ export default function T6BHydraulicDiagram() {
   const handleSvgMouseUp = () => {
     flapDragging.current = false;
     if (sbDragging.current) {
-      if (flapPos === 'UP') {  // only change state when flaps are UP
+      if (flapPos === 'UP' && hydPsi >= 1800) {  // only change state when flaps UP and pressure OK
         const off = sbOffsetRef.current;
-        if (off > SB_THRESH)       setSbDeployed(false); // dragged right → IN
-        else if (off < -SB_THRESH) setSbDeployed(true);  // dragged left  → OUT
+        if (off > SB_THRESH && sbDeployed) {
+          setSbDeployed(false);
+          setSbInHighlight(true); clearTimeout(sbHighlightTimer.current);
+          sbHighlightTimer.current = setTimeout(() => setSbInHighlight(false), 2000);
+        } else if (off < -SB_THRESH && !sbDeployed) {
+          setSbDeployed(true);
+          setSbOutHighlight(true); clearTimeout(sbHighlightTimer.current);
+          sbHighlightTimer.current = setTimeout(() => setSbOutHighlight(false), 2000);
+        }
       }
       setSbOffset(0); sbOffsetRef.current = 0; sbDragging.current = false;
     }
@@ -695,7 +717,7 @@ export default function T6BHydraulicDiagram() {
   const gearLabel  = gearPhase.startsWith('to_up') || gearPhase === 'up' ? 'UP' : 'DOWN';
 
   const handleGearClick = () => {
-    if (gearLocked) return;
+    if (gearLocked || hydPsi < 1800) return;
     gearTimers.current.forEach(clearTimeout);
     if (gearPhase === 'up') {
       setGearPhase('to_down_1');
@@ -778,6 +800,12 @@ export default function T6BHydraulicDiagram() {
         </div>
       </div>
 
+      {/* ── Attribution ── */}
+      <div style={{ textAlign: 'center', margin: '6px 0', fontSize: 9, letterSpacing: '0.12em', color: '#3a6a8a' }}>
+        IMAGES &amp; COMPONENT DESCRIPTIONS SOURCED FROM{' '}
+        <span style={{ color: '#5ab8e8', fontWeight: 700, letterSpacing: '0.14em' }}>T6BDRIVER.COM</span>
+      </div>
+
       {/* ── Legend ── */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, marginBottom: 8, fontSize: 9, color: C.muted, letterSpacing: '0.06em' }}>
         {[
@@ -811,6 +839,7 @@ export default function T6BHydraulicDiagram() {
           <InfoModal
             title={HYD_INFO[sel].title}
             items={HYD_INFO[sel].items}
+            photos={HYD_INFO[sel].photos ?? []}
             onClose={() => setSel(null)}
           />
         )}
@@ -911,33 +940,33 @@ export default function T6BHydraulicDiagram() {
         <F d="M555 480 L592 480" paused={paused || fuseBlown} />
 
         {/* Emergency: Selector Valve→ Solenoid */}
-        <F d="M595 445 L595 550" v="emerg" emergPaused={emergPaused} />
+        <F d="M595 445 L595 550" v="emerg" emergPaused={emergPaused} highlighted={emerHighlight} />
 
         {/* Emergency: Selector Valve →Accumulator */}
-        <F d="M595 360 L595 370" v="emerg" emergPaused={emergPaused} />
-        <F d="M595 340 L595 350" v="emerg" emergPaused={emergPaused} />
-        <F d="M595 320 L595 330" v="emerg" emergPaused={emergPaused} />
+        <F d="M595 360 L595 370" v="emerg" emergPaused={emergPaused} highlighted={emerHighlight} />
+        <F d="M595 340 L595 350" v="emerg" emergPaused={emergPaused} highlighted={emerHighlight} />
+        <F d="M595 320 L595 330" v="emerg" emergPaused={emergPaused} highlighted={emerHighlight} />
 
         {/* Emergency: Selector Valve → Gears/Slide Valve */}
-        <F d="M555 405 L460 405 L460 445 L440 445" v="emerg" emergPaused={emergPaused} />
-        <F d="M420 445 L140 445" v="emerg" emergPaused={emergPaused} />
-        <F d="M490 405 L490 310" v="emerg" emergPaused={emergPaused} />
-        <F d="M490 290 L490 210 L470 210" v="emerg" emergPaused={emergPaused} />
-        <F d="M142 443 L142 415" v="emerg" emergPaused={emergPaused} />
-        <F d="M210 443 L210 415" v="emerg" emergPaused={emergPaused} />
-        <F d="M280 443 L280 415" v="emerg" emergPaused={emergPaused} />
-        <F d="M220 447 L220 470" v="emerg" emergPaused={emergPaused} />
+        <F d="M555 405 L460 405 L460 445 L440 445" v="emerg" emergPaused={emergPaused} highlighted={emerHighlight} />
+        <F d="M420 445 L140 445" v="emerg" emergPaused={emergPaused} highlighted={emerHighlight} />
+        <F d="M490 405 L490 310" v="emerg" emergPaused={emergPaused} highlighted={emerHighlight} />
+        <F d="M490 290 L490 210 L470 210" v="emerg" emergPaused={emergPaused} highlighted={emerHighlight} />
+        <F d="M142 443 L142 415" v="emerg" emergPaused={emergPaused} highlighted={emerHighlight} />
+        <F d="M210 443 L210 415" v="emerg" emergPaused={emergPaused} highlighted={emerHighlight} />
+        <F d="M280 443 L280 415" v="emerg" emergPaused={emergPaused} highlighted={emerHighlight} />
+        <F d="M220 447 L220 470" v="emerg" emergPaused={emergPaused} highlighted={emerHighlight} />
 
         
 
         {/* Emergency: Selector Solenoid → Flaps Actuator */}
-        <F d="M555 590 L500 590 L500 710 L440 710" v="emerg" emergPaused={emergPaused} />
-        <F d="M420 710 L250 710" v="emerg" emergPaused={emergPaused} />
+        <F d="M555 590 L500 590 L500 710 L440 710" v="emerg" emergPaused={emergPaused} highlighted={flapHighlight} />
+        <F d="M420 710 L250 710" v="emerg" emergPaused={emergPaused} highlighted={flapHighlight} />
 
         {/* Selector: NWS selector valve → Actuators */}
-        <F d="M330 285 L260 285" v="sel" paused={paused} />
+        <F d="M330 285 L260 285" v="sel" paused={paused || !nwsOn} />
         <text x="295" y="280" style={T.s}>LEFT</text>
-        <F d="M330 315 L260 315" v="sel" paused={paused} />
+        <F d="M330 315 L260 315" v="sel" paused={paused || !nwsOn} />
         <text x="295" y="320"  style={T.s}>RIGHT</text>
 
         {/* Selector: GEAR selector valve → Actuators */}
@@ -959,9 +988,9 @@ export default function T6BHydraulicDiagram() {
         <text x="295" y="510"  style={T.s}>UP</text>
 
         {/* Selector: SPD BRAKE selector valve → Actuators */}
-        <F d="M330 570 L260 570" v="sel" paused={paused} />
+        <F d="M330 570 L260 570" v="sel" paused={paused} highlighted={sbInHighlight} />
         <text x="295" y="565" style={T.s}>IN</text>
-        <F d="M330 600 L260 600" v="sel" paused={paused} />
+        <F d="M330 600 L260 600" v="sel" paused={paused} highlighted={sbOutHighlight} />
         <text x="295" y="605"  style={T.s}>OUT</text>
 
         
@@ -1145,7 +1174,7 @@ export default function T6BHydraulicDiagram() {
           <text x="365" y="403" style={T.h}>Selector</text>
           <text x="365" y="415" style={T.h}>Valve</text>
         </Box>
-        <Box x={260} y={375} w={60} h={40} id="ldggear" sel={sel} onSel={pick} hi="#639922">
+        <Box x={260} y={375} w={60} h={40} id="nosegear" sel={sel} onSel={pick} hi="#639922">
           <text x="290" y="388" style={T.h}>NOSE GEAR</text>
           <text x="290" y="400" style={T.h}>Actuator</text>
         </Box>
@@ -1181,13 +1210,13 @@ export default function T6BHydraulicDiagram() {
           </g>
         )}
 
-        <Box x={330} y={455} w={70} h={70} id="ldggear" sel={sel} onSel={pick} hi="#639922">
+        <Box x={330} y={455} w={70} h={70} id="geardoor" sel={sel} onSel={pick} hi="#639922">
           <text x="365" y="474" style={T.h}>LDG DOOR</text>
           <text x="365" y="486" style={T.h}>Electrical</text>
           <text x="365" y="498" style={T.h}>Selector</text>
           <text x="365" y="510" style={T.h}>Valve</text>
         </Box>
-        <Box x={180} y={470} w={80} h={40} id="ldggear" sel={sel} onSel={pick} hi="#639922">
+        <Box x={180} y={470} w={80} h={40} id="geardoor" sel={sel} onSel={pick} hi="#639922">
           <text x="220" y="483" style={T.h}>Inboard Door</text>
           <text x="220" y="495" style={T.h}>Actuator</text>
         </Box>
@@ -1196,7 +1225,7 @@ export default function T6BHydraulicDiagram() {
         <circle cx={50} cy={300} r={11}
           fill="#c01818" stroke="#3a0404" strokeWidth={0.8}
           style={{ cursor: gearPhase === 'down' ? 'pointer' : 'default' }}
-          onClick={() => { if (gearPhase === 'down' && !emerGrPulled) setNwsOn(v => !v); }} />
+          onClick={() => { if (gearPhase === 'down' && !emerGrPulled && hydPsi >= 1800) setNwsOn(v => !v); }} />
 
         {/* ── Landing Gear Indicator (no border, no labels) ── */}
         <g>
@@ -1394,7 +1423,19 @@ export default function T6BHydraulicDiagram() {
           const cx=657,cy=408,hw=15,hh=40,r=4,r1=5,r2=7;
           const diamond = `M ${cx-hw},${cy-r} L ${cx-r},${cy-hh} A ${r1},${r1},0,0,1,${cx+r},${cy-hh} L ${cx+hw},${cy-r} A ${r2},${r2},0,0,1,${cx+hw},${cy+r} L ${cx+r},${cy+hh} A ${r1},${r1},0,0,1,${cx-r},${cy+hh} L ${cx-hw},${cy+r} A ${r2},${r2},0,0,1,${cx-hw},${cy-r}`;
           return (
-            <g style={{ cursor: 'pointer' }} onClick={() => { if (accumLvlPct >= 50 || emerGrPulled) setEmerGrPulled(v => !v); }}>
+            <g style={{ cursor: 'pointer' }} onClick={() => {
+              if (accumLvlPct >= 50 || emerGrPulled) {
+                const next = !emerGrPulled;
+                setEmerGrPulled(next);
+                if (next) {
+                  setEmerHighlight(true);
+                  clearTimeout(emerHighlightTimer.current);
+                  emerHighlightTimer.current = setTimeout(() => setEmerHighlight(false), 2000);
+                } else {
+                  setEmerHighlight(false);
+                }
+              }
+            }}>
               <defs>
                 <clipPath id="emerGrClip"><path d={diamond} /></clipPath>
               </defs>

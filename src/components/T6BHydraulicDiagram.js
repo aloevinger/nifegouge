@@ -1,4 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
+import {
+  HYD_VERBATIM,
+  HYD_NUMBERS,
+  HYD_EICAS,
+  HYD_EPS,
+  HYD_INFO,
+  InfoModal,
+} from './HydraulicModalData';
 
 // ── Keyframe animations injected once into the document ──────────────
 const KEYFRAMES = `
@@ -34,76 +42,26 @@ const T = {
 };
 
 // ── Animated flow path ───────────────────────────────────────────────
-// v: 'supply' | 'emerg' | 'ret'
-// paused: pauses supply & return when HYD FL LO is active
 function F({ d, v = 'supply', paused = false, emergPaused = false }) {
   const cfg = {
-    supply: {
-      pipeColor: '#C34937',
-      fluidColor: C.supply,
-      pipeWidth: 4,
-      fluidWidth: 2,
-      strokeDasharray: '8 4',
-      animation: 'hydFlowS 1s linear infinite'
-    },
-    emerg:  {
-      pipeColor: '#F8F36D',
-      fluidColor: C.emerg,
-      pipeWidth: 4,
-      fluidWidth: 2,
-      strokeDasharray: '6 4',
-      animation: 'hydFlowE 1.2s linear infinite'
-    },
-    ret:    {
-      pipeColor: '#62A061',
-      fluidColor: C.ret,
-      pipeWidth: 4,
-      fluidWidth: 1.5,
-      strokeDasharray: '5 5',
-      animation: 'hydFlowR 1.6s linear infinite'
-    },
-    sel:    {
-      pipeColor: '#592976',
-      fluidColor: C.ret,
-      pipeWidth: 4,
-      fluidWidth: 2,
-      strokeDasharray: '8 4',
-      animation: 'hydFlowR 1.2s linear infinite'
-    },
-    elec:    {
-      fluidColor: C.text,
-      fluidWidth: 2,
-      strokeDasharray: '8 4',
-    },
-    man:    {
-      fluidColor: C.text,
-      fluidWidth: 2,
-      strokeDasharray: '5 5',
-    },
+    supply: { pipeColor: '#C34937', fluidColor: C.supply,  pipeWidth: 4, fluidWidth: 2,   strokeDasharray: '8 4', animation: 'hydFlowS 1s linear infinite' },
+    emerg:  { pipeColor: '#F8F36D', fluidColor: C.emerg,   pipeWidth: 4, fluidWidth: 2,   strokeDasharray: '6 4', animation: 'hydFlowE 1.2s linear infinite' },
+    ret:    { pipeColor: '#62A061', fluidColor: C.ret,     pipeWidth: 4, fluidWidth: 1.5, strokeDasharray: '5 5', animation: 'hydFlowR 1.6s linear infinite' },
+    sel:    { pipeColor: '#592976', fluidColor: C.ret,     pipeWidth: 4, fluidWidth: 2,   strokeDasharray: '8 4', animation: 'hydFlowR 1.2s linear infinite' },
+    elec:   { fluidColor: C.text,   fluidWidth: 2, strokeDasharray: '8 4' },
+    man:    { fluidColor: C.text,   fluidWidth: 2, strokeDasharray: '5 5' },
   };
   const c = cfg[v];
   const fluidStyle = {
-    stroke: c.fluidColor,
-    strokeWidth: c.fluidWidth,
-    strokeDasharray: c.strokeDasharray,
-    animation: c.animation,
-    fill: 'none'
+    stroke: c.fluidColor, strokeWidth: c.fluidWidth,
+    strokeDasharray: c.strokeDasharray, animation: c.animation, fill: 'none',
   };
-  if (paused && v !== 'emerg') {
-    fluidStyle.animationPlayState = 'paused';
-    fluidStyle.opacity = 0.3;
-  }
-  if (emergPaused && v === 'emerg') {
-    fluidStyle.animationPlayState = 'paused';
-    fluidStyle.opacity = 0.3;
-  }
-
+  if (paused && v !== 'emerg') { fluidStyle.animationPlayState = 'paused'; fluidStyle.opacity = 0.3; }
+  if (emergPaused && v === 'emerg') { fluidStyle.animationPlayState = 'paused'; fluidStyle.opacity = 0.3; }
   return (
     <g>
-      {/* Solid pipe line */}
       <path d={d} stroke={c.pipeColor} strokeWidth={c.pipeWidth} fill="none"
         opacity={(paused && v !== 'emerg') || (emergPaused && v === 'emerg') ? 0.3 : 0.6} />
-      {/* Animated fluid line */}
       <path d={d} style={fluidStyle} />
     </g>
   );
@@ -113,228 +71,345 @@ function F({ d, v = 'supply', paused = false, emergPaused = false }) {
 function Box({ x, y, w, h, rx = 4, id, sel, onSel, hi = C.supply, children }) {
   const active = sel === id;
   return (
-    <g style={{ cursor: id ? 'pointer' : 'default' }}
-       onClick={id ? () => onSel(id) : undefined}>
+    <g style={{ cursor: id ? 'pointer' : 'default' }} onClick={id ? () => onSel(id) : undefined}>
       <rect x={x} y={y} width={w} height={h} rx={rx}
-        fill={active ? `${hi}18` : C.box}
-        stroke={active ? hi : C.stroke}
+        fill={active ? `${hi}18` : C.box} stroke={active ? hi : C.stroke}
         strokeWidth={active ? 0.8 : 0.5} />
       {children}
     </g>
   );
 }
 
-// ── Info panel content ───────────────────────────────────────────────
-const INFO = {
-  reservoir: {
-    title: 'Hydraulic Reservoir',
-    items: [
-      'System capacity: 5 quarts total',
-      'Pressurized by engine bleed air — ≤50 psi',
-      'HYD FL LO caution when quantity drops below 1 quart',
-      'All subsystem return lines feed back to reservoir',
-    ],
-  },
-  edp: {
-    title: 'Engine Driven Pump (EDP)',
-    items: [
-      'Single pump, engine driven — no electric backup',
-      'Normal output: 3000 ±120 psi',
-      'Downstream check valve prevents backflow into engine',
-      'Pressure monitored by transmitter → EICAS',
-    ],
-  },
-  fwsov: {
-    title: 'Firewall Shutoff Valve (FW SOV)',
-    items: [
-      'Closes when FIRE T-handle is pulled',
-      'Isolates engine-side hydraulics from airframe plumbing',
-      'Cable-actuated — no electrical dependency',
-      'Located at the firewall',
-    ],
-  },
-  filter: {
-    title: 'Hydraulic Filter',
-    items: [
-      'Filters contaminants from pressurized supply line',
-      'Located on airframe (cockpit) side of firewall',
-    ],
-  },
-  slide: {
-    title: 'Slide Valve Assembly',
-    items: [
-      'Regulates and controls system pressure',
-      'Routes pressurized fluid to selector manifold',
-      'Unloads system when no demand exists',
-    ],
-  },
-  accum: {
-    title: 'Emergency Accumulator',
-    items: [
-      'Helium precharge provides stored hydraulic pressure',
-      'EHYD PX LO caution if pressure drops below 2400 ±150 psi',
-      'Independent of engine — operates after flameout',
-      'Feeds Emergency Selector Manifold for gear and flap extension',
-    ],
-  },
-  nws: {
-    title: 'Nose Wheel Steering (NWS)',
-    items: [
-      'Powered by main hydraulic system ONLY — no emergency backup',
-      'NWS ON advisory (green) illuminates when armed',
-      '±12° nose wheel centering authority',
-      'NWS Selector Valve in Selector Manifold',
-    ],
-  },
-  gear: {
-    title: 'Landing Gear',
-    items: [
-      'Three actuators: LH Main, Nose Gear, RH Main',
-      'Normal extend/retract cycle approximately 6 seconds',
-      'Emergency extension via accumulator → LDG GR EMER EXT SEL VLV',
-      'Separate gear and door selector valves in manifold',
-    ],
-  },
-  flaps: {
-    title: 'Flaps',
-    items: [
-      'TO (takeoff) detent: 23° deflection',
-      'LDG (landing) detent: 50° deflection',
-      'Separate TO and LDG selector valves in manifold',
-      'Emergency extension via accumulator → FLAP EMER EXT SOLENOID',
-    ],
-  },
-  spdbrk: {
-    title: 'Speed Brake',
-    items: [
-      'SPDBRK OUT advisory (green) when deployed',
-      'Spring-return actuator — main system powered',
-      'NO emergency backup',
-      'S.B. Selector Valve in Selector Manifold',
-    ],
-  },
-};
 
 // ── HYD PRESS EICAS Gauge ────────────────────────────────────────────
-// pressure: PSI value (0–4100). Hand and readout update automatically.
 function HydPressGauge({ pressure = 3040, size = 160, embedded = false }) {
   const MAX = 4100;
-  const START_ANG = 230; // degrees from top, clockwise → 7 o'clock = 0 PSI
-  const SWEEP     = 225; // total sweep → 4 o'clock = MAX PSI
-
-  const cx = size / 2;
-  const cy = size / 2;
-  const outerR = size * 0.43;
-  const arcW   = size * 0.045; // skinny arc band
-  const innerR = outerR - arcW;
+  const START_ANG = 230;
+  const SWEEP     = 225;
+  const cx = size / 2, cy = size / 2;
+  const outerR = size * 0.43, arcW = size * 0.045, innerR = outerR - arcW;
 
   function polar(angleDeg, r) {
     const rad = (angleDeg - 90) * Math.PI / 180;
     return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)];
   }
-
-  function psiToAngle(psi) {
-    return START_ANG + (Math.max(0, Math.min(psi, MAX)) / MAX) * SWEEP;
-  }
-
+  function psiToAngle(psi) { return START_ANG + (Math.max(0, Math.min(psi, MAX)) / MAX) * SWEEP; }
   function arcBand(psiStart, psiEnd, fill) {
-    const a1 = psiToAngle(psiStart);
-    const a2 = psiToAngle(psiEnd);
-    const [x1, y1] = polar(a1, outerR);
-    const [x2, y2] = polar(a2, outerR);
-    const [x3, y3] = polar(a2, innerR);
-    const [x4, y4] = polar(a1, innerR);
-    const laf = (a2 - a1) > 180 ? 1 : 0;
-    return (
-      <path
-        d={`M ${x1} ${y1} A ${outerR} ${outerR} 0 ${laf} 1 ${x2} ${y2} L ${x3} ${y3} A ${innerR} ${innerR} 0 ${laf} 0 ${x4} ${y4} Z`}
-        fill={fill}
-      />
-    );
+    const a1 = psiToAngle(psiStart), a2 = psiToAngle(psiEnd);
+    const [x1,y1] = polar(a1,outerR), [x2,y2] = polar(a2,outerR);
+    const [x3,y3] = polar(a2,innerR), [x4,y4] = polar(a1,innerR);
+    const laf = (a2-a1) > 180 ? 1 : 0;
+    return <path d={`M ${x1} ${y1} A ${outerR} ${outerR} 0 ${laf} 1 ${x2} ${y2} L ${x3} ${y3} A ${innerR} ${innerR} 0 ${laf} 0 ${x4} ${y4} Z`} fill={fill} />;
   }
-
   function needleCol(psi) {
-    if (psi < 1800 || psi >= 3500)  return '#DDDB55'; // amber
-    if (psi >= 2880 && psi < 3120)  return '#4a9030'; // green
-    return '#d8d8d8';                                   // white
+    if (psi < 1800 || psi >= 3500) return '#DDDB55';
+    if (psi >= 2880 && psi < 3120) return '#4a9030';
+    return '#d8d8d8';
   }
-
-  function numberCol(psi) {
-    if (psi < 1800 || psi >= 3500) return '#DDDB55'; // amber
-    return '#d8d8d8';                                  // white (never green)
-  }
+  function numberCol(psi) { return (psi < 1800 || psi >= 3500) ? '#DDDB55' : '#d8d8d8'; }
 
   const needleAngle = psiToAngle(pressure);
-  const [nx,  ny]  = polar(needleAngle,      outerR * 0.84); // tip
-  const [b1x, b1y] = polar(needleAngle + 90, size * 0.028);  // base left
-  const [b2x, b2y] = polar(needleAngle - 90, size * 0.028);  // base right
-
-  const majorTicks = [0, 400, 800, 1200, 1600, 2000, 2400, 2800, 3200, 3600, 4000];
+  const [nx,ny]   = polar(needleAngle,      outerR * 0.84);
+  const [b1x,b1y] = polar(needleAngle + 90, size * 0.028);
+  const [b2x,b2y] = polar(needleAngle - 90, size * 0.028);
+  const majorTicks = [0,400,800,1200,1600,2000,2400,2800,3200,3600,4000];
 
   const content = (
     <>
-      {/* Bezel / background */}
-      <circle cx={cx} cy={cy} r={outerR + 5} fill="#0a0a0a" stroke="#1e2e3e" strokeWidth={1.5} />
-      {arcBand(0, 1800, '#DDDB55')}
-      {arcBand(1800, 2880, '#d8d8d8')}
-      {arcBand(2880, 3120, '#4a9030')}
-      {arcBand(3120, 3500, '#d8d8d8')}
-      {arcBand(3500, 4100, '#DDDB55')}
-      <circle cx={cx} cy={cy} r={innerR - 2} fill="#080f18" />
+      <circle cx={cx} cy={cy} r={outerR+5} fill="#0a0a0a" stroke="#1e2e3e" strokeWidth={1.5} />
+      {arcBand(0,1800,'#DDDB55')} {arcBand(1800,2880,'#d8d8d8')} {arcBand(2880,3120,'#4a9030')}
+      {arcBand(3120,3500,'#d8d8d8')} {arcBand(3500,4100,'#DDDB55')}
+      <circle cx={cx} cy={cy} r={innerR-2} fill="#080f18" />
       {majorTicks.map(psi => {
         const ang = psiToAngle(psi);
-        const [ox, oy] = polar(ang, innerR - 1);
-        const [ix, iy] = polar(ang, innerR - size * 0.04);
+        const [ox,oy] = polar(ang,innerR-1), [ix,iy] = polar(ang,innerR-size*0.04);
         return <line key={psi} x1={ox} y1={oy} x2={ix} y2={iy} stroke="white" strokeWidth={1.2} />;
       })}
-      {[1200, 2400, 3600].map(psi => {
-        const ang = psiToAngle(psi);
-        const [lx, ly] = polar(ang, innerR - size * 0.13);
-        return (
-          <text key={psi} x={lx} y={ly} textAnchor="middle" dominantBaseline="central"
-            fill="#c8d8e8" fontSize={size * 0.082} fontFamily={FONT}>
-            {psi}
-          </text>
-        );
+      {[1200,2400,3600].map(psi => {
+        const [lx,ly] = polar(psiToAngle(psi), innerR-size*0.13);
+        return <text key={psi} x={lx} y={ly} textAnchor="middle" dominantBaseline="central"
+          fill="#c8d8e8" fontSize={size*0.082} fontFamily={FONT}>{psi}</text>;
       })}
       <polygon points={`${nx},${ny} ${b1x},${b1y} ${b2x},${b2y}`} fill={needleCol(pressure)} />
-      <circle cx={cx} cy={cy} r={size * 0.028} fill="#8a9aaa" />
-      <text x={cx} y={cy + size * 0.15} textAnchor="middle" dominantBaseline="central"
-        fill={numberCol(pressure)} fontSize={size * 0.18} fontFamily={FONT} fontWeight="bold">
-        {pressure}
-      </text>
-      <text x={cx} y={cy + size * 0.28} textAnchor="middle" dominantBaseline="central"
-        fill="#6a8a9a" fontSize={size * 0.07} fontFamily={FONT}>PSI</text>
-      <text x={cx} y={cy + size * 0.35} textAnchor="middle" dominantBaseline="central"
-        fill="#6a8a9a" fontSize={size * 0.068} fontFamily={FONT}>HYD PRESS</text>
+      <circle cx={cx} cy={cy} r={size*0.028} fill="#8a9aaa" />
+      <text x={cx} y={cy+size*0.15} textAnchor="middle" dominantBaseline="central"
+        fill={numberCol(pressure)} fontSize={size*0.18} fontFamily={FONT} fontWeight="bold">{pressure}</text>
+      <text x={cx} y={cy+size*0.28} textAnchor="middle" dominantBaseline="central"
+        fill="#6a8a9a" fontSize={size*0.07} fontFamily={FONT}>PSI</text>
+      <text x={cx} y={cy+size*0.35} textAnchor="middle" dominantBaseline="central"
+        fill="#6a8a9a" fontSize={size*0.068} fontFamily={FONT}>HYD PRESS</text>
     </>
   );
-
   if (embedded) return content;
+  return <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block' }}>{content}</svg>;
+}
+
+// ── Briefing Modal ───────────────────────────────────────────────────
+function BriefingModal({ tab, onClose }) {
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [onClose]);
+
+  const COLOR_CAUTION  = '#FAC775';
+  const COLOR_ADVISORY = '#5dcc5d';
+  const COLOR_WARNING  = '#ff5555';
+
+  const eicasColor = (type) => {
+    if (type === 'warning')  return { bg: 'rgba(180,30,30,0.18)', border: '#cc3333', label: COLOR_WARNING };
+    if (type === 'advisory') return { bg: 'rgba(30,100,30,0.18)', border: '#3a7a3a', label: COLOR_ADVISORY };
+    return { bg: 'rgba(120,80,10,0.18)', border: '#8a6010', label: COLOR_CAUTION }; // caution
+  };
+
+  const sectionStyle = {
+    background: 'rgba(255,255,255,0.03)',
+    border: `0.5px solid ${C.stroke}`,
+    borderRadius: 5,
+    padding: '10px 14px',
+    marginBottom: 10,
+  };
+
+  let content = null;
+
+  if (tab === 'verbatim') {
+    content = (
+      <>
+        <div style={{ fontSize: 11, color: C.muted, letterSpacing: '0.06em', marginBottom: 14 }}>
+          {HYD_VERBATIM.heading}
+        </div>
+        {/* Verbatim quote box */}
+        <div style={{
+          ...sectionStyle,
+          background: 'rgba(55,138,221,0.06)',
+          border: `0.5px solid #378ADD55`,
+          fontStyle: 'italic',
+          color: '#a8c8e0',
+          fontSize: 12,
+          lineHeight: 1.75,
+          marginBottom: 18,
+        }}>
+          {HYD_VERBATIM.quote}
+        </div>
+      </>
+    );
+  }
+
+  if (tab === 'numbers') {
+    content = (
+      <>
+        <div style={{ fontSize: 11, color: C.muted, letterSpacing: '0.06em', marginBottom: 14 }}>
+          {HYD_NUMBERS.heading}
+        </div>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
+          <thead>
+            <tr>
+              <th style={{ color: C.muted, textAlign: 'left', padding: '4px 8px', borderBottom: `0.5px solid ${C.stroke}`, fontWeight: 400, letterSpacing: '0.08em', fontSize: 10 }}>
+                VALUE
+              </th>
+              <th style={{ color: C.muted, textAlign: 'left', padding: '4px 8px', borderBottom: `0.5px solid ${C.stroke}`, fontWeight: 400, letterSpacing: '0.08em', fontSize: 10 }}>
+                MEANING
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {HYD_NUMBERS.items.map((row, i) => (
+              <tr key={i} style={{ background: row.highlight ? 'rgba(250,199,117,0.06)' : 'transparent' }}>
+                <td style={{
+                  padding: '8px 8px',
+                  borderBottom: `0.5px solid ${C.stroke}22`,
+                  color: row.highlight ? COLOR_CAUTION : '#5ab8e8',
+                  fontWeight: 700,
+                  whiteSpace: 'nowrap',
+                  verticalAlign: 'top',
+                  minWidth: 180,
+                }}>
+                  {row.value}
+                </td>
+                <td style={{
+                  padding: '8px 8px',
+                  borderBottom: `0.5px solid ${C.stroke}22`,
+                  color: C.muted,
+                  lineHeight: 1.6,
+                }}>
+                  {row.label}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </>
+    );
+  }
+
+  if (tab === 'eicas') {
+    content = (
+      <>
+        <div style={{ fontSize: 11, color: C.muted, letterSpacing: '0.06em', marginBottom: 14 }}>
+          {HYD_EICAS.heading}
+        </div>
+        {HYD_EICAS.items.map((msg) => {
+          const col = eicasColor(msg.color);
+          return (
+            <div key={msg.label} style={{
+              ...sectionStyle,
+              background: col.bg,
+              border: `0.5px solid ${col.border}`,
+              marginBottom: 10,
+            }}>
+              <div style={{
+                fontWeight: 700, fontSize: 13, letterSpacing: '0.14em',
+                color: col.label, marginBottom: 8,
+              }}>
+                {msg.label}
+              </div>
+              <div style={{ marginBottom: 5 }}>
+                <span style={{ color: C.muted, fontSize: 9, letterSpacing: '0.08em' }}>CAUSE — </span>
+                <span style={{ color: C.text, fontSize: 11, lineHeight: 1.6 }}>{msg.cause}</span>
+              </div>
+              <div>
+                <span style={{ color: C.muted, fontSize: 9, letterSpacing: '0.08em' }}>RESPONSE — </span>
+                <span style={{ color: C.text, fontSize: 11, lineHeight: 1.6 }}>{msg.response}</span>
+              </div>
+            </div>
+          );
+        })}
+      </>
+    );
+  }
+
+  if (tab === 'eps') {
+    content = (
+      <>
+        <div style={{ fontSize: 11, color: C.muted, letterSpacing: '0.06em', marginBottom: 14 }}>
+          {HYD_EPS.heading}
+        </div>
+        {HYD_EPS.items.map((ep, i) => (
+          <div key={ep.title} style={{ ...sectionStyle, marginBottom: 14 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+              <span style={{
+                background: 'rgba(55,138,221,0.12)', border: `0.5px solid #378ADD66`,
+                color: '#5ab8e8', fontSize: 9, fontWeight: 700, padding: '2px 7px',
+                borderRadius: 3, letterSpacing: '0.1em',
+              }}>
+                EP {i + 1}
+              </span>
+              <span style={{ fontWeight: 700, color: C.text, fontSize: 11, letterSpacing: '0.1em' }}>
+                {ep.title}
+              </span>
+              {ep.memory && (
+                <span style={{
+                  background: 'rgba(255,80,80,0.15)', border: '0.5px solid #cc333366',
+                  color: COLOR_WARNING, fontSize: 8, fontWeight: 700, padding: '2px 6px',
+                  borderRadius: 3, letterSpacing: '0.1em',
+                }}>★ MEMORY</span>
+              )}
+            </div>
+
+            {ep.indications.length > 0 && (
+              <div style={{ marginBottom: 8 }}>
+                <div style={{ color: C.muted, fontSize: 9, letterSpacing: '0.1em', marginBottom: 4 }}>
+                  INDICATIONS
+                </div>
+                <ul style={{ margin: 0, paddingLeft: 16, color: '#a8b8c8', fontSize: 11, lineHeight: 1.7 }}>
+                  {ep.indications.map((ind, j) => <li key={j}>{ind}</li>)}
+                </ul>
+              </div>
+            )}
+
+            <div style={{ marginBottom: ep.landing ? 8 : 0 }}>
+              <div style={{ color: C.muted, fontSize: 9, letterSpacing: '0.1em', marginBottom: 4 }}>
+                PROCEDURE
+              </div>
+              <ol style={{ margin: 0, paddingLeft: 18, color: C.text, fontSize: 11, lineHeight: 1.8 }}>
+                {ep.procedure.map((step, j) => <li key={j}>{step}</li>)}
+              </ol>
+            </div>
+
+            {ep.landing && (
+              <div style={{
+                marginTop: 8, padding: '5px 10px',
+                background: 'rgba(55,138,221,0.06)', borderLeft: `2px solid #378ADD66`,
+                color: '#7ab8d8', fontSize: 10, lineHeight: 1.5,
+              }}>
+                <span style={{ fontWeight: 700, letterSpacing: '0.08em', color: C.muted, fontSize: 9 }}>
+                  LANDING CRITERIA — {' '}
+                </span>
+                {ep.landing}
+              </div>
+            )}
+          </div>
+        ))}
+      </>
+    );
+  }
+
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block' }}>
-      {content}
-    </svg>
+    <div
+      onClick={onClose}
+      style={{
+        position: 'absolute', inset: 0, zIndex: 100,
+        background: 'rgba(4,10,20,0.82)',
+        display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
+        padding: '24px 16px',
+        backdropFilter: 'blur(2px)',
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          background: '#080f18',
+          border: `0.5px solid ${C.stroke}`,
+          borderRadius: 7,
+          width: '100%', maxWidth: 680,
+          maxHeight: '88vh',
+          display: 'flex', flexDirection: 'column',
+          fontFamily: FONT,
+          boxShadow: '0 8px 40px rgba(0,0,0,0.7)',
+        }}
+      >
+        {/* Scrollable body */}
+        <div style={{ overflowY: 'auto', padding: '14px 18px', flex: 1 }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 6 }}>
+            <button
+              onClick={onClose}
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                color: C.muted, fontSize: 16, lineHeight: 1, padding: '0 4px',
+              }}
+            >×</button>
+          </div>
+          {content}
+        </div>
+        {/* Footer hint */}
+        <div style={{
+          padding: '6px 18px', borderTop: `0.5px solid ${C.stroke}22`,
+          color: '#2a4a5a', fontSize: 8, letterSpacing: '0.08em', flexShrink: 0,
+        }}>
+          CLICK OUTSIDE OR PRESS ESC TO CLOSE
+        </div>
+      </div>
+    </div>
   );
 }
 
-// ── Main component — drop this into any tab ──────────────────────────
+// ── Main component ───────────────────────────────────────────────────
 export default function T6BHydraulicDiagram() {
   const [sel,      setSel]      = useState(null);
-  const [hydFlo,   setHydFlo]   = useState(false);   // HYD FL LO fault
-  const [ehydPx,   setEhydPx]   = useState(false);   // EHYD PX LO fault
-  const [hydPsi,   setHydPsi]   = useState(3040);    // HYD PRESS gauge value
-  const [gearPhase, setGearPhase] = useState('up');  // landing gear state machine
+  const [briefingTab, setBriefingTab] = useState(null);   // ← NEW: active briefing tab
+  const [hydFlo,   setHydFlo]   = useState(false);
+  const [ehydPx,   setEhydPx]   = useState(false);
+  const [hydPsi,   setHydPsi]   = useState(3040);
+  const [gearPhase, setGearPhase] = useState('up');
   const gearTimers    = useRef([]);
-  const [flapPos,   setFlapPos]   = useState('UP');  // actual flap position — dial + accumulator
-  const [selectorPos, setSelectorPos] = useState('UP'); // lever visual only
-  const [nwsOn,     setNwsOn]     = useState(false); // nose wheel steering
+  const [flapPos,   setFlapPos]   = useState('UP');
+  const [selectorPos, setSelectorPos] = useState('UP');
+  const [nwsOn,     setNwsOn]     = useState(false);
   const [largeEhydSim, setLargeEhydSim] = useState(false);
   const [fuseBlown,    setFuseBlown]    = useState(false);
   const svgRef        = useRef(null);
   const flapDragging  = useRef(false);
 
-  // ── Flap drag constants ──────────────────────────────────────────────
   const FLAP_SNAP_Y = { UP: 663, TO: 682, LDG: 701 };
 
   const clientToSvgY = (clientY) => {
@@ -343,20 +418,8 @@ export default function T6BHydraulicDiagram() {
     return (clientY - rect.top) * (820 / rect.height);
   };
 
-  const handleFlapMouseDown = (e) => {
-    e.preventDefault();
-    flapDragging.current = true;
-  };
+  const handleFlapMouseDown = (e) => { e.preventDefault(); flapDragging.current = true; };
 
-  const handleFlapMouseMove = (e) => {
-    if (!flapDragging.current) return;
-    const svgY = clientToSvgY(e.clientY);
-    const nearest = Object.entries(FLAP_SNAP_Y).reduce((best, [pos, y]) =>
-      Math.abs(y - svgY) < Math.abs(FLAP_SNAP_Y[best] - svgY) ? pos : best, 'UP');
-    setFlapPos(nearest);
-  };
-
-  // ── Speed brake drag ────────────────────────────────────────────────
   const sbDragging      = useRef(false);
   const sbOffsetRef     = useRef(0);
   const [sbOffset,    setSbOffset]    = useState(0);
@@ -365,18 +428,15 @@ export default function T6BHydraulicDiagram() {
 
   const handleSbMouseDown = (e) => { if (emerGrPulled) return; e.preventDefault(); sbDragging.current = true; };
 
-  // ── PSI slider drag ───────────────────────────────────────────────────
   const psiSliderDragging = useRef(false);
 
-  // ── Reservoir fluid divider drag ─────────────────────────────────────
   const [resDivPct, setResDivPct] = useState(50);
   const resDivDragging = useRef(false);
 
-  // ── Accumulator fluid level drag ─────────────────────────────────────
   const [accumLvlPct, setAccumLvlPct] = useState(80);
   const accumDragging = useRef(false);
+  const dragJustEnded = useRef(false);
 
-  // ── EMER LDG GR handle pulled ─────────────────────────────────────────
   const [emerGrPulled, setEmerGrPulled] = useState(false);
   const emerAnimRef = useRef(null);
 
@@ -395,7 +455,6 @@ export default function T6BHydraulicDiagram() {
     emerAnimRef.current = requestAnimationFrame(animate);
     return () => { if (emerAnimRef.current) cancelAnimationFrame(emerAnimRef.current); };
   }, [emerGrPulled]); // eslint-disable-line react-hooks/exhaustive-deps
-
   // ── Normal-operation background loop ─────────────────────────────────
   // • Accumulator refills to 85%
   // • While accumulator is filling, reservoir slowly drains left
@@ -406,7 +465,7 @@ export default function T6BHydraulicDiagram() {
     const ACCUM_RATE    = 85 / 14000;  // units/ms — refill in ~14 s
     const RES_DRAIN     = 1.5;         // units/sec — drains while accum filling
     const RES_FILL      = 8.0;         // units/sec — fills back to 35% floor
-    const PSI_RATE      = 150;         // PSI/sec drift toward 3000
+    const PSI_RATE      = 500;         // PSI/sec drift toward 3000
     let accumTracked    = null;
     let lastTime        = null;
     let rafId;
@@ -416,17 +475,14 @@ export default function T6BHydraulicDiagram() {
         const deltaSec = deltaMs / 1000;
         const wasFillingAccum = accumTracked !== null && accumTracked < 85;
         // Accumulator refill
-        setAccumLvlPct(prev => {
-          const next = prev >= 85 ? prev : Math.min(85, prev + ACCUM_RATE * deltaMs);
-          accumTracked = next;
-          return next;
-        });
+        setAccumLvlPct(prev => { const next = prev >= 85 ? prev : Math.min(85, prev + ACCUM_RATE * deltaMs); accumTracked = next; return next; });
         // Reservoir: drain while accum fills (never below 35), auto-fill if below 35
         setResDivPct(prev => {
           if (wasFillingAccum && prev > 35) return Math.max(35, prev - RES_DRAIN * deltaSec);
           if (prev < 35)                    return Math.min(35, prev + RES_FILL  * deltaSec);
           return prev;
         });
+        
         // HYD pressure drift toward green band — suspended while user drags slider
         if (!psiSliderDragging.current) {
           setHydPsi(prev => {
@@ -450,11 +506,8 @@ export default function T6BHydraulicDiagram() {
   const hydDumpAnimRef = useRef(null);
   const handleHydDump = () => {
     if (hydDumpAnimRef.current) cancelAnimationFrame(hydDumpAnimRef.current);
-    const target   = 15;
-    const startTime = performance.now();
-    const startVal  = accumLvlPct;
-    const duration  = 2500;
-    const RES_RATE  = 3; // same rate reservoir moves left while filling
+    const target = 15, startTime = performance.now(), startVal = accumLvlPct, duration = 2500;
+    const RES_RATE = 6;
     let lastFrameTime = startTime;
     const animate = (now) => {
       const frameDelta = (now - lastFrameTime) / 1000;
@@ -468,15 +521,11 @@ export default function T6BHydraulicDiagram() {
     hydDumpAnimRef.current = requestAnimationFrame(animate);
   };
 
-  // ── Large EHYD leak animation ─────────────────────────────────────────
+   // ── Large EHYD leak animation
   useEffect(() => {
     if (!largeEhydSim) { setFuseBlown(false); return; }
-    const ACCUM_RATE  = 5.5;   // units drained per second
-    const RES_RATE    = 2.8;   // reservoir divider moves left per second (pre-fuse)
-    const FUSE_AT_MS  = 4000;
-    let fuseTriggered = false;
-    let lastTime = null;
-    let rafId;
+    const ACCUM_RATE = 5.5, RES_RATE = 2.8, FUSE_AT_MS = 4000;
+    let fuseTriggered = false, lastTime = null, rafId;
     const startTime = performance.now();
     const tick = (now) => {
       if (lastTime === null) lastTime = now;
@@ -484,16 +533,11 @@ export default function T6BHydraulicDiagram() {
       lastTime = now;
       const elapsed = now - startTime;
       // Blow fuse at 4 seconds
-      if (elapsed >= FUSE_AT_MS && !fuseTriggered) {
-        fuseTriggered = true;
-        setFuseBlown(true);
-      }
+      if (elapsed >= FUSE_AT_MS && !fuseTriggered) { fuseTriggered = true; setFuseBlown(true); }
       // Drain accumulator always
       setAccumLvlPct(prev => Math.max(0, prev - ACCUM_RATE * delta));
       // Move reservoir left only before fuse blows
-      if (!fuseTriggered) {
-        setResDivPct(prev => Math.max(0, prev - RES_RATE * delta));
-      }
+      if (!fuseTriggered) setResDivPct(prev => Math.max(0, prev - RES_RATE * delta));
       rafId = requestAnimationFrame(tick);
     };
     rafId = requestAnimationFrame(tick);
@@ -503,12 +547,8 @@ export default function T6BHydraulicDiagram() {
   // ── Small EHYD leak — cascade: reservoir → HYD press → accumulator ────
   useEffect(() => {
     if (!ehydPx) return;
-    const RES_RATE   = 1.5;  // units/sec — slow reservoir drain
-    const PSI_RATE   = 280;  // PSI/sec — drains once reservoir hits 0
-    const ACCUM_RATE = 3.0;  // units/sec — drains once PSI < 1800
-    let resCur = 100, psiCur = 3040;
-    let lastTime = null;
-    let rafId;
+    const RES_RATE = 1.5, PSI_RATE = 280, ACCUM_RATE = 3.0;
+    let resCur = 100, psiCur = 3040, lastTime = null, rafId;
     const tick = (now) => {
       if (lastTime === null) { lastTime = now; rafId = requestAnimationFrame(tick); return; }
       const delta = (now - lastTime) / 1000;
@@ -516,15 +556,10 @@ export default function T6BHydraulicDiagram() {
       // Phase 1: drain reservoir
       setResDivPct(prev => { resCur = prev; return Math.max(0, prev - RES_RATE * delta); });
       // Phase 2: once reservoir empty, drain HYD pressure
-      if (resCur <= 0) {
-        setHydPsi(prev => { psiCur = prev; return Math.max(0, prev - PSI_RATE * delta); });
-      } else {
-        setHydPsi(prev => { psiCur = prev; return prev; });
-      }
+      if (resCur <= 0) setHydPsi(prev => { psiCur = prev; return Math.max(0, prev - PSI_RATE * delta); });
+      else             setHydPsi(prev => { psiCur = prev; return prev; });
       // Phase 3: once PSI < 1800, drain accumulator
-      if (psiCur < 1800) {
-        setAccumLvlPct(prev => Math.max(0, prev - ACCUM_RATE * delta));
-      }
+      if (psiCur < 1800) setAccumLvlPct(prev => Math.max(0, prev - ACCUM_RATE * delta));
       rafId = requestAnimationFrame(tick);
     };
     rafId = requestAnimationFrame(tick);
@@ -534,22 +569,14 @@ export default function T6BHydraulicDiagram() {
   // ── Main HYD leak — same cascade as small EHYD but accumulator never moves
   useEffect(() => {
     if (!hydFlo) return;
-    const RES_RATE = 1.5;
-    const PSI_RATE = 280;
-    let resCur = 100, psiCur = 3040;
-    let lastTime = null;
-    let rafId;
+    const RES_RATE = 1.5, PSI_RATE = 280;
+    let resCur = 100, lastTime = null, rafId;
     const tick = (now) => {
       if (lastTime === null) { lastTime = now; rafId = requestAnimationFrame(tick); return; }
       const delta = (now - lastTime) / 1000;
       lastTime = now;
       setResDivPct(prev => { resCur = prev; return Math.max(0, prev - RES_RATE * delta); });
-      if (resCur <= 0) {
-        setHydPsi(prev => { psiCur = prev; return Math.max(0, prev - PSI_RATE * delta); });
-      } else {
-        setHydPsi(prev => { psiCur = prev; return prev; });
-      }
-      // Accumulator intentionally untouched
+      if (resCur <= 0) setHydPsi(prev => Math.max(0, prev - PSI_RATE * delta));
       rafId = requestAnimationFrame(tick);
     };
     rafId = requestAnimationFrame(tick);
@@ -562,7 +589,6 @@ export default function T6BHydraulicDiagram() {
   }, [emerGrPulled]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const FLAP_ORDER = { UP: 0, TO: 1, LDG: 2 };
-
   // Selector always moves freely.
   // When handle pulled, actual flap position (dial + accumulator) only ratchets toward LDG.
   const setFlapSafe = (pos) => {
@@ -577,9 +603,7 @@ export default function T6BHydraulicDiagram() {
     if (!emerGrPulled) return;
     const target = flapPos === 'LDG' ? 15 : flapPos === 'TO' ? 25 : null;
     if (target === null) return;
-    const startVal = accumLvlPct;
-    const duration = 1200;
-    const startTime = performance.now();
+    const startVal = accumLvlPct, duration = 1200, startTime = performance.now();
     let rafId;
     const animate = (now) => {
       const t = Math.min((now - startTime) / duration, 1);
@@ -640,17 +664,18 @@ export default function T6BHydraulicDiagram() {
         if (off > SB_THRESH)       setSbDeployed(false); // dragged right → IN
         else if (off < -SB_THRESH) setSbDeployed(true);  // dragged left  → OUT
       }
-      setSbOffset(0);
-      sbOffsetRef.current = 0;
-      sbDragging.current = false;
+      setSbOffset(0); sbOffsetRef.current = 0; sbDragging.current = false;
     }
+    if (resDivDragging.current || accumDragging.current) dragJustEnded.current = true;
     resDivDragging.current = false;
     accumDragging.current = false;
     psiSliderDragging.current = false;
   };
 
-  const pick = (id) => setSel(s => s === id ? null : id);
-  const info = sel ? INFO[sel] : null;
+  const pick = (id) => {
+    if (dragJustEnded.current) { dragJustEnded.current = false; return; }
+    setSel(id);
+  };
   const paused      = emerGrPulled || ((hydFlo || ehydPx) && hydPsi < 1800);
   const emergPaused = accumLvlPct <= 0;
 
@@ -690,38 +715,13 @@ export default function T6BHydraulicDiagram() {
     }
   };
 
-  // ── small helper: caution/advisory rect + label ──────────────────
-  const CautionBar = ({ x, y, w, label, active, blink = false, type = 'caution' }) => (
-    <>
-      <rect x={x} y={y} width={w} height={19} rx={2}
-        fill={active
-          ? (type === 'caution' ? C.caution : C.advisory)
-          : 'rgba(20,30,44,0.7)'}
-        stroke={active
-          ? (type === 'caution' ? '#BA7517' : '#639922')
-          : C.stroke}
-        strokeWidth={0.5}
-        style={active && blink ? { animation: 'hydBlink 1.2s ease-in-out infinite' } : {}} />
-      <text x={x + w / 2} y={y + 10}
-        style={active
-          ? (type === 'caution' ? T.caution : T.advisory)
-          : { ...T.t, fill: '#2e3e52' }}>
-        {label}
-      </text>
-    </>
-  );
-
-  const SmallBox = ({ x, y, w = 91, label, accent }) => (
-    <>
-      <rect x={x} y={y} width={w} height={18} rx={2}
-        fill={accent ? 'rgba(239,159,39,0.1)' : 'rgba(16,26,40,0.8)'}
-        stroke={accent ? '#BA7517' : C.stroke} strokeWidth={0.5} />
-      <text x={x + w / 2} y={y + 9}
-        style={{ ...T.t, fill: accent ? C.emerg : C.muted }}>
-        {label}
-      </text>
-    </>
-  );
+  // ── Tab button config ────────────────────────────────────────────────
+  const TABS = [
+    { id: 'verbatim', label: 'NATOPS INTRO' },
+    { id: 'numbers',  label: 'NUMBERS'  },
+    { id: 'eicas',    label: 'EICAS'    },
+    { id: 'eps',      label: 'EPs'      },
+  ];
 
   return (
     <div style={{ background: C.bg, width: '100%' }}>
@@ -734,21 +734,42 @@ export default function T6BHydraulicDiagram() {
 
       {/* ── Header ── */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
-        <span style={{ fontSize: 10, letterSpacing: '0.14em', color: '#4a7fa8' }}>
-          T-6B TEXAN II — HYDRAULIC SYSTEM
-        </span>
-        <div style={{ display: 'flex', gap: 8 }}>
+
+        {/* LEFT — briefing tabs (2×2 grid) */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
+          {TABS.map(({ id, label }) => (
+            <button
+              key={id}
+              onClick={() => setBriefingTab(t => t === id ? null : id)}
+              style={{
+                background: briefingTab === id ? 'rgba(55,138,221,0.18)' : 'transparent',
+                border: `0.5px solid ${briefingTab === id ? '#378ADD' : C.stroke}`,
+                color: briefingTab === id ? '#5ab8e8' : C.muted,
+                padding: '6px 12px', fontSize: 11, borderRadius: 3, cursor: 'pointer',
+                letterSpacing: '0.08em', fontFamily: FONT,
+                fontWeight: briefingTab === id ? 700 : 400,
+                transition: 'all 0.15s',
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {/* RIGHT — fault sims (top: main hyd leak; bottom: two ehyd leaks) */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
           {[
-            { active: hydFlo,        set: setHydFlo,        label: 'MAIN HYD LEAK',       bg: C.caution, border: '#BA7517', tc: '#4a2a08' },
-            { active: ehydPx,        set: setEhydPx,        label: 'SMALL EHYD LEAK',     bg: C.emerg,   border: '#BA7517', tc: '#4a2a08' },
-            { active: largeEhydSim,  set: setLargeEhydSim,  label: 'LARGE EHYD LEAK',     bg: '#cc2222', border: '#991010', tc: '#f8e0e0' },
-          ].map(({ active, set, label, bg, border, tc }) => (
+            { active: hydFlo,        set: setHydFlo,        label: 'MAIN HYD LEAK',   bg: C.caution, border: '#BA7517', tc: '#4a2a08', col: 2 },
+            { active: ehydPx,        set: setEhydPx,        label: 'SMALL EHYD LEAK', bg: C.emerg,   border: '#BA7517', tc: '#4a2a08' },
+            { active: largeEhydSim,  set: setLargeEhydSim,  label: 'LARGE EHYD LEAK', bg: '#cc2222', border: '#991010', tc: '#f8e0e0' },
+          ].map(({ active, set, label, bg, border, tc, col }) => (
             <button key={label} onClick={() => set(v => !v)} style={{
+              gridColumn: col,
               background: active ? bg : 'transparent',
               border: `1px solid ${active ? border : C.stroke}`,
               color: active ? tc : C.muted,
-              padding: '3px 9px', fontSize: 9, borderRadius: 3, cursor: 'pointer',
-              letterSpacing: '0.08em', fontFamily: FONT,
+              padding: '6px 12px', fontSize: 11, borderRadius: 3, cursor: 'pointer',
+              letterSpacing: '0.06em', fontFamily: FONT,
               fontWeight: active ? 700 : 400,
             }}>
               {active ? `● ${label}` : `▷ SIM ${label}`}
@@ -769,8 +790,7 @@ export default function T6BHydraulicDiagram() {
         ].map(({ stroke, sw, da, label }) => (
           <span key={label} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <svg width="22" height="5" style={{ overflow: 'visible' }}>
-              <line x1="0" y1="2.5" x2="22" y2="2.5"
-                stroke={stroke} strokeWidth={sw} strokeDasharray={da} />
+              <line x1="0" y1="2.5" x2="22" y2="2.5" stroke={stroke} strokeWidth={sw} strokeDasharray={da} />
             </svg>
             {label}
           </span>
@@ -778,53 +798,29 @@ export default function T6BHydraulicDiagram() {
         <span style={{ marginLeft: 'auto', color: '#2a4a5a' }}>CLICK COMPONENTS FOR DETAILS</span>
       </div>
 
-      {/* ── SVG Schematic ── */}
-      {/*
-        Layout summary (all coordinates in SVG units, viewBox 680×820):
-          EDP:                 x=462  y=18   w=196 h=62
-          Check Valve:         cx=450 cy=47  r=10
-          FW Shutoff Valve:    x=260  y=22   w=128 h=55   — supply enters right, exits bottom
-          Firewall marker:     x=395  y=12 → y=95  (dashed vertical)
-          Power Package:       x=10   y=10   w=196 h=168  (dashed outline)
-          Reservoir:           x=18   y=38   w=140 h=100
-          Filter:              x=268  y=100  w=112 h=36
-          Press Transmitter:   x=395  y=100  w=152 h=36
-          Slide Valve:         x=222  y=166  w=185 h=44
-          3500 psi RV:         x=428  y=166  w=158 h=44
-          Distribution bar:    y=250  x=50→218
-          Selector Manifold:   x=10   y=270  w=220 h=500 (VERTICAL)
-            NWS:               x=18   y=288  w=204 h=110
-            Gear:              x=18   y=408  w=204 h=110
-            Flaps:             x=18   y=528  w=204 h=110
-            Speed Brake:       x=18   y=648  w=204 h=110
-          Emer Accumulator:    x=480  y=260  w=168 h=108
-          Emer Sel Manifold:   x=480  y=390  w=172 h=140
-          Return bus:          y=780  x=8→460
-
-        Supply circuit (blue):
-          EDP(462,47) → CV(450,47) → FW SOV right(388,47)
-          FW SOV exit bottom(324,77) → Filter(324,100)
-          Filter bottom(324,136) → Slide Valve(324,166)
-          Slide Valve exit(314,210) → splits:
-            - Left to Distrib bar(50,250)
-            - Right to Accumulator(590,260)
-          Distrib bar(50,250)→(218,250) → drops to each sub at x=120
-
-        Emergency circuit (amber):
-          Accum bottom(564,368) → Emer Sel Manifold top(564,390)
-
-        Return circuit (gray):
-          Each sub bottom(x,398/518/638/758) → return bus(x,780)
-          Bus (8,780)→(460,780) → up left rail (8,780)→(8,88)→(18,88) into Reservoir
-      */}
+      {/* ── SVG Schematic (wrapped in position:relative for modal) ── */}
       <div style={{ position: 'relative' }}>
+
+        {/* ── Briefing Modal overlay ── */}
+        {briefingTab && (
+          <BriefingModal tab={briefingTab} onClose={() => setBriefingTab(null)} />
+        )}
+
+        {/* ── Component Info Modal overlay ── */}
+        {sel && HYD_INFO[sel] && (
+          <InfoModal
+            title={HYD_INFO[sel].title}
+            items={HYD_INFO[sel].items}
+            onClose={() => setSel(null)}
+          />
+        )}
 
       <svg ref={svgRef} viewBox="0 0 680 820" width="100%" style={{ display: 'block' }}
         onMouseMove={handleSvgMouseMove}
         onMouseUp={handleSvgMouseUp}
         onMouseLeave={handleSvgMouseUp}>
 
-        {/* ── HYD PRESS gauge — embedded, scales with SVG ── */}
+        {/* ── HYD PRESS gauge ── */}
         {(() => {
           const gx = 550, gy = 8, gs = 120;
           const sliderX = gx, sliderY = gy + gs + 6, sliderW = gs, sliderH = 5;
@@ -940,7 +936,7 @@ export default function T6BHydraulicDiagram() {
 
         {/* Selector: NWS selector valve → Actuators */}
         <F d="M330 285 L260 285" v="sel" paused={paused} />
-        <text x="295" y="280"  style={T.s}>LEFT</text>
+        <text x="295" y="280" style={T.s}>LEFT</text>
         <F d="M330 315 L260 315" v="sel" paused={paused} />
         <text x="295" y="320"  style={T.s}>RIGHT</text>
 
@@ -948,7 +944,7 @@ export default function T6BHydraulicDiagram() {
         <F d="M330 365 L150 365 L150 375" v="sel" paused={paused} />
         <F d="M220 365 L220 375" v="sel" paused={paused} />
         <F d="M290 365 L290 375" v="sel" paused={paused} />
-        <text x="295" y="360"  style={T.s}>UP</text>
+        <text x="295" y="360" style={T.s}>UP</text>
         <F d="M330 425 L287 425" v="sel" paused={paused} />
         <F d="M273 425 L217 425" v="sel" paused={paused} />
         <F d="M203 425 L160 425 L160 415" v="sel" paused={paused} />
@@ -958,20 +954,20 @@ export default function T6BHydraulicDiagram() {
 
         {/* Selector: DOOR selector valve → Actuators */}
         <F d="M330 475 L260 475" v="sel" paused={paused} />
-        <text x="295" y="470"  style={T.s}>DOWN</text>
+        <text x="295" y="470" style={T.s}>DOWN</text>
         <F d="M330 505 L260 505" v="sel" paused={paused} />
         <text x="295" y="510"  style={T.s}>UP</text>
 
         {/* Selector: SPD BRAKE selector valve → Actuators */}
         <F d="M330 570 L260 570" v="sel" paused={paused} />
-        <text x="295" y="565"  style={T.s}>IN</text>
+        <text x="295" y="565" style={T.s}>IN</text>
         <F d="M330 600 L260 600" v="sel" paused={paused} />
         <text x="295" y="605"  style={T.s}>OUT</text>
 
         
         {/* Selector: FLAPS selector valve → Actuators */}
         <F d="M330 670 L240 670 L240 690" v="sel" paused={paused} />
-        <text x="295" y="665"  style={T.s}>TO</text>
+        <text x="295" y="665" style={T.s}>TO</text>
         <F d="M330 750 L240 750 L240 730" v="sel" paused={paused} />
         <text x="295" y="755"  style={T.s}>LDG</text>
 
@@ -1040,17 +1036,14 @@ export default function T6BHydraulicDiagram() {
         {/* Power Package dashed outline */}
         <rect x="140" y="65" width="365" height="170" rx="6"
           fill="none" stroke="#1e3040" strokeWidth="0.5" strokeDasharray="6 4" />
-        <text x="185" y="225"
-          style={{ ...T.t, fill: '#1e3a4a', letterSpacing: '0.1em', fontSize: 7.5 }}>
-          POWER PACKAGE
-        </text>
+        <text x="185" y="225" style={{ ...T.t, fill: '#1e3a4a', letterSpacing: '0.1em', fontSize: 7.5 }}>POWER PACKAGE</text>
 
         {/* Reservoir */}
         <Box x={238} y={80} w={100} h={80} id="reservoir" sel={sel} onSel={pick}>
           {/* Fluid fill — green (return) left, red (supply) right, draggable divider */}
           {(() => {
-            const rx = 238, ry = 80, rw = 100, rh = 80;
-            const divX = rx + (resDivPct / 100) * rw;
+            const rx=238,ry=80,rw=100,rh=80;
+            const divX = rx + (resDivPct/100)*rw;
             return (
               <>
                 <rect x={rx + 2} y={ry + 2} width={Math.max(0, divX - rx - 2)} height={rh - 4} rx={2}
@@ -1072,17 +1065,17 @@ export default function T6BHydraulicDiagram() {
               </>
             );
           })()}
-          <text x="288" y="170"  style={T.h}>RESERVOIR</text>
+          <text x="288" y="170" style={T.h}>RESERVOIR</text>
         </Box>
 
         {/* Overboard Relief Valve */}
-        <Box x={150} y={85} w={80} h={30}>
+        <Box x={150} y={85} w={80} h={30} id="overboard" sel={sel} onSel={pick}>
           <text x="190" y="95" style={T.h}>Overboard</text>
-          <text x="190" y="107" style={T.h}>Releif Valve</text>
+          <text x="190" y="107" style={T.h}>Relief Valve</text>
         </Box>
 
         {/* Return Line Filter */}
-        <Box x={200} y={140} w={20} h={10} id="filter" sel={sel} onSel={pick}>
+        <Box x={200} y={140} w={20} h={10} id="returnfilter" sel={sel} onSel={pick}>
           <rect x="200" y="140" width="20" height="10" fill="url(#crosshatch)" />
         </Box>
 
@@ -1099,11 +1092,10 @@ export default function T6BHydraulicDiagram() {
         </Box>
 
         {/* Check Valve */}
-       <Box x={425} y={60} w={10} h={20} id="cvalve" sel={sel} onSel={pick}>
-         {/* Down arrow */}
+        <Box x={425} y={60} w={10} h={20} id="cvalve" sel={sel} onSel={pick}>
          <path d="M430 65 L430 75 M427 72 L430 75 L433 72"
            stroke={C.supply} strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-       </Box>
+        </Box>
 
         {/* Filter */}
         <Box x={425} y={90} w={10} h={20} id="filter" sel={sel} onSel={pick}>
@@ -1111,12 +1103,12 @@ export default function T6BHydraulicDiagram() {
         </Box>
 
         {/* Pressure Transmitter */}
-        <Box x={450} y={105} w={50} h={20}>
+        <Box x={450} y={105} w={50} h={20} id="pxtx" sel={sel} onSel={pick}>
           <text x="475" y="116" style={T.h}>PX TX</text>
         </Box>
 
         {/* 3500 psi System Relief Valve */}
-        <Box x={390} y={130} w={80} h={40}>
+        <Box x={390} y={130} w={80} h={40} id="relief" sel={sel} onSel={pick}>
           <text x="430" y="145" style={T.h}>3500 psi</text>
           <text x="430" y="157" style={T.h}>Relief Valve</text>
         </Box>
@@ -1135,10 +1127,7 @@ export default function T6BHydraulicDiagram() {
         {/* ────────────── SELECTOR MANIFOLD (VERTICAL) ────────────── */}
         <rect x="110" y="250" width="300" height="550" rx="5"
           fill="none" stroke="#1e3040" strokeWidth="0.5" strokeDasharray="6 4" />
-        <text x="260" y="255"
-          style={{ ...T.t, fill: '#1e3a4a', letterSpacing: '0.1em', fontSize: 7.5 }}>
-          SELECTOR MANIFOLD
-        </text>
+        <text x="260" y="255" style={{ ...T.t, fill: '#1e3a4a', letterSpacing: '0.1em', fontSize: 7.5 }}>SELECTOR MANIFOLD</text>
 
         {/* NWS */}
         <Box x={330} y={260} w={70} h={70} id="nws" sel={sel} onSel={pick} hi="#639922">
@@ -1147,63 +1136,58 @@ export default function T6BHydraulicDiagram() {
           <text x="365" y="303" style={T.h}>Selector</text>
           <text x="365" y="315" style={T.h}>Valve</text>
         </Box>
-      
-        <circle cx="250" cy="300" r="20"
-          fill={C.box} stroke={C.stroke} strokeWidth="0.5" />
+        <circle cx="250" cy="300" r="20" fill={C.box} stroke={C.stroke} strokeWidth="0.5" />
 
         {/* Landing Gear */}
-        <Box x={330} y={360} w={70} h={70} id="nws" sel={sel} onSel={pick} hi="#639922">
+        <Box x={330} y={360} w={70} h={70} id="ldggear" sel={sel} onSel={pick} hi="#639922">
           <text x="365" y="379" style={T.h}>LDG GEAR</text>
           <text x="365" y="391" style={T.h}>Electrical</text>
           <text x="365" y="403" style={T.h}>Selector</text>
           <text x="365" y="415" style={T.h}>Valve</text>
         </Box>
-        <Box x={260} y={375} w={60} h={40} id="nws" sel={sel} onSel={pick} hi="#639922">
+        <Box x={260} y={375} w={60} h={40} id="ldggear" sel={sel} onSel={pick} hi="#639922">
           <text x="290" y="388" style={T.h}>NOSE GEAR</text>
           <text x="290" y="400" style={T.h}>Actuator</text>
         </Box>
-        <Box x={190} y={375} w={60} h={40} id="nws" sel={sel} onSel={pick} hi="#639922">
+        <Box x={190} y={375} w={60} h={40} id="ldggear" sel={sel} onSel={pick} hi="#639922">
           <text x="220" y="388" style={T.h}>RH GEAR</text>
           <text x="220" y="400" style={T.h}>Actuator</text>
         </Box>
-        <Box x={120} y={375} w={60} h={40} id="nws" sel={sel} onSel={pick} hi="#639922">
+        <Box x={120} y={375} w={60} h={40} id="ldggear" sel={sel} onSel={pick} hi="#639922">
           <text x="150" y="388" style={T.h}>LH GEAR</text>
           <text x="150" y="400" style={T.h}>Actuator</text>
         </Box>
-        
+
         {/* Emergency Check Valve */}
-       <Box x={535} y={475} w={20} h={10} id="cvalve" sel={sel} onSel={pick}>
-         {/* Down arrow */}
-         <path d="M540 480 L550 480 M547 477 L550 480 L547 483"
-           stroke={C.supply} strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-       </Box>
+        <Box x={535} y={475} w={20} h={10} id="ecvalve" sel={sel} onSel={pick}>
+          <path d="M540 480 L550 480 M547 477 L550 480 L547 483" 
+          stroke={C.supply} strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        </Box>
 
        {/* Hydraulic Fuse */}
-       <Box x={475} y={475} w={20} h={10} id="fuse" sel={sel} onSel={pick}>
+        <Box x={475} y={475} w={20} h={10} id="fuse" sel={sel} onSel={pick}>
           <text x="485" y="490" style={T.s}>HYDRAULIC</text>
           <text x="485" y="500" style={T.s}>FUSE</text>
-       </Box>
+        </Box>
        {/* Fuse blow effects */}
-       {fuseBlown && (
-         <g>
-           {/* Dramatic glow ring */}
-           <rect x={475} y={475} width={20} height={10} rx={2}
-             fill="none" stroke="#ff2020" strokeWidth={3}
-             filter="url(#emerGlow)"
-             style={{ animation: 'fuseBlowFlash 1.2s ease-out 1 forwards' }} />
-           {/* Permanent red X */}
-           <line x1={477} y1={477} x2={493} y2={483} stroke="#ff2020" strokeWidth={2} strokeLinecap="round" />
-           <line x1={493} y1={477} x2={477} y2={483} stroke="#ff2020" strokeWidth={2} strokeLinecap="round" />
-         </g>
-       )}
+        {fuseBlown && (
+          <g>
+            {/* Dramatic glow ring */}
+           <rect x={475} y={475} width={20} height={10} rx={2} fill="none" stroke="#ff2020" strokeWidth={3}
+              filter="url(#emerGlow)" style={{ animation: 'fuseBlowFlash 1.2s ease-out 1 forwards' }} />
+            {/* Permanent red X */}
+            <line x1={477} y1={477} x2={493} y2={483} stroke="#ff2020" strokeWidth={2} strokeLinecap="round" />
+            <line x1={493} y1={477} x2={477} y2={483} stroke="#ff2020" strokeWidth={2} strokeLinecap="round" />
+          </g>
+        )}
 
-        <Box x={330} y={455} w={70} h={70} id="nws" sel={sel} onSel={pick} hi="#639922">
+        <Box x={330} y={455} w={70} h={70} id="ldggear" sel={sel} onSel={pick} hi="#639922">
           <text x="365" y="474" style={T.h}>LDG DOOR</text>
           <text x="365" y="486" style={T.h}>Electrical</text>
           <text x="365" y="498" style={T.h}>Selector</text>
           <text x="365" y="510" style={T.h}>Valve</text>
         </Box>
-        <Box x={180} y={470} w={80} h={40} id="nws" sel={sel} onSel={pick} hi="#639922">
+        <Box x={180} y={470} w={80} h={40} id="ldggear" sel={sel} onSel={pick} hi="#639922">
           <text x="220" y="483" style={T.h}>Inboard Door</text>
           <text x="220" y="495" style={T.h}>Actuator</text>
         </Box>
@@ -1216,19 +1200,12 @@ export default function T6BHydraulicDiagram() {
 
         {/* ── Landing Gear Indicator (no border, no labels) ── */}
         <g>
-          {/* Three gear position lights: LH (shifted down) · NOSE · RH (shifted down) */}
-          {[
-            { lx: 30, dy: 8, li: 0 },
-            { lx: 50, dy: 0, li: 1 },
-            { lx: 70, dy: 8, li: 2 },
-          ].map(({ lx, dy, li }) => {
-            const [green, red] = gearLights[li];
+          {[{ lx:30,dy:8,li:0 },{ lx:50,dy:0,li:1 },{ lx:70,dy:8,li:2 }].map(({ lx,dy,li }) => {
+            const [green,red] = gearLights[li];
             return (
               <g key={li}>
-                <rect x={lx - 8} y={418 + dy} width={16} height={9} rx={1}
-                  fill={green ? '#2db52d' : '#081408'} stroke="#182818" strokeWidth={0.4} />
-                <rect x={lx - 8} y={427 + dy} width={16} height={9} rx={1}
-                  fill={red   ? '#c02020' : '#0e0404'} stroke="#280a0a" strokeWidth={0.4} />
+                <rect x={lx-8} y={418+dy} width={16} height={9} rx={1} fill={green?'#2db52d':'#081408'} stroke="#182818" strokeWidth={0.4} />
+                <rect x={lx-8} y={427+dy} width={16} height={9} rx={1} fill={red?'#c02020':'#0e0404'} stroke="#280a0a" strokeWidth={0.4} />
               </g>
             );
           })}
@@ -1238,30 +1215,21 @@ export default function T6BHydraulicDiagram() {
             const gearRed = ((emerGrPulled && gearPhase === 'up') || flapPos === 'LDG') && gearPhase !== 'down';
             return (
               <>
-                {gearRed && (
-                  <circle cx={50} cy={470} r={20}
-                    fill="none" stroke="#ff2020" strokeWidth={3}
-                    filter="url(#emerGlow)" opacity={0.95} />
-                )}
+                {gearRed && <circle cx={50} cy={470} r={20} fill="none" stroke="#ff2020" strokeWidth={3} filter="url(#emerGlow)" opacity={0.95} />}
                 <circle cx={50} cy={470} r={20}
-                  fill={gearRed ? '#8b1010' : gearPhase === 'down' ? '#b8b8a8' : '#686860'}
-                  stroke="#c0c0b0" strokeWidth={1}
-                  style={{ cursor: gearLocked ? 'not-allowed' : 'pointer' }}
-                  onClick={handleGearClick} />
+                  fill={gearRed?'#8b1010':gearPhase==='down'?'#b8b8a8':'#686860'} stroke="#c0c0b0" strokeWidth={1}
+                  style={{ cursor: gearLocked?'not-allowed':'pointer' }} onClick={handleGearClick} />
               </>
             );
           })()}
           <text x={50} y={470} textAnchor="middle" dominantBaseline="central"
-            style={{ fontFamily: FONT, fontSize: 7.5, fontWeight: 700, fill: '#1a1a14',
-                     cursor: gearLocked ? 'not-allowed' : 'pointer' }}
-            onClick={handleGearClick}>
-            {gearLabel}
-          </text>
+            style={{ fontFamily:FONT, fontSize:7.5, fontWeight:700, fill:'#1a1a14', cursor:gearLocked?'not-allowed':'pointer' }}
+            onClick={handleGearClick}>{gearLabel}</text>
         </g>
 
         {/* ── Flap 3-Position Slider (draggable) ── */}
         {(() => {
-          const trackX = 595, trackY = 660, trackW = 6, trackH = 44;
+          const trackX=595,trackY=660,trackW=6,trackH=44;
           const ty = FLAP_SNAP_Y[selectorPos];
           return (
             <g>
@@ -1270,51 +1238,37 @@ export default function T6BHydraulicDiagram() {
                 fill="#111e2a" stroke="#2e3e52" strokeWidth={0.5} />
               {/* Notch lines + labels + click zones */}
               {['UP','TO','LDG'].map(pos => (
-                <g key={pos} style={{ cursor: 'pointer' }} onClick={() => setFlapSafe(pos)}>
-                  <text x={trackX + trackW + 10} y={FLAP_SNAP_Y[pos]}
-                    textAnchor="start" dominantBaseline="central"
-                    style={{ ...T.t, fontSize: 7, fill: selectorPos === pos ? '#c8d8e8' : '#3a4a5a' }}>
-                    {pos}
-                  </text>
-                  <rect x={trackX - 6} y={FLAP_SNAP_Y[pos] - 9} width={trackW + 12} height={18}
-                    fill="transparent" />
+                <g key={pos} style={{ cursor:'pointer' }} onClick={() => setFlapSafe(pos)}>
+                  <text x={trackX+trackW+10} y={FLAP_SNAP_Y[pos]} textAnchor="start" dominantBaseline="central"
+                    style={{ ...T.t, fontSize:7, fill:selectorPos===pos?'#c8d8e8':'#3a4a5a' }}>{pos}</text>
+                  <rect x={trackX-6} y={FLAP_SNAP_Y[pos]-9} width={trackW+12} height={18} fill="transparent" />
                 </g>
               ))}
               {/* Draggable thumb */}
               <rect x={trackX - 2.5} y={ty - 2.5} width={trackW + 5} height={5} rx={2}
                 fill="#8090a0" stroke="#b0bcc8" strokeWidth={0.6}
-                style={{ cursor: 'grab' }}
-                onMouseDown={handleFlapMouseDown} />
+                style={{ cursor:'grab' }} onMouseDown={handleFlapMouseDown} />
             </g>
           );
         })()}
 
         {/* ── Flap Position Indicator Dial ── */}
         {(() => {
-          const dcx = 595, dcy = 737, dr = 18;
-          const angleMap = { UP: 30, TO: 90, LDG: 150 };
-          function dp(ang, r) {
-            const rad = (ang - 90) * Math.PI / 180;
-            return [dcx + r * Math.cos(rad), dcy + r * Math.sin(rad)];
-          }
-          const [nx, ny] = dp(angleMap[flapPos], dr * 0.78);
+          const dcx=595,dcy=737,dr=18;
+          const angleMap = { UP:30, TO:90, LDG:150 };
+          function dp(ang,r) { const rad=(ang-90)*Math.PI/180; return [dcx+r*Math.cos(rad),dcy+r*Math.sin(rad)]; }
+          const [nx,ny] = dp(angleMap[flapPos],dr*0.78);
           return (
             <g>
-              <circle cx={dcx} cy={dcy} r={dr + 4} fill="#080f18" stroke="#2e3e52" strokeWidth={0.8} />
+              <circle cx={dcx} cy={dcy} r={dr+4} fill="#080f18" stroke="#2e3e52" strokeWidth={0.8} />
               <circle cx={dcx} cy={dcy} r={dr} fill="#0d1620" />
-              {Object.entries(angleMap).map(([label, ang]) => {
-                const [lx, ly] = dp(ang, dr + 9);
-                return (
-                  <text key={label} x={lx} y={ly} textAnchor="middle" dominantBaseline="central"
-                    style={{ ...T.t, fontSize: 7, fill: flapPos === label ? '#c8d8e8' : '#3a4a5a' }}>
-                    {label}
-                  </text>
-                );
+              {Object.entries(angleMap).map(([label,ang]) => {
+                const [lx,ly] = dp(ang,dr+9);
+                return <text key={label} x={lx} y={ly} textAnchor="middle" dominantBaseline="central"
+                  style={{ ...T.t, fontSize:7, fill:flapPos===label?'#c8d8e8':'#3a4a5a' }}>{label}</text>;
               })}
-              <text x={dcx-10} y={dcy + 6} textAnchor="middle"
-                style={{ ...T.t, fontSize: 6, fill: C.muted }}>FLAPS</text>
-              <line x1={dcx} y1={dcy} x2={nx} y2={ny}
-                stroke="#c8d8e8" strokeWidth={1.5} strokeLinecap="round" />
+              <text x={dcx-10} y={dcy+6} textAnchor="middle" style={{ ...T.t, fontSize:6, fill:C.muted }}>FLAPS</text>
+              <line x1={dcx} y1={dcy} x2={nx} y2={ny} stroke="#c8d8e8" strokeWidth={1.5} strokeLinecap="round" />
               <circle cx={dcx} cy={dcy} r={2.5} fill="#8a9aaa" />
             </g>
           );
@@ -1322,27 +1276,18 @@ export default function T6BHydraulicDiagram() {
 
         {/* ── Speed Brake Drag Handle (circular) ── */}
         {(() => {
-          const trackX = 22, trackCY = 580, trackW = 56, trackH = 5;
+          const trackX=22,trackCY=580,trackW=56,trackH=5;
           const tcx = SB_CX + sbOffset;
-          const r = 14;
-          const stripeXs = [-8, -5, -2, 1, 4, 7];
+          const r=14;
+          const stripeXs=[-8,-5,-2,1,4,7];
           return (
             <g>
-              {/* Track groove */}
-              <rect x={trackX} y={trackCY - trackH / 2} width={trackW} height={trackH} rx={3}
-                fill="#0d1620" stroke="#2e3e52" strokeWidth={0.5} />
-              {/* Circular thumb */}
-              <circle cx={tcx} cy={trackCY} r={r}
-                fill="#7a7e88" stroke="#505460" strokeWidth={0.7}
-                style={{ cursor: 'ew-resize', userSelect: 'none' }}
-                onMouseDown={handleSbMouseDown} />
-              {/* Texture stripes */}
+              <rect x={trackX} y={trackCY-trackH/2} width={trackW} height={trackH} rx={3} fill="#0d1620" stroke="#2e3e52" strokeWidth={0.5} />
+              <circle cx={tcx} cy={trackCY} r={r} fill="#7a7e88" stroke="#505460" strokeWidth={0.7}
+                style={{ cursor:'ew-resize', userSelect:'none' }} onMouseDown={handleSbMouseDown} />
               {stripeXs.map(ox => (
-                <line key={ox}
-                  x1={tcx + ox} y1={trackCY - r + 3}
-                  x2={tcx + ox} y2={trackCY + r - 3}
-                  stroke="#454850" strokeWidth={0.8}
-                  style={{ pointerEvents: 'none' }} />
+                <line key={ox} x1={tcx+ox} y1={trackCY-r+3} x2={tcx+ox} y2={trackCY+r-3}
+                  stroke="#454850" strokeWidth={0.8} style={{ pointerEvents:'none' }} />
               ))}
             </g>
           );
@@ -1355,7 +1300,7 @@ export default function T6BHydraulicDiagram() {
           <text x="365" y="593" style={T.h}>Selector</text>
           <text x="365" y="605" style={T.h}>Valve</text>
         </Box>
-        <Box x={180} y={565} w={80} h={40} id="nws" sel={sel} onSel={pick} hi="#639922">
+        <Box x={180} y={565} w={80} h={40} id="spdbrk" sel={sel} onSel={pick} hi="#639922">
           <text x="220" y="578" style={T.h}>Speed Brake</text>
           <text x="220" y="590" style={T.h}>Actuator</text>
         </Box>
@@ -1373,7 +1318,7 @@ export default function T6BHydraulicDiagram() {
           <text x="365" y="758" style={T.h}>Selector</text>
           <text x="365" y="770" style={T.h}>Valve</text>
         </Box>
-        <Box x={190} y={690} w={60} h={40} id="nws" sel={sel} onSel={pick} hi="#639922">
+        <Box x={190} y={690} w={60} h={40} id="flaps" sel={sel} onSel={pick} hi="#639922">
           <text x="220" y="703" style={T.h}>Flaps</text>
           <text x="220" y="715" style={T.h}>Actuator</text>
         </Box>
@@ -1383,25 +1328,20 @@ export default function T6BHydraulicDiagram() {
 
         {/* HYDRAULIC DUMP — black box to the right of accumulator */}
         {(() => {
-          const bx = 640, by = 262, bw = 26, bh = 56;
-          const cx1 = bx + 8, cx2 = bx + 18; // two text columns
-          const hydraulic = ['H','Y','D','R','A','U','L','I','C'];
-          const dump      = ['D','U','M','P'];
+          const bx=640,by=262,bw=26,bh=56;
+          const cx1=bx+8,cx2=bx+18;
+          const hydraulic=['H','Y','D','R','A','U','L','I','C'];
+          const dump=['D','U','M','P'];
           return (
-            <g style={{ cursor: 'pointer' }} onClick={handleHydDump}>
-              <rect x={bx} y={by} width={bw} height={bh} rx={3}
-                fill="#000000" stroke="#3a3a3a" strokeWidth={0.6} />
-              {hydraulic.map((ch, i) => (
-                <text key={i} x={cx1} y={by + 5 + i * 5.5} textAnchor="middle" dominantBaseline="central"
-                  style={{ fontFamily: FONT, fontSize: 5, fill: '#b0b8c8' }}>
-                  {ch}
-                </text>
+            <g style={{ cursor:'pointer' }} onClick={handleHydDump}>
+              <rect x={bx} y={by} width={bw} height={bh} id="hyddump" rx={3} fill="#000000" stroke="#3a3a3a" strokeWidth={0.6} />
+              {hydraulic.map((ch,i) => (
+                <text key={i} x={cx1} y={by+5+i*5.5} textAnchor="middle" dominantBaseline="central"
+                  style={{ fontFamily:FONT, fontSize:5, fill:'#b0b8c8' }}>{ch}</text>
               ))}
-              {dump.map((ch, i) => (
-                <text key={i} x={cx2} y={by + 16 + i * 5.5} textAnchor="middle" dominantBaseline="central"
-                  style={{ fontFamily: FONT, fontSize: 5, fill: '#b0b8c8' }}>
-                  {ch}
-                </text>
+              {dump.map((ch,i) => (
+                <text key={i} x={cx2} y={by+16+i*5.5} textAnchor="middle" dominantBaseline="central"
+                  style={{ fontFamily:FONT, fontSize:5, fill:'#b0b8c8' }}>{ch}</text>
               ))}
             </g>
           );
@@ -1411,153 +1351,76 @@ export default function T6BHydraulicDiagram() {
         <Box x={555} y={260} w={80} h={60} id="accum" sel={sel} onSel={pick} hi={C.emerg}>
           {/* Fluid level — empty above line, yellow emergency fluid below */}
           {(() => {
-            const bx = 555, by = 260, bw = 80, bh = 60;
-            const lineY = by + (1 - accumLvlPct / 100) * bh;
+            const bx=555,by=260,bw=80,bh=60;
+            const lineY = by + (1-accumLvlPct/100)*bh;
             return (
               <>
-                <rect x={bx + 2} y={lineY} width={bw - 4} height={Math.max(0, by + bh - lineY - 2)} rx={1}
-                  fill={C.emerg} opacity={0.4} style={{ pointerEvents: 'none' }} />
-                <line x1={bx + 2} y1={lineY} x2={bx + bw - 2} y2={lineY}
-                  stroke="#000000" strokeWidth={2}
-                  style={{ cursor: 'ns-resize' }}
+                <rect x={bx+2} y={lineY} width={bw-4} height={Math.max(0,by+bh-lineY-2)} rx={1}
+                  fill={C.emerg} opacity={0.4} style={{ pointerEvents:'none' }} />
+                <line x1={bx+2} y1={lineY} x2={bx+bw-2} y2={lineY} stroke="#000000" strokeWidth={2}
+                  style={{ cursor:'ns-resize' }}
                   onMouseDown={e => { e.preventDefault(); e.stopPropagation(); accumDragging.current = true; }} />
               </>
             );
           })()}
-          <text x="595" y="250"
-            style={{ ...T.h, fill: ehydPx || fuseBlown ? C.emerg : '#b09a5a' }}>
-            EMER ACCUMULATOR
-          </text>
-          <text x="595" y="265"
-            style={{ ...T.s, fontSize: 6, fill: ehydPx || fuseBlown ? C.emerg : '#b09a5a' }}>
-            HELIUM PRECHARGE
-          </text>
+          <text x="595" y="250" style={{ ...T.h, fill: ehydPx||fuseBlown?C.emerg:'#b09a5a' }}>EMER ACCUMULATOR</text>
+          <text x="595" y="265" style={{ ...T.s, fontSize:6, fill: ehydPx||fuseBlown?C.emerg:'#b09a5a' }}>HELIUM PRECHARGE</text>
         </Box>
 
-        <Box x={585} y={330} w={20} h={10} id="accum" sel={sel} onSel={pick} hi={C.emerg}>
-        </Box>
-
-        <Box x={585} y={350} w={20} h={10} id="accum" sel={sel} onSel={pick} hi={C.emerg}>
-          <text x="645" y="350"
-            style={{ ...T.s, fill: ehydPx || fuseBlown ? C.emerg : '#b09a5a' }}>
-            3500 PSI px
-          </text>
-          <text x="645" y="360"
-            style={{ ...T.s, fill: ehydPx || fuseBlown ? C.emerg : '#b09a5a' }}>
-            RELEASE VALVE
-          </text>
+        <Box x={585} y={330} w={20} h={10} id="hyddump" sel={sel} onSel={pick} hi={C.emerg} />
+        <Box x={585} y={350} w={20} h={10} id="erelief" sel={sel} onSel={pick} hi={C.emerg}>
+          <text x="645" y="350" style={{ ...T.s, fill: ehydPx||fuseBlown?C.emerg:'#b09a5a' }}>3500 PSI px</text>
+          <text x="645" y="360" style={{ ...T.s, fill: ehydPx||fuseBlown?C.emerg:'#b09a5a' }}>RELEASE VALVE</text>
         </Box>
 
         {/* LDG GEAR EMER EXT glow when handle pulled */}
         {emerGrPulled && (
-          <rect x={555} y={370} width={80} height={75} rx={4}
-            fill="none" stroke={C.emerg} strokeWidth={2}
-            filter="url(#emerGlow)" opacity={0.9} />
+          <rect x={555} y={370} width={80} height={75} rx={4} fill="none" stroke={C.emerg} strokeWidth={2} filter="url(#emerGlow)" opacity={0.9} />
         )}
-        <Box x={555} y={370} w={80} h={75} id="accum" sel={sel} onSel={pick} hi={C.emerg}>
-          <text x="595" y="383"
-            style={{ ...T.h, fill: ehydPx || fuseBlown ? C.emerg : '#b09a5a' }}>
-            LDG GEAR
-          </text>
-          <text x="595" y="395"
-            style={{ ...T.h, fill: ehydPx || fuseBlown ? C.emerg : '#b09a5a' }}>
-            EMERGENCY
-          </text>
-          <text x="595" y="407"
-            style={{ ...T.h, fill: ehydPx || fuseBlown ? C.emerg : '#b09a5a' }}>
-            EXTENSION
-          </text>
-          <text x="595" y="419"
-            style={{ ...T.h, fill: ehydPx || fuseBlown ? C.emerg : '#b09a5a' }}>
-            SELECTOR
-          </text>
-          <text x="595" y="431"
-            style={{ ...T.h, fill: ehydPx || fuseBlown ? C.emerg : '#b09a5a' }}>
-            VALVE
-          </text>
+        <Box x={555} y={370} w={80} h={75} id="emerldggr" sel={sel} onSel={pick} hi={C.emerg}>
+          {['LDG GEAR','EMERGENCY','EXTENSION','SELECTOR','VALVE'].map((t,i) => (
+            <text key={i} x="595" y={383+i*12} style={{ ...T.h, fill: ehydPx||fuseBlown?C.emerg:'#b09a5a' }}>{t}</text>
+          ))}
         </Box>
 
-        <Box x={555} y={550} w={80} h={75} id="accum" sel={sel} onSel={pick} hi={C.emerg}>
-          <text x="595" y="563"
-            style={{ ...T.h, fill: ehydPx || fuseBlown ? C.emerg : '#b09a5a' }}>
-            FLAP
-          </text>
-          <text x="595" y="575"
-            style={{ ...T.h, fill: ehydPx || fuseBlown ? C.emerg : '#b09a5a' }}>
-            EMERGENCY
-          </text>
-          <text x="595" y="587"
-            style={{ ...T.h, fill: ehydPx || fuseBlown ? C.emerg : '#b09a5a' }}>
-            EXTENSION
-          </text>
-          <text x="595" y="599"
-            style={{ ...T.h, fill: ehydPx || fuseBlown ? C.emerg : '#b09a5a' }}>
-            SELECTOR
-          </text>
-          <text x="595" y="611"
-            style={{ ...T.h, fill: ehydPx || fuseBlown ? C.emerg : '#b09a5a' }}>
-            SOLENOID
-          </text>
+        <Box x={555} y={550} w={80} h={75} id="emerflaps" sel={sel} onSel={pick} hi={C.emerg}>
+          {['FLAP','EMERGENCY','EXTENSION','SELECTOR','SOLENOID'].map((t,i) => (
+            <text key={i} x="595" y={563+i*12} style={{ ...T.h, fill: ehydPx||fuseBlown?C.emerg:'#b09a5a' }}>{t}</text>
+          ))}
         </Box>
 
         {/* ── EMER LDG GR Handle (2D diamond) ── */}
         {(() => {
-          const cx = 657, cy = 408, hw = 15, hh = 40, r = 4, r1=5, r2 = 7;
-          const diamond = `
-            M ${cx-hw},${cy - r}
-            L ${cx-r}, ${cy-hh}
-            A ${r1}, ${r1}, 0, 0, 1, ${cx+r}, ${cy-hh}
-            L ${cx+hw},${cy - r}
-            A ${r2}, ${r2}, 0, 0, 1, ${cx+hw}, ${cy+r}
-            L ${cx+r}, ${cy+hh}
-            A ${r1}, ${r1}, 0, 0, 1, ${cx-r}, ${cy+hh}
-            L ${cx-hw},${cy + r}
-            A ${r2}, ${r2}, 0, 0, 1, ${cx-hw}, ${cy-r}`;
+          const cx=657,cy=408,hw=15,hh=40,r=4,r1=5,r2=7;
+          const diamond = `M ${cx-hw},${cy-r} L ${cx-r},${cy-hh} A ${r1},${r1},0,0,1,${cx+r},${cy-hh} L ${cx+hw},${cy-r} A ${r2},${r2},0,0,1,${cx+hw},${cy+r} L ${cx+r},${cy+hh} A ${r1},${r1},0,0,1,${cx-r},${cy+hh} L ${cx-hw},${cy+r} A ${r2},${r2},0,0,1,${cx-hw},${cy-r}`;
           return (
-            <g style={{ cursor: 'pointer' }} onClick={() => setEmerGrPulled(v => !v)}>
+            <g style={{ cursor: 'pointer' }} onClick={() => { if (accumLvlPct >= 50 || emerGrPulled) setEmerGrPulled(v => !v); }}>
               <defs>
-                <clipPath id="emerGrClip">
-                  <path d={diamond} />
-                </clipPath>
+                <clipPath id="emerGrClip"><path d={diamond} /></clipPath>
               </defs>
               {/* Glow ring when pulled */}
-              {emerGrPulled && (
-                <path d={diamond} fill="none" stroke={C.emerg} strokeWidth={3}
-                  filter="url(#emerGlow)" opacity={0.95} />
-              )}
+              {emerGrPulled && <path d={diamond} fill="none" stroke={C.emerg} strokeWidth={3} filter="url(#emerGlow)" opacity={0.95} />}
               {/* Diamond body — yellow base */}
               <path d={diamond} fill="#d4a800" stroke="#2a1e00" strokeWidth="1.2" />
               {/* Hazard stripes clipped to diamond — start above tip so top stripe goes all the way across */}
-              {Array.from({ length: 14 }, (_, i) => (
-                <line key={i}
-                  x1={515 + i * 13} y1={350}
-                  x2={515 + i * 13 + 100} y2={450}
-                  stroke="#1a1200" strokeWidth="5.5"
-                  clipPath="url(#emerGrClip)" />
+              {Array.from({ length:14 },(_,i) => (
+                <line key={i} x1={515+i*13} y1={350} x2={515+i*13+100} y2={450}
+                  stroke="#1a1200" strokeWidth="5.5" clipPath="url(#emerGrClip)" />
               ))}
               {/* Yellow center strip down the middle */}
-              <rect x={cx - 4} y={cy - hh - 5} width={8} height={hh * 2 + 10}
-                fill="#d4a800" clipPath="url(#emerGrClip)" />
+              <rect x={cx-4} y={cy-hh-5} width={8} height={hh*2+10} fill="#d4a800" clipPath="url(#emerGrClip)" />
               {/* Border overlay */}
               <path d={diamond} fill="none" stroke="#2a1e00" strokeWidth="1.2" />
               {/* EMER label above circle — letters stacked vertically */}
-              {['E','M','E','R'].map((letter, i) => (
-                <text key={i} x={cx} y={cy - 31 + i * 5} textAnchor="middle" dominantBaseline="central"
-                  style={{ fontFamily: FONT, fontSize: 6, fontWeight: 700, fill: '#1a1200' }}>
-                  {letter}
-                </text>
+              {['E','M','E','R'].map((letter,i) => (
+                <text key={i} x={cx} y={cy-31+i*5} textAnchor="middle" dominantBaseline="central"
+                  style={{ fontFamily:FONT, fontSize:6, fontWeight:700, fill:'#1a1200' }}>{letter}</text>
               ))}
-              {/* Silver circle — centered */}
-              <circle cx={cx} cy={cy} r="7"
-                fill="#909098" stroke="#2a2a32" strokeWidth="0.8" />
-              <circle cx={cx - 2} cy={cy - 2} r="2.5"
-                fill="#c8c8d0" opacity="0.6" />
-              {/* LDG GR label below circle */}
-              {['L','D','G', ' ','G','R'].map((letter, i) => (
-                <text key={i} x={cx} y={cy + 10 + i * 5} textAnchor="middle" dominantBaseline="central"
-                  style={{ fontFamily: FONT, fontSize: 6, fontWeight: 700, fill: '#1a1200' }}>
-                  {letter}
-                </text>
+              <circle cx={cx} cy={cy} r="7" fill="#909098" stroke="#2a2a32" strokeWidth="0.8" />
+              <circle cx={cx-2} cy={cy-2} r="2.5" fill="#c8c8d0" opacity="0.6" />
+              {['L','D','G',' ','G','R'].map((letter,i) => (
+                <text key={i} x={cx} y={cy+10+i*5} textAnchor="middle" dominantBaseline="central"
+                  style={{ fontFamily:FONT, fontSize:6, fontWeight:700, fill:'#1a1200' }}>{letter}</text>
               ))}
             </g>
           );
@@ -1565,41 +1428,11 @@ export default function T6BHydraulicDiagram() {
 
         <rect x="515" y="325" width="165" height="310" rx="5"
           fill="none" stroke="#6a4a18" strokeWidth="0.5" strokeDasharray="4 3" />
-        <text x="595" y="645"
-          style={{ ...T.t, fill: '#7a5520', letterSpacing: '0.06em', fontSize: 7.5 }}>
-          EMER SELECTOR MANIFOLD
-        </text>
+        <text x="595" y="645" style={{ ...T.t, fill:'#7a5520', letterSpacing:'0.06em', fontSize:7.5 }}>EMER SELECTOR MANIFOLD</text>
 
       </svg>
       </div>
 
-      {/* ── Info Panel ── */}
-      <div style={{
-        marginTop: 10, padding: '10px 14px',
-        background: 'rgba(8,16,28,0.97)',
-        border: `0.5px solid ${info ? '#378ADD' : C.stroke}`,
-        borderRadius: 5, fontSize: 10, lineHeight: 1.8,
-        letterSpacing: '0.04em', minHeight: 42,
-        transition: 'border-color .2s',
-      }}>
-        {info ? (
-          <>
-            <div style={{
-              fontWeight: 700, letterSpacing: '0.12em',
-              marginBottom: 5, color: C.text, fontSize: 10,
-            }}>
-              {info.title.toUpperCase()}
-            </div>
-            <ul style={{ margin: 0, paddingLeft: 14, color: C.muted }}>
-              {info.items.map((item, i) => <li key={i}>{item}</li>)}
-            </ul>
-          </>
-        ) : (
-          <span style={{ color: '#2a4a5a', fontSize: 9, letterSpacing: '0.08em' }}>
-            ▸  CLICK ANY COMPONENT TO VIEW OPERATING DETAILS
-          </span>
-        )}
-      </div>
     </div>
     </div>
   );

@@ -13,7 +13,7 @@ import TW4Briefs from './components/TW4Briefs.js';
 import NIFEAbout from './components/NIFEAbout.js';
 import LandingPage from './components/LandingPage.js';
 import CourseRules from './components/TW4CourseRules.js';
-import Systems from './components/systems/hyds/T6BHydraulicDiagram.js';
+import Systems from './components/systems/Systems.js';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('landing');

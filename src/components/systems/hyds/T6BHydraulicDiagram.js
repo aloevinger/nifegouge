@@ -835,7 +835,7 @@ export default function T6BHydraulicDiagram() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
 
         {/* LEFT — briefing tabs (2×2 grid) */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, maxWidth: 'calc(50% - 4px)', minWidth: 0 }}>
           {TABS.map(({ id, label }) => (
             <button
               key={id}
@@ -844,10 +844,11 @@ export default function T6BHydraulicDiagram() {
                 background: briefingTab === id ? 'rgba(55,138,221,0.18)' : 'transparent',
                 border: `0.5px solid ${briefingTab === id ? '#378ADD' : C.stroke}`,
                 color: briefingTab === id ? '#5ab8e8' : C.muted,
-                padding: '6px 12px', fontSize: 11, borderRadius: 3, cursor: 'pointer',
+                padding: '6px 8px', fontSize: 11, borderRadius: 3, cursor: 'pointer',
                 letterSpacing: '0.08em', fontFamily: FONT,
                 fontWeight: briefingTab === id ? 700 : 400,
                 transition: 'all 0.15s',
+                minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}
             >
               {label}
@@ -856,7 +857,7 @@ export default function T6BHydraulicDiagram() {
         </div>
 
         {/* RIGHT — fault sims (top: main hyd leak; bottom: two ehyd leaks) */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, maxWidth: 'calc(50% - 4px)', minWidth: 0 }}>
           {[
             { active: hydFlo,        set: setHydFlo,        label: 'MAIN HYD LEAK',   bg: C.caution, border: '#BA7517', tc: '#4a2a08', col: 2 },
             { active: ehydPx,        set: setEhydPx,        label: 'SMALL EHYD LEAK', bg: C.emerg,   border: '#BA7517', tc: '#4a2a08' },
@@ -867,9 +868,10 @@ export default function T6BHydraulicDiagram() {
               background: active ? bg : 'transparent',
               border: `1px solid ${active ? border : C.stroke}`,
               color: active ? tc : C.muted,
-              padding: '6px 12px', fontSize: 11, borderRadius: 3, cursor: 'pointer',
+              padding: '6px 8px', fontSize: 11, borderRadius: 3, cursor: 'pointer',
               letterSpacing: '0.06em', fontFamily: FONT,
               fontWeight: active ? 700 : 400,
+              minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }}>
               {active ? `● ${label}` : `▷ SIM ${label}`}
             </button>

@@ -15,6 +15,7 @@ const KEYFRAMES = `
   @keyframes hydFlowR { to { stroke-dashoffset: -20; } }
   @keyframes hydBlink  { 0%,100%{opacity:1} 50%{opacity:.18} }
   @keyframes fuseBlowFlash { 0%{opacity:0} 15%{opacity:1} 35%{opacity:0.1} 55%{opacity:1} 75%{opacity:0.1} 90%{opacity:1} 100%{opacity:1} }
+  @keyframes fallingPulse { 0%,100%{opacity:0.9} 50%{opacity:0.5} }
 `;
 
 // ── Color constants ──────────────────────────────────────────────────
@@ -451,6 +452,14 @@ export default function T6BHydraulicDiagram() {
   const [flapLdgHighlight, setFlapLdgHighlight] = useState(false);
   const flapSelHighlightTimer = useRef(null);
   const FLAP_ANGLES = { UP: 30, TO: 90, LDG: 150 };
+
+  // ── Falling-value highlight detection (derived, no state) ────────────
+  const resFalling   = (hydFlo || ehydPx || (largeEhydSim && !fuseBlown)) && resDivPct > 0.5;
+  const psiFalling   = (ehydPx || hydFlo) && resDivPct <= 0.5 && hydPsi > 10;
+  const accumTarget  = emerGrPulled ? (flapPos === 'LDG' ? 15 : flapPos === 'TO' ? 25 : 40) : 0;
+  const accumFalling = (largeEhydSim && accumLvlPct > 0.5) ||
+                       (ehydPx && hydPsi < 1800 && accumLvlPct > 0.5) ||
+                       (emerGrPulled && !largeEhydSim && !ehydPx && accumLvlPct > accumTarget + 1);
   const [flapDisplayAngle, setFlapDisplayAngle] = useState(FLAP_ANGLES.UP);
   const flapNeedleRef = useRef(null);
   const emerAnimRef = useRef(null);
@@ -962,6 +971,13 @@ export default function T6BHydraulicDiagram() {
           ].filter(Boolean);
           return (
             <g>
+              {/* Gauge falling highlight */}
+              {psiFalling && (
+                <rect x={gx} y={gy} width={gs} height={gs} rx={6}
+                  fill="none" stroke={C.caution} strokeWidth={2}
+                  filter="url(#emerGlow)"
+                  style={{ animation: 'fallingPulse 1.2s ease-in-out infinite' }} />
+              )}
               {/* Gauge */}
               <svg x={gx} y={gy} width={gs} height={gs} viewBox={`0 0 ${gs} ${gs}`}>
                 <HydPressGauge pressure={Math.round(hydPsi/10)*10} size={gs} embedded />
@@ -1165,6 +1181,14 @@ export default function T6BHydraulicDiagram() {
         <rect x="140" y="65" width="365" height="170" rx="6"
           fill="none" stroke="#1e3040" strokeWidth="0.5" strokeDasharray="6 4" />
         <text x="185" y="225" style={{ ...T.t, fill: '#1e3a4a', letterSpacing: '0.1em', fontSize: 7.5 }}>POWER PACKAGE</text>
+
+        {/* Reservoir falling highlight */}
+        {resFalling && (
+          <rect x={238} y={80} width={100} height={80} rx={4}
+            fill="none" stroke={C.caution} strokeWidth={2}
+            filter="url(#emerGlow)"
+            style={{ animation: 'fallingPulse 1.2s ease-in-out infinite' }} />
+        )}
 
         {/* Reservoir */}
         <Box x={238} y={80} w={100} h={80} id="reservoir" sel={sel} onSel={pick}>
@@ -1477,6 +1501,14 @@ export default function T6BHydraulicDiagram() {
             </g>
           );
         })()}
+
+        {/* Accumulator falling highlight */}
+        {accumFalling && (
+          <rect x={555} y={260} width={80} height={60} rx={4}
+            fill="none" stroke={C.emerg} strokeWidth={2}
+            filter="url(#emerGlow)"
+            style={{ animation: 'fallingPulse 1.2s ease-in-out infinite' }} />
+        )}
 
         {/* Emergency Accumulator (amber accent) */}
         <Box x={555} y={260} w={80} h={60} id="accum" sel={sel} onSel={pick} hi={C.emerg}>

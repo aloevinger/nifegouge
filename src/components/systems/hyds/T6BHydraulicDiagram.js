@@ -804,8 +804,8 @@ export default function T6BHydraulicDiagram() {
   const _mainRed    = gearLights[0][1] === 1;
   const _noseRed    = gearLights[1][1] === 1;
   const _mainGreen  = gearLights[0][0] === 1;
-  const doorDownHL  = _goingDown && _mainRed;
-  const doorUpHL    = _goingUp   && _mainRed;
+  const doorDownHL  = gearPhase === 'to_down_1' || gearPhase === 'to_up_1';
+  const doorUpHL    = gearPhase === 'to_down_3' || gearPhase === 'to_up_3';
   const noseDownHL  = _goingDown && _noseRed;
   const noseUpHL    = _goingUp   && _noseRed;
   const gearDownHL  = _goingDown && !_mainGreen;

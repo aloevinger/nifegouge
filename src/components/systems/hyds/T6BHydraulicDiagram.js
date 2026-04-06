@@ -454,6 +454,8 @@ export default function T6BHydraulicDiagram() {
   const [flapDisplayAngle, setFlapDisplayAngle] = useState(FLAP_ANGLES.UP);
   const flapNeedleRef = useRef(null);
   const emerAnimRef = useRef(null);
+  const handleSvgMoveRef    = useRef(null);
+  const handleSvgMouseUpRef = useRef(null);
 
   useEffect(() => {
     if (!emerGrPulled) return;
@@ -725,13 +727,6 @@ export default function T6BHydraulicDiagram() {
 
   const handleSvgMouseMove = (e) => handleSvgMove(e.clientX, e.clientY);
 
-  const handleSvgTouchMove = (e) => {
-    const touch = e.touches[0];
-    if (!touch) return;
-    e.preventDefault();
-    handleSvgMove(touch.clientX, touch.clientY);
-  };
-
   const handleSvgMouseUp = () => {
     flapDragging.current = false;
     if (sbDragging.current) {
@@ -758,6 +753,30 @@ export default function T6BHydraulicDiagram() {
     accumDragging.current = false;
     psiSliderDragging.current = false;
   };
+
+  // Always keep refs pointing to the latest versions (for the window touch effect below)
+  handleSvgMoveRef.current    = handleSvgMove;
+  handleSvgMouseUpRef.current = handleSvgMouseUp;
+
+  // ── Window-level non-passive touch listeners (reliable on mobile Safari) ─
+  useEffect(() => {
+    const anyDragging = () =>
+      flapDragging.current || sbDragging.current || resDivDragging.current ||
+      psiSliderDragging.current || accumDragging.current;
+    const onTouchMove = (e) => {
+      if (!anyDragging()) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      if (touch) handleSvgMoveRef.current(touch.clientX, touch.clientY);
+    };
+    const onTouchEnd = () => handleSvgMouseUpRef.current();
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
+    window.addEventListener('touchend',  onTouchEnd);
+    return () => {
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend',  onTouchEnd);
+    };
+  }, []); // eslint-disable-line
 
   const pick = (id) => {
     if (dragJustEnded.current) { dragJustEnded.current = false; return; }
@@ -923,12 +942,10 @@ export default function T6BHydraulicDiagram() {
           />
         )}
 
-      <svg ref={svgRef} viewBox="0 0 680 820" width="100%" style={{ display: 'block', touchAction: 'none' }}
+      <svg ref={svgRef} viewBox="0 0 680 820" width="100%" style={{ display: 'block' }}
         onMouseMove={handleSvgMouseMove}
         onMouseUp={handleSvgMouseUp}
-        onMouseLeave={handleSvgMouseUp}
-        onTouchMove={handleSvgTouchMove}
-        onTouchEnd={handleSvgMouseUp}>
+        onMouseLeave={handleSvgMouseUp}>
 
         {/* ── HYD PRESS gauge ── */}
         {(() => {
@@ -955,7 +972,7 @@ export default function T6BHydraulicDiagram() {
               {/* Thumb */}
               <rect x={thumbX - 4} y={sliderY - 3} width={8} height={sliderH + 6} rx={2}
                 fill="#5ab030" stroke="#3a8020" strokeWidth={0.5}
-                style={{ cursor: 'ew-resize' }}
+                style={{ cursor: 'ew-resize', touchAction: 'none' }}
                 onMouseDown={e => { e.preventDefault(); e.stopPropagation(); psiSliderDragging.current = true; }}
                 onTouchStart={e => { e.stopPropagation(); psiSliderDragging.current = true; }} />
               {/* Status messages */}
@@ -1163,7 +1180,7 @@ export default function T6BHydraulicDiagram() {
                   fill="#C34937" opacity={0.45} style={{ pointerEvents: 'none' }} />
                 <line x1={divX} y1={ry + 2} x2={divX} y2={ry + rh - 2}
                   stroke="#000000" strokeWidth={2.5}
-                  style={{ cursor: 'ew-resize' }}
+                  style={{ cursor: 'ew-resize', touchAction: 'none' }}
                   onMouseDown={e => { e.preventDefault(); e.stopPropagation(); resDivDragging.current = true; }}
                   onTouchStart={e => { e.stopPropagation(); resDivDragging.current = true; }} />
                 {/* 1 QT low-level marker at 15% */}
@@ -1249,6 +1266,8 @@ export default function T6BHydraulicDiagram() {
           <text x="365" y="315" style={T.h}>Valve</text>
         </Box>
         <circle cx="250" cy="300" r="20" fill={C.box} stroke={C.stroke} strokeWidth="0.5" />
+        <text x="250" y="294" style={T.h}>NWS</text>
+        <text x="250" y="306" style={T.h}>Act</text>
 
         {/* Landing Gear */}
         <Box x={330} y={360} w={70} h={70} id="ldggear" sel={sel} onSel={pick} hi="#639922">
@@ -1359,7 +1378,7 @@ export default function T6BHydraulicDiagram() {
               {/* Draggable thumb */}
               <rect x={trackX - 2.5} y={ty - 2.5} width={trackW + 5} height={5} rx={2}
                 fill="#8090a0" stroke="#b0bcc8" strokeWidth={0.6}
-                style={{ cursor:'grab' }} onMouseDown={handleFlapMouseDown} onTouchStart={handleFlapMouseDown} />
+                style={{ cursor:'grab', touchAction: 'none' }} onMouseDown={handleFlapMouseDown} onTouchStart={handleFlapMouseDown} />
             </g>
           );
         })()}
@@ -1396,7 +1415,7 @@ export default function T6BHydraulicDiagram() {
             <g>
               <rect x={trackX} y={trackCY-trackH/2} width={trackW} height={trackH} rx={3} fill="#0d1620" stroke="#2e3e52" strokeWidth={0.5} />
               <circle cx={tcx} cy={trackCY} r={r} fill="#7a7e88" stroke="#505460" strokeWidth={0.7}
-                style={{ cursor:'ew-resize', userSelect:'none' }} onMouseDown={handleSbMouseDown} onTouchStart={handleSbMouseDown} />
+                style={{ cursor:'ew-resize', userSelect:'none', touchAction: 'none' }} onMouseDown={handleSbMouseDown} onTouchStart={handleSbMouseDown} />
               {stripeXs.map(ox => (
                 <line key={ox} x1={tcx+ox} y1={trackCY-r+3} x2={tcx+ox} y2={trackCY+r-3}
                   stroke="#454850" strokeWidth={0.8} style={{ pointerEvents:'none' }} />
@@ -1470,7 +1489,7 @@ export default function T6BHydraulicDiagram() {
                 <rect x={bx+2} y={lineY} width={bw-4} height={Math.max(0,by+bh-lineY-2)} rx={1}
                   fill={C.emerg} opacity={0.4} style={{ pointerEvents:'none' }} />
                 <line x1={bx+2} y1={lineY} x2={bx+bw-2} y2={lineY} stroke="#000000" strokeWidth={2}
-                  style={{ cursor:'ns-resize' }}
+                  style={{ cursor:'ns-resize', touchAction: 'none' }}
                   onMouseDown={e => { e.preventDefault(); e.stopPropagation(); accumDragging.current = true; }}
                   onTouchStart={e => { e.stopPropagation(); accumDragging.current = true; }} />
               </>

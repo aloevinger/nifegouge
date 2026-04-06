@@ -444,9 +444,15 @@ export default function T6BHydraulicDiagram() {
   const emerHighlightTimer = useRef(null);
   const [flapHighlight, setFlapHighlight] = useState(false);
   const flapHighlightTimer = useRef(null);
-  const [sbOutHighlight, setSbOutHighlight] = useState(false);
-  const [sbInHighlight,  setSbInHighlight]  = useState(false);
+  const [sbOutHighlight,   setSbOutHighlight]   = useState(false);
+  const [sbInHighlight,    setSbInHighlight]    = useState(false);
   const sbHighlightTimer = useRef(null);
+  const [flapToHighlight,  setFlapToHighlight]  = useState(false);
+  const [flapLdgHighlight, setFlapLdgHighlight] = useState(false);
+  const flapSelHighlightTimer = useRef(null);
+  const FLAP_ANGLES = { UP: 30, TO: 90, LDG: 150 };
+  const [flapDisplayAngle, setFlapDisplayAngle] = useState(FLAP_ANGLES.UP);
+  const flapNeedleRef = useRef(null);
   const emerAnimRef = useRef(null);
 
   useEffect(() => {
@@ -594,10 +600,37 @@ export default function T6BHydraulicDiagram() {
 
   // Sync flap indicator to selector when handle is released
   useEffect(() => {
-    if (!emerGrPulled) setFlapPos(selectorPos);
+    if (!emerGrPulled) {
+      setFlapPos(selectorPos);
+      cancelAnimationFrame(flapNeedleRef.current);
+      setFlapDisplayAngle(FLAP_ANGLES[selectorPos]);
+    }
   }, [emerGrPulled]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const FLAP_ORDER = { UP: 0, TO: 1, LDG: 2 };
+
+  // Animate needle one step: fromAngle → toAngle with mid-stutter, then call onDone
+  const animateFlapStep = (fromAngle, toAngle, onDone) => {
+    const mid = (fromAngle + toAngle) / 2;
+    const P1 = 300, P2 = 1000, P3 = 700; // ms: rush to mid, stall, rush to final
+    const start = performance.now();
+    const tick = (now) => {
+      const e = now - start;
+      let angle;
+      if      (e < P1)          angle = fromAngle + (mid - fromAngle) * (e / P1);
+      else if (e < P1 + P2)     angle = mid;
+      else if (e < P1 + P2 + P3) angle = mid + (toAngle - mid) * ((e - P1 - P2) / P3);
+      else {
+        setFlapDisplayAngle(toAngle);
+        if (onDone) onDone();
+        return;
+      }
+      setFlapDisplayAngle(angle);
+      flapNeedleRef.current = requestAnimationFrame(tick);
+    };
+    flapNeedleRef.current = requestAnimationFrame(tick);
+  };
+
   // Selector always moves freely.
   // When handle pulled, actual flap position (dial + accumulator) only ratchets toward LDG.
   const setFlapSafe = (pos) => {
@@ -608,6 +641,28 @@ export default function T6BHydraulicDiagram() {
       setFlapHighlight(true);
       clearTimeout(flapHighlightTimer.current);
       flapHighlightTimer.current = setTimeout(() => setFlapHighlight(false), 2000);
+    }
+    if (FLAP_ORDER[pos] !== FLAP_ORDER[flapPos]) {
+      const steps = Math.abs(FLAP_ORDER[pos] - FLAP_ORDER[flapPos]);
+      const duration = steps > 1 ? 4000 : 2000;
+      clearTimeout(flapSelHighlightTimer.current);
+      setFlapToHighlight(false);
+      setFlapLdgHighlight(false);
+      if (pos === 'TO')  { setFlapToHighlight(true);  flapSelHighlightTimer.current = setTimeout(() => setFlapToHighlight(false),  duration); }
+      if (pos === 'LDG') { setFlapLdgHighlight(true); flapSelHighlightTimer.current = setTimeout(() => setFlapLdgHighlight(false), duration); }
+
+      // Animate needle — cancel any running animation first
+      cancelAnimationFrame(flapNeedleRef.current);
+      const fromAngle = flapDisplayAngle;
+      const toAngle   = FLAP_ANGLES[pos];
+      if (steps === 1) {
+        animateFlapStep(fromAngle, toAngle, null);
+      } else {
+        // skip a step: stitch two animations via the intermediate angle
+        const midPos = FLAP_ORDER[pos] > FLAP_ORDER[flapPos] ? 'TO' : 'TO';
+        const midAngle = FLAP_ANGLES[midPos];
+        animateFlapStep(fromAngle, midAngle, () => animateFlapStep(midAngle, toAngle, null));
+      }
     }
     setFlapPos(pos);
     if (pos === 'TO' || pos === 'LDG') setSbDeployed(false);
@@ -630,45 +685,51 @@ export default function T6BHydraulicDiagram() {
     return () => cancelAnimationFrame(rafId);
   }, [flapPos, emerGrPulled]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Combined SVG mouse handlers ──────────────────────────────────────
-  const handleSvgMouseMove = (e) => {
+  // ── Combined SVG move handler (shared between mouse and touch) ───────
+  const handleSvgMove = (clientX, clientY) => {
+    if (!svgRef.current) return;
+    const rect = svgRef.current.getBoundingClientRect();
     // flap drag
     if (flapDragging.current) {
-      const rect = svgRef.current.getBoundingClientRect();
-      const svgY = (e.clientY - rect.top) * (820 / rect.height);
+      const svgY = (clientY - rect.top) * (820 / rect.height);
       const nearest = Object.entries(FLAP_SNAP_Y).reduce((best, [pos, y]) =>
         Math.abs(y - svgY) < Math.abs(FLAP_SNAP_Y[best] - svgY) ? pos : best, 'UP');
       setFlapSafe(nearest);
     }
-    // speed brake drag — always moves visually, state change gated below
-    if (sbDragging.current && svgRef.current) {
-      const rect = svgRef.current.getBoundingClientRect();
-      const svgX = (e.clientX - rect.left) * (680 / rect.width);
+    // speed brake drag — always moves visually, state change gated on release
+    if (sbDragging.current) {
+      const svgX = (clientX - rect.left) * (680 / rect.width);
       const offset = Math.max(-SB_RANGE, Math.min(SB_RANGE, svgX - SB_CX));
       sbOffsetRef.current = offset;
       setSbOffset(offset);
     }
     // reservoir divider drag
-    if (resDivDragging.current && svgRef.current) {
-      const rect = svgRef.current.getBoundingClientRect();
-      const svgX = (e.clientX - rect.left) * (680 / rect.width);
+    if (resDivDragging.current) {
+      const svgX = (clientX - rect.left) * (680 / rect.width);
       const pct = Math.max(0, Math.min(85, ((svgX - 238) / 100) * 100));
       setResDivPct(pct);
     }
     // psi slider drag
-    if (psiSliderDragging.current && svgRef.current) {
-      const rect = svgRef.current.getBoundingClientRect();
-      const svgX = (e.clientX - rect.left) * (680 / rect.width);
+    if (psiSliderDragging.current) {
+      const svgX = (clientX - rect.left) * (680 / rect.width);
       const psi = Math.round(Math.max(0, Math.min(4100, ((svgX - 514) / 154) * 4100)) / 10) * 10;
       setHydPsi(psi);
     }
     // accumulator level drag
-    if (accumDragging.current && svgRef.current) {
-      const rect = svgRef.current.getBoundingClientRect();
-      const svgY = (e.clientY - rect.top) * (820 / rect.height);
+    if (accumDragging.current) {
+      const svgY = (clientY - rect.top) * (820 / rect.height);
       const pct = Math.max(0, Math.min(85, ((260 + 60 - svgY) / 60) * 100));
       setAccumLvlPct(pct);
     }
+  };
+
+  const handleSvgMouseMove = (e) => handleSvgMove(e.clientX, e.clientY);
+
+  const handleSvgTouchMove = (e) => {
+    const touch = e.touches[0];
+    if (!touch) return;
+    e.preventDefault();
+    handleSvgMove(touch.clientX, touch.clientY);
   };
 
   const handleSvgMouseUp = () => {
@@ -678,11 +739,15 @@ export default function T6BHydraulicDiagram() {
         const off = sbOffsetRef.current;
         if (off > SB_THRESH && sbDeployed) {
           setSbDeployed(false);
-          setSbInHighlight(true); clearTimeout(sbHighlightTimer.current);
+          clearTimeout(sbHighlightTimer.current);
+          setSbOutHighlight(false);
+          setSbInHighlight(true);
           sbHighlightTimer.current = setTimeout(() => setSbInHighlight(false), 2000);
         } else if (off < -SB_THRESH && !sbDeployed) {
           setSbDeployed(true);
-          setSbOutHighlight(true); clearTimeout(sbHighlightTimer.current);
+          clearTimeout(sbHighlightTimer.current);
+          setSbInHighlight(false);
+          setSbOutHighlight(true);
           sbHighlightTimer.current = setTimeout(() => setSbOutHighlight(false), 2000);
         }
       }
@@ -714,6 +779,18 @@ export default function T6BHydraulicDiagram() {
   };
   const gearLights = emerGrPulled ? [[1,1],[1,0],[1,1]] : (GEAR_LIGHTS[gearPhase] ?? GEAR_LIGHTS.up);
   const gearLocked = gearPhase !== 'up' && gearPhase !== 'down';
+
+  const _goingDown  = gearPhase.startsWith('to_down');
+  const _goingUp    = gearPhase.startsWith('to_up');
+  const _mainRed    = gearLights[0][1] === 1;
+  const _noseRed    = gearLights[1][1] === 1;
+  const _mainGreen  = gearLights[0][0] === 1;
+  const doorDownHL  = _goingDown && _mainRed;
+  const doorUpHL    = _goingUp   && _mainRed;
+  const noseDownHL  = _goingDown && _noseRed;
+  const noseUpHL    = _goingUp   && _noseRed;
+  const gearDownHL  = _goingDown && !_mainGreen;
+  const gearUpHL    = _goingUp   && !_mainGreen;
   const gearLabel  = gearPhase.startsWith('to_up') || gearPhase === 'up' ? 'UP' : 'DOWN';
 
   const handleGearClick = () => {
@@ -844,10 +921,12 @@ export default function T6BHydraulicDiagram() {
           />
         )}
 
-      <svg ref={svgRef} viewBox="0 0 680 820" width="100%" style={{ display: 'block' }}
+      <svg ref={svgRef} viewBox="0 0 680 820" width="100%" style={{ display: 'block', touchAction: 'none' }}
         onMouseMove={handleSvgMouseMove}
         onMouseUp={handleSvgMouseUp}
-        onMouseLeave={handleSvgMouseUp}>
+        onMouseLeave={handleSvgMouseUp}
+        onTouchMove={handleSvgTouchMove}
+        onTouchEnd={handleSvgMouseUp}>
 
         {/* ── HYD PRESS gauge ── */}
         {(() => {
@@ -875,7 +954,8 @@ export default function T6BHydraulicDiagram() {
               <rect x={thumbX - 4} y={sliderY - 3} width={8} height={sliderH + 6} rx={2}
                 fill="#5ab030" stroke="#3a8020" strokeWidth={0.5}
                 style={{ cursor: 'ew-resize' }}
-                onMouseDown={e => { e.preventDefault(); e.stopPropagation(); psiSliderDragging.current = true; }} />
+                onMouseDown={e => { e.preventDefault(); e.stopPropagation(); psiSliderDragging.current = true; }}
+                onTouchStart={e => { e.stopPropagation(); psiSliderDragging.current = true; }} />
               {/* Status messages */}
               {cautions.map(({ key, label, color, blink }, i) => (
                 <text key={key} x={sliderX} y={msgY + i * 13}
@@ -970,21 +1050,21 @@ export default function T6BHydraulicDiagram() {
         <text x="295" y="320"  style={T.s}>RIGHT</text>
 
         {/* Selector: GEAR selector valve → Actuators */}
-        <F d="M330 365 L150 365 L150 375" v="sel" paused={paused} />
-        <F d="M220 365 L220 375" v="sel" paused={paused} />
-        <F d="M290 365 L290 375" v="sel" paused={paused} />
+        <F d="M330 365 L150 365 L150 375" v="sel" paused={paused} highlighted={gearUpHL} />
+        <F d="M220 365 L220 375"          v="sel" paused={paused} highlighted={gearUpHL} />
+        <F d="M290 365 L290 375"          v="sel" paused={paused} highlighted={noseUpHL} />
         <text x="295" y="360" style={T.s}>UP</text>
-        <F d="M330 425 L287 425" v="sel" paused={paused} />
-        <F d="M273 425 L217 425" v="sel" paused={paused} />
-        <F d="M203 425 L160 425 L160 415" v="sel" paused={paused} />
-        <F d="M230 425 L230 415" v="sel" paused={paused} />
-        <F d="M300 425 L300 415" v="sel" paused={paused} />
+        <F d="M330 425 L287 425"          v="sel" paused={paused} highlighted={gearDownHL} />
+        <F d="M273 425 L217 425"          v="sel" paused={paused} highlighted={gearDownHL} />
+        <F d="M203 425 L160 425 L160 415" v="sel" paused={paused} highlighted={gearDownHL} />
+        <F d="M230 425 L230 415"          v="sel" paused={paused} highlighted={gearDownHL} />
+        <F d="M300 425 L300 415"          v="sel" paused={paused} highlighted={noseDownHL} />
         <text x="300" y="430"  style={T.s}>DOWN</text>
 
         {/* Selector: DOOR selector valve → Actuators */}
-        <F d="M330 475 L260 475" v="sel" paused={paused} />
+        <F d="M330 475 L260 475" v="sel" paused={paused} highlighted={doorDownHL} />
         <text x="295" y="470" style={T.s}>DOWN</text>
-        <F d="M330 505 L260 505" v="sel" paused={paused} />
+        <F d="M330 505 L260 505" v="sel" paused={paused} highlighted={doorUpHL} />
         <text x="295" y="510"  style={T.s}>UP</text>
 
         {/* Selector: SPD BRAKE selector valve → Actuators */}
@@ -995,9 +1075,9 @@ export default function T6BHydraulicDiagram() {
 
         
         {/* Selector: FLAPS selector valve → Actuators */}
-        <F d="M330 670 L240 670 L240 690" v="sel" paused={paused} />
+        <F d="M330 670 L240 670 L240 690" v="sel" paused={paused} highlighted={flapToHighlight} />
         <text x="295" y="665" style={T.s}>TO</text>
-        <F d="M330 750 L240 750 L240 730" v="sel" paused={paused} />
+        <F d="M330 750 L240 750 L240 730" v="sel" paused={paused} highlighted={flapLdgHighlight} />
         <text x="295" y="755"  style={T.s}>LDG</text>
 
         {/* Return: NWS selector valve → Return line */}
@@ -1082,7 +1162,8 @@ export default function T6BHydraulicDiagram() {
                 <line x1={divX} y1={ry + 2} x2={divX} y2={ry + rh - 2}
                   stroke="#000000" strokeWidth={2.5}
                   style={{ cursor: 'ew-resize' }}
-                  onMouseDown={e => { e.preventDefault(); e.stopPropagation(); resDivDragging.current = true; }} />
+                  onMouseDown={e => { e.preventDefault(); e.stopPropagation(); resDivDragging.current = true; }}
+                  onTouchStart={e => { e.stopPropagation(); resDivDragging.current = true; }} />
                 {/* 1 QT low-level marker at 15% */}
                 <line x1={rx + 15} y1={ry + 2} x2={rx + 15} y2={ry + rh - 2}
                   stroke="#ffffff" strokeWidth={1} strokeDasharray="3 2"
@@ -1276,7 +1357,7 @@ export default function T6BHydraulicDiagram() {
               {/* Draggable thumb */}
               <rect x={trackX - 2.5} y={ty - 2.5} width={trackW + 5} height={5} rx={2}
                 fill="#8090a0" stroke="#b0bcc8" strokeWidth={0.6}
-                style={{ cursor:'grab' }} onMouseDown={handleFlapMouseDown} />
+                style={{ cursor:'grab' }} onMouseDown={handleFlapMouseDown} onTouchStart={handleFlapMouseDown} />
             </g>
           );
         })()}
@@ -1286,7 +1367,7 @@ export default function T6BHydraulicDiagram() {
           const dcx=595,dcy=737,dr=18;
           const angleMap = { UP:30, TO:90, LDG:150 };
           function dp(ang,r) { const rad=(ang-90)*Math.PI/180; return [dcx+r*Math.cos(rad),dcy+r*Math.sin(rad)]; }
-          const [nx,ny] = dp(angleMap[flapPos],dr*0.78);
+          const [nx,ny] = dp(flapDisplayAngle, dr*0.78);
           return (
             <g>
               <circle cx={dcx} cy={dcy} r={dr+4} fill="#080f18" stroke="#2e3e52" strokeWidth={0.8} />
@@ -1313,7 +1394,7 @@ export default function T6BHydraulicDiagram() {
             <g>
               <rect x={trackX} y={trackCY-trackH/2} width={trackW} height={trackH} rx={3} fill="#0d1620" stroke="#2e3e52" strokeWidth={0.5} />
               <circle cx={tcx} cy={trackCY} r={r} fill="#7a7e88" stroke="#505460" strokeWidth={0.7}
-                style={{ cursor:'ew-resize', userSelect:'none' }} onMouseDown={handleSbMouseDown} />
+                style={{ cursor:'ew-resize', userSelect:'none' }} onMouseDown={handleSbMouseDown} onTouchStart={handleSbMouseDown} />
               {stripeXs.map(ox => (
                 <line key={ox} x1={tcx+ox} y1={trackCY-r+3} x2={tcx+ox} y2={trackCY+r-3}
                   stroke="#454850" strokeWidth={0.8} style={{ pointerEvents:'none' }} />
@@ -1388,7 +1469,8 @@ export default function T6BHydraulicDiagram() {
                   fill={C.emerg} opacity={0.4} style={{ pointerEvents:'none' }} />
                 <line x1={bx+2} y1={lineY} x2={bx+bw-2} y2={lineY} stroke="#000000" strokeWidth={2}
                   style={{ cursor:'ns-resize' }}
-                  onMouseDown={e => { e.preventDefault(); e.stopPropagation(); accumDragging.current = true; }} />
+                  onMouseDown={e => { e.preventDefault(); e.stopPropagation(); accumDragging.current = true; }}
+                  onTouchStart={e => { e.stopPropagation(); accumDragging.current = true; }} />
               </>
             );
           })()}

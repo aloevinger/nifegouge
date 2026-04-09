@@ -15,13 +15,6 @@ function Systems() {
         >
           Hydraulics
         </span>
-        <span
-          className={activeTab === 'elec' ? 'active' : ''}
-          onClick={() => setActiveTab('elec')}
-          style={{ cursor: 'pointer' }}
-        >
-          Electrical
-        </span>
       </div>
       {activeTab === 'hyds' && <T6BHydraulicDiagram />}
       {activeTab === 'elec' && <T6BElectricalDiagram />}

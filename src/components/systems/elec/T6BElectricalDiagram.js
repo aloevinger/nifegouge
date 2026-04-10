@@ -305,15 +305,16 @@ function Limiter({ cx, cy, color = C.muted }) {
 }
 
 // ── CB item list (1 or 2 columns) ────────────────────────────────────
-function CBList({ x, y, items, cols = 2, colW = 148, rowH = 9, color, extraH = 0, live = false }) {
+function CBList({ x, y, items, cols = 2, colW = 148, rowH = 9, color, extraH = 0, live = false, id, sel, onSel }) {
   const perCol = Math.ceil(items.length / cols);
   const totalH = perCol * rowH;
   const totalW = cols * colW;
+  const active = id && sel === id;
   return (
-    <g>
+    <g style={{ cursor: id ? 'pointer' : 'default' }} onClick={id ? () => onSel(id) : undefined}>
       {color && (
         <rect x={x - 3} y={y - 2} width={totalW + 6} height={totalH + 4 + extraH} rx={2}
-          fill={live ? `${color}33` : `${color}0d`} stroke={color} strokeWidth={0.5} opacity={0.7} />
+          fill={live ? `${color}33` : `${color}0d`} stroke={active ? color : color} strokeWidth={active ? 1 : 0.5} opacity={active ? 1 : 0.7} />
       )}
       {items.map((item, i) => {
         const col = i < perCol ? 0 : 1;
@@ -491,7 +492,7 @@ function BriefingModal({ tab, onClose }) {
                 {(() => {
                   let count = 0;
                   return ep.procedure.map((step, j) => {
-                    if (/^if\b/i.test(step.trim())) {
+                    if (/^if\b/i.test(step.trim()) || step.trim().endsWith(':')) {
                       return (
                         <div key={j} style={{ color: C.muted, fontStyle: 'italic', margin: '4px 0 2px', paddingLeft: 8, borderLeft: `2px solid ${C.stroke}` }}>
                           {step}
@@ -546,6 +547,11 @@ export default function T6BElectricalDiagram() {
   const [hopLayer, setHopLayer] = useState(null);
   const [briefingTab, setBriefingTab] = useState(null);
   const [extPwrInfo, setExtPwrInfo] = useState(false);
+  const [extPwrConn, setExtPwrConn] = useState(false);
+  const [simGenBusInop,  setSimGenBusInop]  = useState(false);
+  const [simBatBusInop,  setSimBatBusInop]  = useState(false);
+  const [simBusTieInop,  setSimBusTieInop]  = useState(false);
+  const [simGenFail,     setSimGenFail]     = useState(false);
 
   const TABS = [
     { id: 'verbatim', label: 'NATOPS INTRO' },
@@ -566,7 +572,7 @@ export default function T6BElectricalDiagram() {
   const togStarter = (k) => setSw(s => {
     const next = (s[k] + 1) % 3;
     const autoKey = k === 'fStarter' ? 'fStrAuto' : 'rStrAuto';
-    return { ...s, [k]: next, [autoKey]: next === 1 && n1 < 60 };
+    return { ...s, [k]: next, [autoKey]: next === 1 && n1 < 50 };
   });
   // Battery switches are mutually exclusive — turning one on turns the other off
   const togBat = (k) => setSw(s => s[k]
@@ -586,11 +592,15 @@ export default function T6BElectricalDiagram() {
   // Derived relay states
   const batRlyOn  = sw.fBat || sw.rBat;
   const batRlyOnRear  = sw.rBat;
-  const genRlyOn  = sw.fGen  || sw.rGen;
   const strRlyOn  = sw.fStarter === 2 || sw.rStarter === 2 || sw.fStrAuto || sw.rStrAuto;
+  const genRlyOn  = (sw.fGen  || sw.rGen) & !strRlyOn;
+  // EP sim overrides — applied to power-flow derivations only, not switch/relay display state
+  const effStrRlyOn = strRlyOn || simGenFail;
+  const effGenRlyOn = (sw.fGen || sw.rGen) & !effStrRlyOn;
+  const effBusTie   = sw.fBusTie && !simBusTieInop;
   // Battery wire direction: flows OUT of battery when bat-only; INTO battery when gen or ext pwr is charging
-  const extPwrActive  = sel === 'extpwr' && batRlyOn;
-  const batIsCharging = extPwrActive || (genRlyOn && sw.fBusTie);
+  const extPwrActive  = extPwrConn && batRlyOn;
+  const batIsCharging = extPwrActive || (effGenRlyOn && effBusTie);
   const batWireLive   = true;//batRlyOn || batIsCharging;
   // The battery→BAT RLY path runs right-to-left (toward battery).
   // Forward animation = charging; reversed animation = battery sourcing.
@@ -603,14 +613,14 @@ export default function T6BElectricalDiagram() {
   const auxSw2On  =  sw.fAuxBat;
 
   // Bus liveness — used for CBList backgrounds
-  const fwdBatBusLive  = batRlyOn || (sw.fBusTie && genRlyOn);
-  const fwdGenBusLive  = genRlyOn || (sw.fBusTie && batRlyOn);
-  const fwdAviBatLive  = sw.fAviMstr && fwdBatBusLive && !cb.fwdAvi;
-  const fwdAviGenLive  = sw.fAviMstr && fwdGenBusLive && !cb.fwdAvi;
-  const auxBatBusLive  = (auxSw2On & !cb.fwdBatAux) & (sw.fAuxBat || fwdBatBusLive);
+  const fwdBatBusLive  = !simBatBusInop && (batRlyOn || (effBusTie && effGenRlyOn));
+  const fwdGenBusLive  = !simGenBusInop && (effGenRlyOn || (effBusTie && batRlyOn));
+  const fwdAviBatLive  = (sw.fAviMstr && fwdBatBusLive) || (cb.fwdAvi && fwdBatBusLive);
+  const fwdAviGenLive  = (sw.fAviMstr && fwdGenBusLive) || (cb.fwdAvi && fwdGenBusLive);
+  const auxBatBusLive  = (auxSw2On & !cb.fwdBatAux) || (auxSw1On & fwdBatBusLive);
 
   // EICAS electrical display
-  const eicasOn = batWireLive;
+  const eicasOn = fwdBatBusLive || fwdAviGenLive;
   const [eicasAmps,  setEicasAmps]  = useState(0);
   const [eicasVolts, setEicasVolts] = useState(24);
   const eicasRef = useRef({ amps: 0, volts: 24, tAmps: 0, tVolts: 24 });
@@ -636,7 +646,7 @@ export default function T6BElectricalDiagram() {
 
   // Ramp N1 linearly to 60% over 20s while bat relay and starter relay are both closed
   useEffect(() => {
-    if (!batRlyOn || !strRlyOn || n1Ref.current >= 60) return;
+    if (!batRlyOn || (!strRlyOn & n1Ref.current < 50) || n1Ref.current >= 60) return;
     const RATE = 60 / (20 * 1000); // % per ms
     const startTime = Date.now();
     const startN1   = n1Ref.current;
@@ -661,7 +671,7 @@ export default function T6BElectricalDiagram() {
   }, [sw.rStarter]);
 
   // AUTO/RESET: open relay once N1 reaches 60% by clearing the auto-engage flags; MANUAL unaffected
-  const n1AtThreshold = n1 >= 60;
+  const n1AtThreshold = n1 >= 50;
   useEffect(() => {
     if (!n1AtThreshold) return;
     setSw(s => ({ ...s, fStrAuto: false, rStrAuto: false }));
@@ -683,30 +693,70 @@ export default function T6BElectricalDiagram() {
         minWidth: 340, maxWidth: 900, margin: '0 auto',
       }}>
 
-        {/* ── Briefing Tabs ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, marginBottom: 10, maxWidth: 300 }}>
-          {TABS.map(({ id, label }) => (
-            <button
-              key={id}
-              onClick={() => setBriefingTab(t => t === id ? null : id)}
-              style={{
-                background: briefingTab === id ? 'rgba(55,138,221,0.18)' : 'transparent',
-                border: `0.5px solid ${briefingTab === id ? '#378ADD' : C.stroke}`,
-                color: briefingTab === id ? '#5ab8e8' : C.muted,
+        {/* ── Header ── */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
+
+          {/* LEFT — briefing tabs (2×2 grid) */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, maxWidth: 'calc(50% - 4px)', minWidth: 0 }}>
+            {TABS.map(({ id, label }) => (
+              <button
+                key={id}
+                onClick={() => setBriefingTab(t => t === id ? null : id)}
+                style={{
+                  background: briefingTab === id ? 'rgba(55,138,221,0.18)' : 'transparent',
+                  border: `0.5px solid ${briefingTab === id ? '#378ADD' : C.stroke}`,
+                  color: briefingTab === id ? '#5ab8e8' : C.muted,
+                  padding: '6px 8px', fontSize: 11, borderRadius: 3, cursor: 'pointer',
+                  letterSpacing: '0.08em', fontFamily: FONT,
+                  fontWeight: briefingTab === id ? 700 : 400,
+                  transition: 'all 0.15s',
+                  minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {/* RIGHT — EP fault sims */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, maxWidth: 'calc(50% - 4px)', minWidth: 0 }}>
+            {[
+              { active: simGenBusInop, set: setSimGenBusInop, label: 'GEN BUS INOP', bg: '#cc2222', border: '#991010', tc: '#f8e0e0' },
+              { active: simBatBusInop, set: setSimBatBusInop, label: 'BAT BUS INOP', bg: '#cc2222', border: '#991010', tc: '#f8e0e0' },
+              { active: simBusTieInop, set: setSimBusTieInop, label: 'BUS TIE INOP', bg: '#8a6010', border: '#BA7517', tc: '#4a2a08' },
+              { active: simGenFail,    set: setSimGenFail,    label: 'GEN FAILURE',  bg: '#cc2222', border: '#991010', tc: '#f8e0e0' },
+            ].map(({ active, set, label, bg, border, tc }) => (
+              <button key={label} onClick={() => set(v => !v)} style={{
+                background: active ? bg : 'transparent',
+                border: `1px solid ${active ? border : C.stroke}`,
+                color: active ? tc : C.muted,
                 padding: '6px 8px', fontSize: 11, borderRadius: 3, cursor: 'pointer',
-                letterSpacing: '0.08em', fontFamily: FONT,
-                fontWeight: briefingTab === id ? 700 : 400,
-                transition: 'all 0.15s',
-                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-              }}
-            >
-              {label}
-            </button>
-          ))}
+                letterSpacing: '0.06em', fontFamily: FONT,
+                fontWeight: active ? 700 : 400,
+                minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              }}>
+                {active ? `● ${label}` : `▷ SIM ${label}`}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Attribution ── */}
+        <div style={{ textAlign: 'center', margin: '6px 0', fontSize: 9, letterSpacing: '0.12em', color: '#3a6a8a' }}>
+          IMAGES &amp; COMPONENT DESCRIPTIONS SOURCED FROM{' '}
+          <span style={{ color: '#5ab8e8', fontWeight: 700, letterSpacing: '0.14em' }}>T6BDRIVER.COM</span>
         </div>
 
         {/* ── SVG Schematic ── */}
         {briefingTab && <BriefingModal tab={briefingTab} onClose={() => setBriefingTab(null)} />}
+        {extPwrInfo && ELEC_INFO['extpwr'] && (
+          <InfoModal
+            title={ELEC_INFO['extpwr'].title}
+            items={ELEC_INFO['extpwr'].items}
+            photos={ELEC_INFO['extpwr'].photos ?? []}
+            onClose={() => setExtPwrInfo(false)}
+          />
+        )}
         {sel && ELEC_INFO[sel] && (
           <InfoModal
             title={ELEC_INFO[sel].title}
@@ -715,28 +765,9 @@ export default function T6BElectricalDiagram() {
             onClose={() => setSel(null)}
           />
         )}
-        {extPwrInfo && (
-          <div onClick={() => setExtPwrInfo(false)} style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(4,10,20,0.82)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, backdropFilter: 'blur(2px)' }}>
-            <div onClick={e => e.stopPropagation()} style={{ background: '#080f18', border: `0.5px solid ${C.stroke}`, borderRadius: 7, width: '100%', maxWidth: 420, padding: '14px 18px', fontFamily: FONT, boxShadow: '0 8px 40px rgba(0,0,0,0.7)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                <span style={{ fontWeight: 700, color: C.text, fontSize: 12, letterSpacing: '0.1em' }}>EXTERNAL POWER RECEPTACLE</span>
-                <button onClick={() => setExtPwrInfo(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: C.muted, fontSize: 16, lineHeight: 1, padding: '0 4px' }}>×</button>
-              </div>
-              <p style={{ color: C.muted, fontSize: 11, lineHeight: 1.75, margin: '0 0 12px' }}>
-                28 VDC external power receptacle. When connected, ground power supplies the electrical buses directly, allowing battery charging and avionics operation without engine power. Requires battery voltage ≥ 22 V to connect.
-              </p>
-              <button
-                onClick={() => { pick('extpwr'); setExtPwrInfo(false); }}
-                style={{ background: sel === 'extpwr' ? `${C.wire}22` : 'transparent', border: `0.5px solid ${sel === 'extpwr' ? C.wire : C.stroke}`, color: sel === 'extpwr' ? C.wire : C.muted, padding: '6px 14px', fontSize: 10, borderRadius: 3, cursor: 'pointer', letterSpacing: '0.08em', fontFamily: FONT, fontWeight: 700 }}>
-                {sel === 'extpwr' ? 'DISCONNECT' : 'CONNECT'}
-              </button>
-              <div style={{ marginTop: 8, color: '#2a4a5a', fontSize: 8, letterSpacing: '0.08em' }}>CLICK OUTSIDE OR PRESS ESC TO CLOSE</div>
-            </div>
-          </div>
-        )}
         <style>{KEYFRAMES}</style>
         <HopLayerContext.Provider value={hopLayer}>
-        <svg viewBox="0 0 760 870" width="100%" style={{ display: 'block' }}>
+        <svg viewBox="0 0 760 730" width="100%" style={{ display: 'block' }}>
 
           {/* ═══════════════════════════════════════════════════════════
               TOP ROW — Power Sources
@@ -744,11 +775,11 @@ export default function T6BElectricalDiagram() {
 
           {/* EXT PWR Connect/Disconnect button — to the left of the pill */}
           {(() => {
-            const active = sel === 'extpwr';
+            const active = extPwrConn;
             const color = active ? C.wire : C.muted;
             const bx = 5, by = 13, bw = 38, bh = 18;
             return (
-              <g style={{ cursor: 'pointer' }} onClick={() => pick('extpwr')}>
+              <g style={{ cursor: 'pointer' }} onClick={() => setExtPwrConn(v => !v)}>
                 <rect x={bx} y={by} width={bw} height={bh} rx={2}
                   fill={active ? `${C.wire}22` : 'transparent'}
                   stroke={active ? C.wire : C.stroke} strokeWidth={0.6} />
@@ -772,7 +803,7 @@ export default function T6BElectricalDiagram() {
             const cy = py + ph / 2;
             const cr = 4;
             const [cx1, cx2, cx3] = [px + 8, px + 20, px + 32];
-            const active = sel === 'extpwr';
+            const active = extPwrConn;
             return (
               <g style={{ cursor: 'pointer' }} onClick={() => setExtPwrInfo(true)}>
                 {/* Pill body */}
@@ -810,12 +841,30 @@ export default function T6BElectricalDiagram() {
             );
           })()}
           {/* Wires from EXT PWER */}
-          <Wire d={`M 90 22 272 22`} live={sel === 'extpwr' && batRlyOn} />
-          <Rly x={272} y={13} label={['EXT PWR', 'RLY']} isOn={batRlyOn} live={sel === 'extpwr' && batRlyOn}/>
-          <Wire d={`M 288 22 325 22 L 325 78`} live={sel === 'extpwr' && batRlyOn} />
-          <Wire d={`M 70 30 70 40 L ${155-5} 40`} live={sel === 'extpwr' && batRlyOn} dim/>
-          <CB x={155} y={40} isOpen={cb.extPwr} onToggle={() => togCb('extPwr')} label={['EXT', 'PWR']}  live={sel === 'extpwr' && batRlyOn} dim/>
-          <Wire d={`M ${155+5} 40 L 280 40`} live={sel === 'extpwr' && batRlyOn} dim/>
+          <Wire d={`M 90 22 272 22`} live={extPwrActive} />
+          <Rly x={272} y={13} label={['EXT PWR', 'RLY']} isOn={batRlyOn} live={extPwrActive}/>
+          <Wire d={`M 288 22 325 22 L 325 78`} live={extPwrActive} />
+          <Wire d={`M 70 30 70 40 L ${155-5} 40`} live={extPwrActive} dim/>
+          <CB x={155} y={40} isOpen={cb.extPwr} onToggle={() => togCb('extPwr')} label={['EXT', 'PWR']}  live={extPwrActive} dim/>
+          <Wire d={`M ${155+7} 40 L 280 40`} live={extPwrActive} dim/>
+          {/* Voltage Sense — overlays wire after EXT PWR CB */}
+          {(() => {
+            const vx = 210, vy = 40;
+            const rw = 22, rh = 5;
+            const live = extPwrActive && !cb.extPwr;
+            const col = live ? C.wire : C.muted;
+            return (
+              <g>
+                <rect x={vx - rw / 2} y={vy - rh / 2} width={rw} height={rh}
+                  fill={C.bg} stroke={col} strokeWidth={0.6} opacity={live ? 1 : 1} />
+                <text x={vx} y={vy + rh / 2 + 6}
+                  style={{ fontFamily: FONT, fontSize: 5.5, fill: col, opacity: live ? 1 : 0.45,
+                    textAnchor: 'middle', dominantBaseline: 'central', letterSpacing: '0.07em' }}>
+                  VOLTAGE SENSE
+                </text>
+              </g>
+            );
+          })()}
 
           {/* Battery 42Ah */}
           {/* Ground wire: up from − terminal, left, down to ground symbol */}
@@ -898,20 +947,20 @@ export default function T6BElectricalDiagram() {
           {/* ═══════════════════════════════════════════════════════════
               MAIN BUS WIRE  (horizontal, y=MY)
           ═══════════════════════════════════════════════════════════ */}
-          <Wire d={`M 631 ${LY-102} ${588+5} ${LY-102}`}  live={n1AtThreshold && !strRlyOn}/>
-          <Hop x={588} y={LY-102} dir="h"  live={n1AtThreshold && !strRlyOn}/>
-          <Wire d={`M ${588-5} ${LY-102} 536 ${LY-102}`}  live={n1AtThreshold && !strRlyOn}/>
-          <Wire d={`M 520 ${LY-102} 390 ${LY-102}`} live={genRlyOn} />
-          <Wire d={`M 390 ${LY-102} 386 ${LY-102}`} live={sw.fBusTie && batRlyOn || genRlyOn} reverse={!genRlyOn}  />
-          <Wire d={`M 370 ${LY-102} 325 ${LY-102}`} live={batRlyOn|| (sw.fBusTie && genRlyOn)}  reverse={!genRlyOn || !sw.fBusTie}  />
-          <Wire d={`M 325 ${LY-102} 316 ${LY-102}`} live={batRlyOn|| (sw.fBusTie && genRlyOn)} reverse={batWireReverse}/>
-          <Wire d={`M 300 ${LY-102} 290 ${LY-102}`} live={batRlyOn|| (sw.fBusTie && genRlyOn)} reverse={batWireReverse}/>
+          <Wire d={`M 631 ${LY-102} ${588+5} ${LY-102}`}  live={n1AtThreshold && !effStrRlyOn}/>
+          <Hop x={588} y={LY-102} dir="h"  live={n1AtThreshold && !effStrRlyOn}/>
+          <Wire d={`M ${588-5} ${LY-102} 536 ${LY-102}`}  live={n1AtThreshold && !effStrRlyOn}/>
+          <Wire d={`M 520 ${LY-102} 390 ${LY-102}`} live={effGenRlyOn} />
+          <Wire d={`M 390 ${LY-102} 386 ${LY-102}`} live={effBusTie && batRlyOn || effGenRlyOn} reverse={!effGenRlyOn}  />
+          <Wire d={`M 370 ${LY-102} 325 ${LY-102}`} live={batRlyOn || (effBusTie && effGenRlyOn)}  reverse={!effGenRlyOn || !effBusTie}  />
+          <Wire d={`M 325 ${LY-102} 316 ${LY-102}`} live={batRlyOn || (effBusTie && effGenRlyOn)} reverse={batWireReverse}/>
+          <Wire d={`M 300 ${LY-102} 290 ${LY-102}`} live={batRlyOn || (effBusTie && effGenRlyOn)} reverse={batWireReverse}/>
           <Wire d={`M 290 ${LY-102} ${280+5} ${LY-102}`} live={batWireLive} reverse={batWireReverse} />
           <Hop x={280} y={LY-102} dir="h" live={batWireLive} />
           <Wire d={`M ${280-5} ${LY-102} 262 ${LY-102}`} live={batWireLive} reverse={batWireReverse} />
           <Rly x={300} y={LY-111} label={['BAT', 'RLY']} isOn={batRlyOn} />
-          <Rly x={370} y={LY-111} label={['BUS', 'TIE', 'RLY']} isOn={sw.fBusTie} live={sw.fBusTie && batRlyOn} onToggle={() => pick('bustierly')} />
-          <Rly x={520} y={LY-111} label={['GEN', 'RLY']} isOn={genRlyOn} live={n1AtThreshold && !strRlyOn && genRlyOn}/>
+          <Rly x={370} y={LY-111} label={['BUS', 'TIE', 'RLY']} isOn={sw.fBusTie} live={effBusTie && batRlyOn} onToggle={() => pick('bustierly')} />
+          <Rly x={520} y={LY-111} label={['GEN', 'RLY']} isOn={genRlyOn} live={n1AtThreshold && !effStrRlyOn && effGenRlyOn}/>
           {/* BUS TIE TO BAT BUS*/}
           <Wire d={`M 366 ${LY-102} 366 ${LY+99} L 235 ${LY+99}`} live={fwdBatBusLive} />
           {/* BUS TIE TO BUS TIE SWITCH*/}
@@ -929,17 +978,30 @@ export default function T6BElectricalDiagram() {
           <Hop x={464} y={RY+67} dir="h"  live={fwdGenBusLive}/>
           <Wire d={`M ${464+5} ${RY+67} L 555 ${RY+67}`}  live={fwdGenBusLive}/>
           {/* SHUNT TO EICAS*/}
-          <Wire d={`M 346 ${LY-102} 346 ${LY-50} L ${290+5} ${LY-50}`}  live = {fwdBatBusLive}/>
-          <Hop x={290} y={LY-50} dir="h"  live = {fwdBatBusLive}/>
-          <Wire d={`M ${290-5} ${LY-50} L 150 ${LY-50}`} live = {fwdBatBusLive}/>
+          <Wire d={`M 346 ${LY-102} 346 ${LY-50} L ${290+5} ${LY-50}`}  live={batRlyOn || (effBusTie && effGenRlyOn)}/>
+          <Hop x={290} y={LY-50} dir="h"  live={batRlyOn || (effBusTie && effGenRlyOn)}/>
+          <Wire d={`M ${290-5} ${LY-50} L 150 ${LY-50}`} live={batRlyOn || (effBusTie && effGenRlyOn)}/>
           <EICASDisplay x={68} y={LY-50-19} on={eicasOn} amps={eicasAmps} volts={eicasVolts} />
+          {/* EICAS-style EP warning messages below display — only when display is powered */}
+          {(fwdAviGenLive || fwdAviBatLive || fwdBatBusLive) && [
+            simGenBusInop && { label: 'GEN BUS', color: '#ff5555' },
+            simBatBusInop && { label: 'BAT BUS', color: '#ff5555' },
+            simGenFail    && { label: 'GEN',     color: '#ff5555' },
+            simBusTieInop && { label: 'BUS TIE', color: '#fac777' },
+          ].filter(Boolean).map((msg, i) => (
+            <text key={msg.label} x={90} y={LY - 25 + i * 10}
+              style={{ fontFamily: FONT, fontSize: 8, fontWeight: 700, fill: msg.color,
+                textAnchor: 'middle', dominantBaseline: 'central', letterSpacing: '0.12em' }}>
+              {msg.label}
+            </text>
+          ))}
 
           {/* ═══════════════════════════════════════════════════════════
               HOT BAT BUS  (direct from battery, always live)
           ═══════════════════════════════════════════════════════════ */}
           {/* Tap from battery left terminal down to HOT BAT BUS */}
           <Bus x={LX} y={LY+11} w={LW} label="HOT BAT BUS" color={C.hot} id="hotbatbus" sel={sel} onSel={pick} />
-          <CBList x={LX} y={LY+25} cols={2} colW={CW} color={C.hot} live={true} items={[
+          <CBList x={LX} y={LY+25} cols={2} colW={CW} color={C.hot} live={true} id="hotbatbus" sel={sel} onSel={pick} items={[
             'RAM AIR VALVE', 'CLOCKS', 'ELT', 'BATTERY',
             'OBOGS', 'EMERG FLAPS', 'FWD MAINT', 'SPARE',
           ]} />
@@ -953,7 +1015,7 @@ export default function T6BElectricalDiagram() {
           {/* FWD BAT BUS — drop from main bus */}
           <Bus x={LX} y={LY+94} w={LW} label="FWD BAT BUS" color={C.bat} id="fwdbatbus" sel={sel} onSel={pick} />
           {/* Left column (col 0) + Right column (col 1) CB items */}
-          <CBList x={LX} y={LY+107} cols={2} colW={CW} color={C.bat} extraH={9} live={fwdBatBusLive} items={[
+          <CBList x={LX} y={LY+107} cols={2} colW={CW} color={C.bat} extraH={9} live={fwdBatBusLive} id="fwdbatbus" sel={sel} onSel={pick} items={[
             'AIL/EL TRIM', 'IAC 1', 'AVI MSTR', 'HYD SYS', 'COLL', 'START', 'FDR',
             'LDGGR CONT', 'PMU', 'FLAP CONT', 'BOOST PUMP', 'EDM', 'AUDIO',
             'UTIL', 'IGN', 'PROP SYS', 'FUEL QTY LO', 'FLDT', 'UFCP',
@@ -973,14 +1035,14 @@ export default function T6BElectricalDiagram() {
 
           {/* Wire: FLDT (FWD BAT BUS col-1 row-4) → FWD AVI BAT BUS header */}
           <Wire d={`M ${LX+LW+3} ${LY+148} ${267-5} ${LY+148}`} live={fwdBatBusLive} />
-          <Wire d={`M ${267+5} ${LY+148} ${LX+LW+60} ${LY+148}`} live={fwdBatBusLive && !cb.fwdAvi} />
+          <Wire d={`M ${267+5} ${LY+148} ${LX+LW+60} ${LY+148}`} live={fwdBatBusLive} />
           <CB x={267} y={LY+148} live={fwdBatBusLive} isOpen={cb.fwdAvi} onToggle={() => togCb('fwdAvi')} label={['FWD','AVI']}/>
           <Wire d={`M ${LX+LW+75} ${LY+148} ${LX+LW+80} ${LY+148} L ${LX+LW+80} ${LY+245} L ${LX+LW} ${LY+245}`} live={fwdAviBatLive}/>
-          <Rly x={LX + 180} y={LY+139} label={['AVI', 'MSTR', 'RLY']} isOn={sw.fAviMstr} live={fwdAviBatLive && sw.fAviMstr} onToggle={() => pick('avimstrrly')} />
+          <Rly x={LX + 180} y={LY+139} label={['AVI', 'MSTR', 'RLY']} isOn={sw.fAviMstr||cb.fwdAvi} live={fwdAviBatLive} onToggle={() => pick('avimstrrly')} />
 
           {/* FWD AVI BAT BUS */}
           <Bus x={LX} y={LY+240} w={LW} label="FWD AVI BAT BUS" color={C.avi} id="fwdavibatbus" sel={sel} onSel={pick} />
-          <CBList x={LX} y={LY+253} cols={1} colW={CW*2} color={C.avi} extraH={9} live={fwdAviBatLive} items={['CTR MFD']} />
+          <CBList x={LX} y={LY+253} cols={1} colW={CW*2} color={C.avi} extraH={9} live={fwdAviBatLive} id="fwdavibatbus" sel={sel} onSel={pick} items={['CTR MFD']} />
           {/* AFT AVI label box*/}
           <g>
             <rect x={LX-3} y={LY+263} width={44} height={10} rx={2}
@@ -994,7 +1056,7 @@ export default function T6BElectricalDiagram() {
 
           {/* FWD AUX BAT BUS */}
           <Bus x={LX} y={LY+278} w={LW} label="FWD AUX BAT BUS" color={C.aux} id="fwdauxbatbus" sel={sel} onSel={pick} />
-          <CBList x={LX} y={LY+291} cols={2} colW={CW} color={C.aux} live={auxBatBusLive} items={[
+          <CBList x={LX} y={LY+291} cols={2} colW={CW} color={C.aux} live={auxBatBusLive} id="fwdauxbatbus" sel={sel} onSel={pick} items={[
             'RADIO RLYS', 'STBY INST', 'COM2', 'FIRE 1', 'IRS', '','',''
           ]} />
           {/* STBYLTS and AFT STBY label boxes*/}
@@ -1029,7 +1091,7 @@ export default function T6BElectricalDiagram() {
 
           {/* AFT BAT BUS */}
           <Bus x={LX} y={LY+352} w={LW} label="AFT BAT BUS" color={C.bat} id="aftbatbus" sel={sel} onSel={pick} />
-          <CBList x={LX} y={LY+365} cols={2} colW={CW} color={C.bat} live={fwdBatBusLive} items={[
+          <CBList x={LX} y={LY+365} cols={2} colW={CW} color={C.bat} live={fwdBatBusLive} id="aftbatbus" sel={sel} onSel={pick} items={[
             'UFCP', 'AUDIO', 'UTIL LT',
             'INST LT', 'FLDT', 'RH MFD',
           ]} />
@@ -1037,7 +1099,7 @@ export default function T6BElectricalDiagram() {
           {/* AFT AUX BAT BUS */}
           {/* Vertical feed from FWD AUX BAT BUS */}
           <Bus x={LX} y={LY+396} w={LW} label="AFT AUX BAT BUS" color={C.aux} id="aftauxbatbus" sel={sel} onSel={pick} />
-          <CBList x={LX} y={LY+409} cols={1} colW={CW*2} color={C.aux} live={auxBatBusLive} items={['STBY INST']} />
+          <CBList x={LX} y={LY+409} cols={1} colW={CW*2} color={C.aux} live={auxBatBusLive} id="aftauxbatbus" sel={sel} onSel={pick} items={['STBY INST']} />
 
           {/* Wire: AFT AVI box → AFT AVI BAT BUS (outside left) */}
           <Wire d={`M ${LX-3} ${LY+268} L ${LX-12} ${LY+268} L ${LX-12} ${LY+426} L ${LX} ${LY+426}`}  live={fwdAviBatLive}/>
@@ -1045,7 +1107,7 @@ export default function T6BElectricalDiagram() {
           {/* AFT AVI BAT BUS */}
           {/* Vertical feed from FWD AVI BAT BUS */}
           <Bus x={LX} y={LY+421} w={LW} label="AFT AVI BAT BUS" color={C.avi} id="aftavibatbus" sel={sel} onSel={pick} />
-          <CBList x={LX} y={LY+434} cols={1} colW={CW*2} color={C.avi} live={fwdAviBatLive} items={['CTR MFD']} />
+          <CBList x={LX} y={LY+434} cols={1} colW={CW*2} color={C.avi} live={fwdAviBatLive} id="aftavibatbus" sel={sel} onSel={pick} items={['CTR MFD']} />
 
           {/* ═══════════════════════════════════════════════════════════
               COCKPIT SWITCH PANELS
@@ -1229,15 +1291,15 @@ export default function T6BElectricalDiagram() {
           <Hop x={528} y={100} dir="h" live={batRlyOnRear} dim/>
           <Wire d={`M ${528-5} 100 L 463 100`} live={batRlyOnRear} dim/>
           {/* GEN SWITCH TO GEN RLY */}
-          <Wire d={`M 499 125 499 110 L 528 110`} live={genRlyOn && sw.fGen}  dim/>
-          <Wire d={`M 528 110 L 528 85`} live={genRlyOn}  dim/>
-          <Wire d={`M 660 170 660 165 L 630 165 L 630 110 L ${623+5} 110`} live={genRlyOn && sw.rGen}  dim/>
-          <Hop x={623} y={110} dir="h" live={genRlyOn && sw.rGen}  dim/>
-          <Wire d={`M ${623-5} 110 L ${588+5} 110`} live={genRlyOn && sw.rGen}  dim/>
-          <Hop x={588} y={110} dir="h" live={genRlyOn && sw.rGen}  dim/>
-          <Wire d={`M ${588-5} 110 L ${575+5} 110`} live={genRlyOn && sw.rGen}  dim/>
-          <Hop x={575} y={110} dir="h" live={genRlyOn && sw.rGen}  dim/>
-          <Wire d={`M ${575-5} 110 L 528 110`} live={genRlyOn && sw.rGen}  dim/>
+          <Wire d={`M 499 125 499 110 L 528 110`} live={effGenRlyOn && sw.fGen}  dim/>
+          <Wire d={`M 528 110 L 528 85`} live={effGenRlyOn}  dim/>
+          <Wire d={`M 660 170 660 165 L 630 165 L 630 110 L ${623+5} 110`} live={effGenRlyOn && sw.rGen}  dim/>
+          <Hop x={623} y={110} dir="h" live={effGenRlyOn && sw.rGen}  dim/>
+          <Wire d={`M ${623-5} 110 L ${588+5} 110`} live={effGenRlyOn && sw.rGen}  dim/>
+          <Hop x={588} y={110} dir="h" live={effGenRlyOn && sw.rGen}  dim/>
+          <Wire d={`M ${588-5} 110 L ${575+5} 110`} live={effGenRlyOn && sw.rGen}  dim/>
+          <Hop x={575} y={110} dir="h" live={effGenRlyOn && sw.rGen}  dim/>
+          <Wire d={`M ${575-5} 110 L 528 110`} live={effGenRlyOn && sw.rGen}  dim/>
           {/* AUX BAT SWITCH TO AUX BAT RLY */}
           <Wire d={`M 535 125 535 120 L ${499+5} 120`} live={sw.fAuxBat} dim/>
           <Hop x={499} y={120} dir="h" live={sw.fAuxBat} dim/>
@@ -1246,14 +1308,14 @@ export default function T6BElectricalDiagram() {
           <Wire d={`M ${463-5} 120 L 405 120 L 405 ${RY+240} L 354 ${RY+240} L 354 ${RY+234}`} live={sw.fAuxBat} dim/>
 
           {/* ═══════════════════════════════════════════════════════════
-              GEN BUS  (above / outside FRONT RH CB PANEL)
+              GEN BUS  (above / outside FRONT RH CB PANEL) id="genbus"
           ═══════════════════════════════════════════════════════════ */}
           {/* Drop from after GEN RLY → GEN BUS */}
-          <Bus x={RX} y={RY} w={RW} label="GEN BUS" color={C.gen} id="genbus" sel={sel} onSel={pick} />
-          <CBList x={RX} y={RY+13} cols={2} colW={CW} color={C.gen} live={n1AtThreshold && !strRlyOn} items={[
+          <Bus x={RX} y={RY} w={RW} label="GEN BUS" color={C.gen} sel={sel} onSel={pick} />
+          <CBList x={RX} y={RY+13} cols={2} colW={CW} color={C.gen} live={n1AtThreshold && !effStrRlyOn && !simGenBusInop} sel={sel} onSel={pick} items={[
             'COND BLOWER', 'HEAT EXCH BLOWER', 'BUS SENSE'
           ]} />
-          <Wire d={`M 575 ${LY-102} 575 ${RY-8} L ${RX-10} ${RY-8} L ${RX-10} ${RY+5} L ${RX} ${RY+5}`} live={n1AtThreshold && !strRlyOn} />
+          <Wire d={`M 575 ${LY-102} 575 ${RY-8} L ${RX-10} ${RY-8} L ${RX-10} ${RY+5} L ${RX} ${RY+5}`} live={n1AtThreshold && !effStrRlyOn && !simGenBusInop} />
 
           {/* ═══════════════════════════════════════════════════════════
               FRONT RH CB PANEL
@@ -1263,7 +1325,7 @@ export default function T6BElectricalDiagram() {
 
           {/* FWD GEN BUS (RH) — same bus, separate drop from main */}
           <Bus x={RX} y={RY+62} w={RW} label="FWD GEN BUS" color={C.gen} id="fwdgenbus" sel={sel} onSel={pick} />
-          <CBList x={RX} y={RY+75} cols={2} colW={CW} color={C.gen} live={fwdGenBusLive} items={[
+          <CBList x={RX} y={RY+75} cols={2} colW={CW} color={C.gen} live={fwdGenBusLive} id="fwdgenbus" sel={sel} onSel={pick} items={[
             'AIR COND', 'FUEL BAL', 'TEST', 'CKPT TEMP', 'SIDE', "TRIM IND", 'NAV', 'EDM', 'TAD', 'SPEED BRAKE', 'EVAP BLWR', 'TAXI',
             'GEN SW', 'AOA HT', 'PITOT HT', 'NWS', 'FIRE 2', 'SEAT ADJ','DVR/DTS', 'HOTAS', 'TAT', 'AUDIO', '', '',
           ]} />
@@ -1281,14 +1343,14 @@ export default function T6BElectricalDiagram() {
 
           {/* Wire: just below TEST (FWD GEN BUS col-0 row-3) → FWD AVI GEN BUS header */}
           <Wire d={`M ${RX-3} ${RY+107} L ${541+5} ${RY+107}`} live={fwdGenBusLive} />
-          <Wire d={`M ${541-5} ${RY+107} L ${RX-26} ${RY+107}`} live={fwdGenBusLive && !cb.fwdAvi} />
+          <Wire d={`M ${541-5} ${RY+107} L ${RX-26} ${RY+107}`} live={fwdGenBusLive} />
           <CB x={541} y={RY+107} live={fwdGenBusLive} isOpen={cb.fwdAvi} onToggle={() => togCb('fwdAvi')} label={['FWD','AVI']}/>
-          <Rly x={RX-43} y={RY+98} label={['AVI', 'MSTR', 'RLY']} isOn={sw.fAviMstr} onToggle={() => pick('avimstrrly')} />
+          <Rly x={RX-43} y={RY+98} label={['AVI', 'MSTR', 'RLY']} isOn={sw.fAviMstr||cb.fwdAvi} onToggle={() => pick('avimstrrly')} />
           <Wire d={`M ${RX-44} ${RY+107} L ${RX-50} ${RY+107} L ${RX-50} ${RY+195} L ${RX} ${RY+195}`}  live={fwdAviGenLive}/>
 
           {/* FWD AVI GEN BUS — fed from GEN BUS */}
           <Bus x={RX} y={RY+190} w={RW} label="FWD AVI GEN BUS" color={C.avi} id="fwdavigenbus" sel={sel} onSel={pick} />
-          <CBList x={RX} y={RY+204} cols={2} colW={CW} color={C.avi} live={fwdAviGenLive} items={[
+          <CBList x={RX} y={RY+204} cols={2} colW={CW} color={C.avi} live={fwdAviGenLive} id="fwdavigenbus" sel={sel} onSel={pick} items={[
             'ADC', 'COM1', 'IRS', 'RAD ALTM', 'DME', 'XPDR',
             'TCAS', 'IAC 2', 'RADIO RLYS', 'LH MFD', 'VHF NAV',
           ]} />
@@ -1315,7 +1377,7 @@ export default function T6BElectricalDiagram() {
 
           {/* AFT GEN BUS */}
           <Bus x={RX} y={RY+280} w={RW} label="AFT GEN BUS" color={C.gen} id="aftgenbus" sel={sel} onSel={pick} />
-          <CBList x={RX} y={RY+292} cols={2} colW={CW} color={C.gen} live={fwdGenBusLive} items={[
+          <CBList x={RX} y={RY+292} cols={2} colW={CW} color={C.gen} live={fwdGenBusLive} id="aftgenbus" sel={sel} onSel={pick} items={[
             'EVAP BLWR', 'SEAT ADJ', 'TRIM IND', 'SIDE LTS', 'AUDIO',
           ]} />
 
@@ -1326,7 +1388,7 @@ export default function T6BElectricalDiagram() {
 
           {/* AFT AVI GEN BUS */}
           <Bus x={RX} y={RY+325} w={RW} label="AFT AVI GEN BUS" color={C.avi} id="aftavigenbus" sel={sel} onSel={pick} />
-          <CBList x={RX} y={RY+338} cols={1} colW={CW*2} color={C.avi} live={fwdAviGenLive} items={['LH MFD']} />
+          <CBList x={RX} y={RY+338} cols={1} colW={CW*2} color={C.avi} live={fwdAviGenLive} id="aftavigenbus" sel={sel} onSel={pick} items={['LH MFD']} />
 
           {/* ═══════════════════════════════════════════════════════════
               CENTER — AUX BAT (5Ah) + AVI MSTR feed
@@ -1386,8 +1448,23 @@ export default function T6BElectricalDiagram() {
           <Limiter cx={366} cy={LY+0} />
           <Limiter cx={390} cy={LY+0} />
 
+          {/* ── EP Failure overlays ── */}
+          {simGenBusInop  && <RedX cx={RX + RW/2} cy={RY + 129}     size={85} />}
+          {simBatBusInop  && <RedX cx={LX + LW/2} cy={LY + 170}    size={85} />}
+          {simBusTieInop  && <RedX cx={378}        cy={LY - 102}    size={10} />}
+          {simGenFail     && <RedX cx={660}         cy={LY - 102}   size={30} />}
+          {/* Shunt symbol — overlays EICAS horizontal wire */}
+          <Shunt cx={346} cy={LY-102} />
+
+          {/* ── MFD screenshot ── */}
+          <image href="/systems/elec/MFDs.png" x={250} y={550} width={310} height={89}
+            preserveAspectRatio="xMidYMid meet" />
+          {!fwdAviGenLive && <rect x={307}       y={560} width={53} height={70} fill="black" />}
+          {!fwdAviBatLive && <rect x={307 + 72} y={560} width={53} height={70} fill="black" />}
+          {!fwdBatBusLive && <rect x={307 + 143} y={560} width={53} height={70} fill="black" />}
+
           {/* ── Bottom Legend ── */}
-          <g>
+          <g transform="translate(0, +5)">
             <rect x={330} y={645} width={150} height={75} rx={4}
               fill={C.box} stroke={C.stroke} strokeWidth={0.5} />
             <text x={400} y={652}
@@ -1447,5 +1524,55 @@ export default function T6BElectricalDiagram() {
         </HopLayerContext.Provider>
       </div>
     </div>
+  );
+}
+
+// ── Shunt symbol ─────────────────────────────────────────────────────
+// Horizontal: [+□]──[thin rect]──[□−]  with "SHUNT" label above
+function Shunt({ cx, cy, color = C.muted }) {
+  const sqS  = 6;     // square side
+  const rectW = 8;   // skinny middle rectangle width
+  const rectH = 4;    // skinny middle rectangle height
+  const gap  = 0;     // gap between elements
+  const lsX  = cx - rectW / 2 - gap - sqS;  // left square left edge
+  const rsX  = cx + rectW / 2 + gap;         // right square left edge
+  return (
+    <g>
+      <text x={cx} y={cy - sqS / 2 - 5}
+        style={{ fontFamily: FONT, fontSize: 6, fill: color,
+          textAnchor: 'middle', dominantBaseline: 'central', letterSpacing: '0.1em' }}>
+        SHUNT
+      </text>
+      {/* Left terminal square with + */}
+      <rect x={lsX} y={cy - sqS / 2} width={sqS} height={sqS}
+        fill={C.bg} stroke={color} strokeWidth={0.6} />
+      <text x={lsX + sqS / 2} y={cy}
+        style={{ fontFamily: FONT, fontSize: 8, fill: color,
+          textAnchor: 'middle', dominantBaseline: 'central' }}>
+        +
+      </text>
+      {/* Middle skinny rectangle */}
+      <rect x={cx - rectW / 2} y={cy - rectH / 2} width={rectW} height={rectH}
+        fill={C.bg} stroke={color} strokeWidth={0.6} />
+      {/* Right terminal square with − */}
+      <rect x={rsX} y={cy - sqS / 2} width={sqS} height={sqS}
+        fill={C.bg} stroke={color} strokeWidth={0.6} />
+      <text x={rsX + sqS / 2} y={cy}
+        style={{ fontFamily: FONT, fontSize: 8, fill: color,
+          textAnchor: 'middle', dominantBaseline: 'central' }}>
+        −
+      </text>
+    </g>
+  );
+}
+
+// ── Red X failure overlay ─────────────────────────────────────────────
+function RedX({ cx, cy, size = 14 }) {
+  const h = size / 2;
+  return (
+    <g opacity={0.55}>
+      <line x1={cx - h} y1={cy - h} x2={cx + h} y2={cy + h} stroke="#cc2222" strokeWidth={2} strokeLinecap="round" />
+      <line x1={cx + h} y1={cy - h} x2={cx - h} y2={cy + h} stroke="#cc2222" strokeWidth={2} strokeLinecap="round" />
+    </g>
   );
 }

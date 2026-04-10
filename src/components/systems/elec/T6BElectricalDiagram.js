@@ -10,6 +10,7 @@ const KEYFRAMES = `
   .wire-anim     { stroke-dasharray: 8 4; animation: wireFlow    0.9s linear infinite; }
   .wire-anim-rev { stroke-dasharray: 8 4; animation: wireFlowRev 0.9s linear infinite; }
   .wire-anim-dim { stroke-dasharray: 4 3; animation: wireFlowDim 0.7s linear infinite; }
+  @keyframes eicasFlash  { 0%,100%{opacity:1} 25%{opacity:0.1} 50%{opacity:1} 75%{opacity:0.1} }
 `;
 
 // ── Color constants ──────────────────────────────────────────────────
@@ -552,6 +553,15 @@ export default function T6BElectricalDiagram() {
   const [simBatBusInop,  setSimBatBusInop]  = useState(false);
   const [simBusTieInop,  setSimBusTieInop]  = useState(false);
   const [simGenFail,     setSimGenFail]     = useState(false);
+  const [flashingMsgs,   setFlashingMsgs]   = useState(new Set());
+  const flashMsg = (label) => {
+    setFlashingMsgs(s => new Set([...s, label]));
+    setTimeout(() => setFlashingMsgs(s => { const n = new Set(s); n.delete(label); return n; }), 5000);
+  };
+  useEffect(() => { if (simGenBusInop) flashMsg('GEN BUS'); }, [simGenBusInop]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (simBatBusInop) flashMsg('BAT BUS'); }, [simBatBusInop]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (simGenFail)    flashMsg('GEN');     }, [simGenFail]);     // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (simBusTieInop) flashMsg('BUS TIE'); }, [simBusTieInop]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const TABS = [
     { id: 'verbatim', label: 'NATOPS INTRO' },
@@ -572,6 +582,8 @@ export default function T6BElectricalDiagram() {
   const togStarter = (k) => setSw(s => {
     const next = (s[k] + 1) % 3;
     const autoKey = k === 'fStarter' ? 'fStrAuto' : 'rStrAuto';
+    // Second AUTO/RESET press while auto-start is in progress → abort, clear the flag
+    if (next === 1 && s[autoKey]) return { ...s, [k]: next, [autoKey]: false };
     return { ...s, [k]: next, [autoKey]: next === 1 && n1 < 50 };
   });
   // Battery switches are mutually exclusive — turning one on turns the other off
@@ -669,6 +681,21 @@ export default function T6BElectricalDiagram() {
     const id = setTimeout(() => setSw(s => s.rStarter === 1 ? { ...s, rStarter: 0 } : s), 1000);
     return () => clearTimeout(id);
   }, [sw.rStarter]);
+
+  // Decay N1 rapidly to 0 if battery is turned off or starter relay drops before N1 reaches 50%
+  const n1ShouldDecay = n1 > 0 && (!batRlyOn || (!strRlyOn && n1 < 50));
+  useEffect(() => {
+    if (!n1ShouldDecay) return;
+    const DECAY_RATE = 60 / (4 * 1000); // drop from 60% to 0 in ~4s
+    const startTime = Date.now();
+    const startN1 = n1Ref.current;
+    const id = setInterval(() => {
+      const next = Math.max(startN1 - DECAY_RATE * (Date.now() - startTime), 0);
+      setN1(next);
+      if (next <= 0) clearInterval(id);
+    }, 100);
+    return () => clearInterval(id);
+  }, [n1ShouldDecay]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // AUTO/RESET: open relay once N1 reaches 60% by clearing the auto-engage flags; MANUAL unaffected
   const n1AtThreshold = n1 >= 50;
@@ -991,7 +1018,8 @@ export default function T6BElectricalDiagram() {
           ].filter(Boolean).map((msg, i) => (
             <text key={msg.label} x={90} y={LY - 25 + i * 10}
               style={{ fontFamily: FONT, fontSize: 8, fontWeight: 700, fill: msg.color,
-                textAnchor: 'middle', dominantBaseline: 'central', letterSpacing: '0.12em' }}>
+                textAnchor: 'middle', dominantBaseline: 'central', letterSpacing: '0.12em',
+                animation: flashingMsgs.has(msg.label) ? 'eicasFlash 1.333s ease-in-out 3' : 'none' }}>
               {msg.label}
             </text>
           ))}
@@ -1458,7 +1486,8 @@ export default function T6BElectricalDiagram() {
 
           {/* ── MFD screenshot ── */}
           <image href="/systems/elec/MFDs.png" x={250} y={550} width={310} height={89}
-            preserveAspectRatio="xMidYMid meet" />
+            preserveAspectRatio="xMidYMid meet"
+            style={{ cursor: 'pointer' }} onClick={() => pick('MFD')} />
           {!fwdAviGenLive && <rect x={307}       y={560} width={53} height={70} fill="black" />}
           {!fwdAviBatLive && <rect x={307 + 72} y={560} width={53} height={70} fill="black" />}
           {!fwdBatBusLive && <rect x={307 + 143} y={560} width={53} height={70} fill="black" />}

@@ -704,4 +704,15 @@ export const ELEC_INFO = {
     photos: [],
   },
 
+  MFD: {
+    title: 'Multi-Function Display (MFD)',
+    items: [
+      'Note: Automatic screen reversion behavior upon MFD failure is not depicted here.',
+      'If a single MFD fails, the system ensures PFD and EICAS are always presented — PFD reverts center → left → right; EICAS reverts right → left → center.',
+      'If two MFDs fail in the same cockpit, the remaining MFD reverts to PFD (airborne) or EICAS (on ground); pilot may then select any screen.',
+      'Upon Master Caution or Master Warning, the remaining MFD automatically switches to EICAS while retaining follow-on screen access.',
+    ],
+    photos: [],
+  },
+
 };

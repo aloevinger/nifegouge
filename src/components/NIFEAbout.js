@@ -34,7 +34,7 @@ function NIFEAbout() {
               <li>
                 If you're comfortable with code, contribute directly via our{' '}
                 <a
-                  href="https://github.com/aloevinger/nifegouge"
+                  href="https://github.com/aloepinky/nifegouge"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="about-link"
@@ -45,7 +45,7 @@ function NIFEAbout() {
             </ul>
 
             <p className="about-text">
-              Thanks,<br/>ENS Loevinger
+              Thanks,<br/>PinkSheetMafia
             </p>
           </div>
   );

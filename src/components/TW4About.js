@@ -59,13 +59,13 @@ function TW4About() {
       </p>
 
       <p className="about-text" style={{marginTop: '20px', fontStyle: 'italic'}}>
-        This is a work in progress. More pages and content will be added over time. If you see any bugs PLEASE reach out personally at 818-209-2151 or at pinksheetmafia@gmail.com
+        This is a work in progress. More pages and content will be added over time. If you see any bugs PLEASE reach out personally at pinksheetmafia@gmail.com
       </p>
 
       <p className="about-text">
                 If you're comfortable with code, contribute directly via our{' '}
                 <a
-                  href="https://github.com/aloevinger/nifegouge"
+                  href="https://github.com/aloepinky/nifegouge"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="about-link"
@@ -75,7 +75,7 @@ function TW4About() {
       </p>
       
       <p className="about-text">
-        Thanks,<br/>ENS Loevinger
+        Thanks,<br/>PinkSheetMafia
       </p>
     </div>
   );

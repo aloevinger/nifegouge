@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-function TW4About() {
+function TW4About({ onNavigate }) {
   // Preload images for EPs page to reduce load times
   useEffect(() => {
     const imagesToPreload = [
@@ -19,6 +19,15 @@ function TW4About() {
     });
   }, []);
 
+  const navHeadingStyle = {
+    fontSize: '18px',
+    marginTop: '20px',
+    marginBottom: '10px',
+    cursor: 'pointer',
+    textDecoration: 'underline',
+    textUnderlineOffset: '3px',
+  };
+
   return (
     <div className="page-container">
       <p className="about-text" style={{fontSize: '11px', color: '#666', textAlign: 'center', marginTop: '-18px', marginBottom: '-15px', fontStyle: 'italic'}}>
@@ -32,30 +41,36 @@ function TW4About() {
         This section is dedicated to TW4 Primary training resources (sorry Whiting)
       </p>
 
-      <h2 className="about-subtitle" style={{fontSize: '18px', marginTop: '20px', marginBottom: '10px'}}>Interactive Cockpit/EPs</h2>
+      <h2 className="about-subtitle" style={navHeadingStyle} onClick={() => onNavigate('cockpit')}>Interactive Cockpit/EPs</h2>
       <p className="about-text">
         The Cockpit section features a virtual interactive T-6 cockpit poster that serves as a comprehensive training tool for Emergency Procedures (EPs) and Quadfold checklists.
-        By clicking through actual cockpit controls and following procedural flows, you can gain spatial awareness for where the controls are and start developing flow. 
+        By clicking through actual cockpit controls and following procedural flows, you can gain spatial awareness for where the controls are and start developing flow.
         Integrated Notes Warnings Cautions, expanded checklist items, and non-memory items allow for easy access to supplementary material. Or use Simple Mode to just review EPs and NWCs without the cockpit.
-        Please refer to the instructions button on the top left for a more thorough explanation of how to use the virtual cockpit. 
+        Please refer to the instructions button on the top left for a more thorough explanation of how to use the virtual cockpit.
       </p>
 
-      <h2 className="about-subtitle" style={{fontSize: '18px', marginTop: '20px', marginBottom: '10px'}}>Operating Limits</h2>
+      <h2 className="about-subtitle" style={navHeadingStyle} onClick={() => onNavigate('limits')}>Operating Limits</h2>
       <p className="about-text">
         The Limits page provides a virtual T-6B Operating Limitations table. You can quickly test yourself or learn the limits by revealing the answers when stuck.
         See if you can correctly answer all 106 limits in a random order!
       </p>
 
-      <h2 className="about-subtitle" style={{fontSize: '18px', marginTop: '20px', marginBottom: '10px'}}>Briefs</h2>
+      <h2 className="about-subtitle" style={navHeadingStyle} onClick={() => onNavigate('briefs')}>Briefs</h2>
       <p className="about-text">
         The Briefs page allows you to practice the NATOPS brief for both Fam and Form. Clicking on a briefing item will reveal the associated
-        expanded brief item in case you need a refresher or want to learn what is expected of you. 
+        expanded brief item in case you need a refresher or want to learn what is expected of you.
       </p>
 
-      <h2 className="about-subtitle" style={{fontSize: '18px', marginTop: '20px', marginBottom: '10px'}}>Course Rules</h2>
+      <h2 className="about-subtitle" style={navHeadingStyle} onClick={() => onNavigate('courserules')}>Course Rules</h2>
       <p className="about-text">
-        The Course Rules page integrates an interactive course rule map with official text to help you build visual intuition while studying. You can build hypothetical flight paths and test yourself on associated     
+        The Course Rules page integrates an interactive course rule map with official text to help you build visual intuition while studying. You can build hypothetical flight paths and test yourself on associated
         course rules as you progress, quiz yourself on specific areas, or freely explore the Corpus Christi area's course rules.
+      </p>
+
+      <h2 className="about-subtitle" style={navHeadingStyle} onClick={() => onNavigate('systems')}>Systems</h2>
+      <p className="about-text">
+        The Systems page features interactive diagrams for T-6B aircraft systems. Explore hydraulic electrical, and more systems to come with annotated schematics
+        that let you trace flows, understand relationships between components, and build systems knowledge for your systems briefs.
       </p>
 
       <p className="about-text" style={{marginTop: '20px', fontStyle: 'italic'}}>
@@ -73,7 +88,7 @@ function TW4About() {
                   open-source GitHub repo
                 </a>.
       </p>
-      
+
       <p className="about-text">
         Thanks,<br/>PinkSheetMafia
       </p>

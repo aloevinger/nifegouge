@@ -69,7 +69,7 @@ function TW4About({ onNavigate }) {
 
       <h2 className="about-subtitle" style={navHeadingStyle} onClick={() => onNavigate('systems')}>Systems</h2>
       <p className="about-text">
-        The Systems page features interactive diagrams for T-6B aircraft systems. Explore hydraulic electrical, and more systems to come with annotated schematics
+        The Systems page features interactive diagrams for T-6B aircraft systems. Explore hydraulics, electrical, and more systems to come with annotated schematics
         that let you trace flows, understand relationships between components, and build systems knowledge for your systems briefs.
       </p>
 

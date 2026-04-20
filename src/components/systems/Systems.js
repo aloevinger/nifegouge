@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import T6BHydraulicDiagram from './hyds/T6BHydraulicDiagram';
 import T6BElectricalDiagram from './elec/T6BElectricalDiagram';
+import T6BPropDiagram from './prop/T6BPropDiagram';
 
 function Systems() {
   const [activeTab, setActiveTab] = useState('hyds');
@@ -22,9 +23,17 @@ function Systems() {
         >
           Electrical
         </span>
+        <span
+          className={activeTab === 'prop' ? 'active' : ''}
+          onClick={() => setActiveTab('prop')}
+          style={{ cursor: 'pointer' }}
+        >
+          Propeller
+        </span>
       </div>
       {activeTab === 'hyds' && <T6BHydraulicDiagram />}
       {activeTab === 'elec' && <T6BElectricalDiagram />}
+      {activeTab === 'prop' && <T6BPropDiagram />}
     </div>
   );
 }

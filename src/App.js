@@ -182,8 +182,8 @@ function App() {
       {/* Page Content */}
       <div>
         {currentPage === 'landing' && <LandingPage onSelectMode={handleLandingSelection} />}
-        {currentPage === 'about' && mode === 'NIFE' && <NIFEAbout />}
-        {currentPage === 'about' && mode === 'TW4 Primary' && <TW4About />}
+        {currentPage === 'about' && mode === 'NIFE' && <NIFEAbout onNavigate={setCurrentPage} />}
+        {currentPage === 'about' && mode === 'TW4 Primary' && <TW4About onNavigate={setCurrentPage} />}
         {currentPage === 'questions' && mode === 'NIFE' && <Questions />}
         {currentPage === 'docs' && mode === 'NIFE' && <Docs />}
         {currentPage === 'frr' && mode === 'NIFE' && <FRR />}

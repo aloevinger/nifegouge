@@ -497,6 +497,13 @@ export default function T6BPropDiagram() {
         </div>
 
       </div>
+      
+
+      {/* ── Attribution ── */}
+      <div style={{ textAlign: 'center', margin: '6px 0', fontSize: 9, letterSpacing: '0.12em', color: '#3a6a8a' }}>
+        IMAGES &amp; COMPONENT DESCRIPTIONS SOURCED FROM{' '}
+        <span style={{ color: '#5ab8e8', fontWeight: 700, letterSpacing: '0.14em' }}>T6BDRIVER.COM</span>
+      </div>
 
       {/* Briefing modal overlay */}
       {briefingTab && (
@@ -1001,6 +1008,16 @@ export default function T6BPropDiagram() {
           </>);
         })()}
 
+        {/* Note under graphs */}
+        <text x={532} y={462}
+          style={{ fontFamily: FONT, fontSize: 8, fill: '#3a5a70', textAnchor: 'start', fontStyle: 'italic' }}>
+          Note: Full pitch-change behavior not described in NATOPS.
+        </text>
+        <text x={528} y={472}
+          style={{ fontFamily: FONT, fontSize: 8, fill: '#3a5a70', textAnchor: 'start', fontStyle: 'italic' }}>
+          Diagram is rough estimate built to develop intuition only.
+        </text>
+
         {/* ════════════════════════════════════════════
             PCL — POWER CONTROL LEVER  (left side)
         ════════════════════════════════════════════ */}
@@ -1304,12 +1321,6 @@ export default function T6BPropDiagram() {
             </text>
           </>);
         })()}
-
-        {/* Disclaimer */}
-        <text x={410} y={456}
-          style={{ fontFamily: FONT, fontSize: 6.5, fill: '#2a4060', textAnchor: 'middle', fontStyle: 'italic' }}>
-          Note: Full NATOPS pitch-change behavior not depicted. Diagram is schematic only.
-        </text>
 
         {/* ════════════════════════════════════════════
             ROTATING BLADE ASSEMBLY  (last = on top of all other elements)

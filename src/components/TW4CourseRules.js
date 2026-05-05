@@ -1075,7 +1075,7 @@ function TW4CourseRules() {
         Huge thank you to Francis Chval for the <a href="https://drive.google.com/drive/folders/1zRndKMJi24wtqIwm_tSC3z71ZMJgFVEk?usp=sharing" target="_blank" rel="noopener noreferrer">map data</a>
       </p>
       <p className="about-text" style={{textAlign: 'center', fontSize: '10px', marginTop: '-20px', color: '#b30000c0'}}>
-        Not yet fully checked. Please reference against official documents and reach out to ENS Loevinger at 8182092151 if you find errors.
+        Not yet fully checked. Please reference against official documents and reach out to PinkSheetMafia at pinksheetmafia@gmail.com if you find errors.
       </p>
 
       {/* Control Mode Selector */}

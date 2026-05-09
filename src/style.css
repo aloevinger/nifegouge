@@ -173,8 +173,60 @@ table,
   margin-bottom: 20px;
 }
 
+.jetlog-wrapper {
+  width: 600px;
+  margin: 0 auto;
+}
+
 .jetlog-table {
   table-layout: fixed;
+  width: 100%;
+  font-size: 1em;
+}
+
+.jetlog-table td {
+  height: 20px;
+}
+
+.jetlog-info-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  margin: 0;
+}
+
+.jetlog-wrapper .jetlog-table {
+  margin-bottom: 0;
+}
+
+.jetlog-info-table td {
+  width: 25%;
+  height: 20px;
+  border: 1px solid black;
+  padding: 1px 3px;
+}
+
+.info-label {
+  display: block;
+  font-size: 0.55em;
+  font-weight: bold;
+  color: #444;
+  line-height: 1;
+}
+
+.jetlog-info-table input {
+  border: none;
+  border-bottom: 1px solid #999;
+  outline: none;
+  background: transparent;
+  font-size: 0.75em;
+  padding: 0;
+  vertical-align: middle;
+}
+
+.jetlog-info-table input::placeholder {
+  color: #bbb;
+  font-style: italic;
 }
 
 th,
@@ -195,10 +247,14 @@ td,
   text-align: left;
 }
 
-.jetlog-table th,
+.jetlog-table th {
+  text-align: center;
+  padding: 1px 3px;
+}
+
 .jetlog-table td {
   text-align: center;
-  padding: 4px;
+  padding: 1px 3px;
 }
 
 th,
@@ -225,8 +281,8 @@ input,
 }
 
 .jetlog-table input {
-  text-align: left;
-  font-size: 0.65em;
+  text-align: center;
+  font-size: 1em;
 }
 
 .form-section input {

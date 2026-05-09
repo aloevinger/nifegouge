@@ -14,6 +14,7 @@ import NIFEAbout from './components/NIFEAbout.js';
 import LandingPage from './components/LandingPage.js';
 import CourseRules from './components/TW4CourseRules.js';
 import Systems from './components/systems/Systems.js';
+import TW4JetLog from './components/TW4JetLog.js';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('landing');
@@ -174,7 +175,17 @@ function App() {
             >
               Systems
             </a>
-            </>
+            <a
+              href="#jetlog"
+              onClick={(e) => {
+                e.preventDefault();
+                setCurrentPage('jetlog');
+              }}
+              className={currentPage === 'jetlog' ? 'active' : ''}
+            >
+              Jet Log
+            </a>
+</>
           )}
         </div>
       </div>}
@@ -195,6 +206,7 @@ function App() {
         {currentPage === 'briefs' && mode === 'TW4 Primary' && <TW4Briefs />}
         {currentPage === 'courserules' && mode === 'TW4 Primary' && <CourseRules />}
         {currentPage === 'systems' && mode === 'TW4 Primary' && <Systems />}
+        {currentPage === 'jetlog' && mode === 'TW4 Primary' && <TW4JetLog />}
       </div>
     </div>
   );

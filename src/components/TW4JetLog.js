@@ -979,11 +979,11 @@ function TW4JetLog() {
     <div className="jetlog-container" onKeyDown={handleKeyNav}>
       {showPDF ? (
         <>
-          <div style={{textAlign: 'center', padding: '8px 0'}}>
-            <button onClick={() => setShowPDF(false)}>← Return to Jet Log</button>
-          </div>
           <div style={{fontSize: '0.68em', color: '#888', textAlign: 'center', marginBottom: '2px'}}>
             Route may be more verbose than necessary. Make route as concise as possible.
+          </div>
+          <div style={{textAlign: 'center', padding: '8px 0'}}>
+            <button onClick={() => setShowPDF(false)}>← Return to Jet Log</button>
           </div>
           <iframe src={pdfUrl} style={{width: '100%', height: 'calc(100vh - 50px)', border: 'none', display: 'block'}} title="DD-1801 Flight Plan" />
         </>

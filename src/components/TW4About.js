@@ -73,6 +73,11 @@ function TW4About({ onNavigate }) {
         that let you trace flows, understand relationships between components, and build systems knowledge for your systems briefs.
       </p>
 
+      <h2 className="about-subtitle" style={navHeadingStyle} onClick={() => onNavigate('jetlog')}>Jet Log</h2>
+      <p className="about-text">
+        The Jet Log page instantly generates a Jet Log and 1801 flight plan, automatically using and interpolating the appropriate NATOPS tables and referencing General Planning chapter 4. Makes flight planning take a fraction of the time!
+      </p>
+
       <p className="about-text" style={{marginTop: '20px', fontStyle: 'italic'}}>
         This is a work in progress. More pages and content will be added over time. If you see any bugs PLEASE reach out personally at pinksheetmafia@gmail.com
       </p>

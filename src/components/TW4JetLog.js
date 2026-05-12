@@ -43,6 +43,7 @@ function TW4JetLog() {
   const [localPresets, setLocalPresets] = useState([]);
   const [showPresets, setShowPresets] = useState(false);
   const [presetName, setPresetName] = useState('');
+  const [jetlogScale, setJetlogScale] = useState(1);
 
   // Alternate table rows use r200+ namespace so main table can grow freely
   const ALT_ROWS = [200, 202, 204, 206];
@@ -160,6 +161,13 @@ function TW4JetLog() {
       return next;
     });
   }, [vfrMode, clncFields.vfrGsCalc, clncFields.vfrLbsPh, vfrApr, altDistKey]);
+
+  useEffect(() => {
+    const update = () => setJetlogScale(Math.min(1, window.innerWidth / 640));
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
 
   useEffect(() => {
     fetch('/presets.json')
@@ -1479,7 +1487,7 @@ function TW4JetLog() {
         >{vfrMode ? 'VFR' : 'IFR'}</button>
       </div>
 
-      <div className="jetlog-wrapper">
+      <div className="jetlog-wrapper" style={jetlogScale < 1 ? {zoom: jetlogScale} : undefined}>
       <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '0'}}>
         <div style={{display: 'flex', alignItems: 'center', gap: '4px'}}>
           <input type="text" value={depInput} onChange={e => { const v = e.target.value; setDepInput(v); const match = airports.find(ap => ap.airport.toUpperCase() === v.trim().toUpperCase()); if (match) selectAirport(match, 'dep'); }} style={{width: '70px', border: '1px solid #999', borderRadius: '3px', padding: '2px 4px', fontSize: '0.85em', backgroundColor: '#f4f4f4'}} />

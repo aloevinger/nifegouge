@@ -1461,10 +1461,13 @@ function TW4JetLog() {
           <div style={{fontSize: '0.68em', color: '#888', textAlign: 'center', marginBottom: '2px'}}>
             Route may be more verbose than necessary. Make route as concise as possible.
           </div>
-          <div style={{textAlign: 'center', padding: '8px 0'}}>
+          <div style={{textAlign: 'center', padding: '8px 0', display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap'}}>
             <button onClick={() => setPdfUrl(prev => { URL.revokeObjectURL(prev); return null; })}>← Return to Jet Log</button>
+            <a href={pdfUrl} download="DD-1801.pdf" target="_blank" rel="noreferrer" style={{display: 'inline-block', padding: '4px 10px', background: '#e8e8e8', border: '1px solid #999', borderRadius: '3px', color: '#000', textDecoration: 'none', fontSize: '0.9em', cursor: 'pointer'}}>Open / Download PDF</a>
           </div>
-          <iframe src={pdfUrl} style={{width: '100%', height: 'calc(100vh - 50px)', border: 'none', display: 'block'}} title="DD-1801 Flight Plan" />
+          {jetlogScale >= 1 && (
+            <iframe src={pdfUrl} style={{width: '100%', height: 'calc(100vh - 50px)', border: 'none', display: 'block'}} title="DD-1801 Flight Plan" />
+          )}
         </>
       ) : (
       <>

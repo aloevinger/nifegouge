@@ -1075,13 +1075,23 @@ function TW4Briefs() {
           }}>
             <ul style={{listStyleType: 'none', padding: 0, margin: 0}}>
               <li style={{marginBottom: '0px'}}>
+                <a href="https://fwb.metoc.navy.mil/" target="_blank" rel="noopener noreferrer" style={{color: '#01202C', textDecoration: 'underline'}}>
+                  FWB (CAC)
+                </a>
+              </li>
+              <li style={{marginBottom: '0px'}}>
                 <a href="https://aviationweather.gov" target="_blank" rel="noopener noreferrer" style={{color: '#01202C', textDecoration: 'underline'}}>
                   Aviation Weather
                 </a>
               </li>
               <li style={{marginBottom: '0px'}}>
                 <a href="https://notams.aim.faa.gov/notamSearch/nsapp.html#/" target="_blank" rel="noopener noreferrer" style={{color: '#01202C', textDecoration: 'underline'}}>
-                  NOTAMs
+                  NOTAMs (FAA)
+                </a>
+              </li>
+              <li style={{marginBottom: '0px'}}>
+                <a href="https://www.daip.jcs.mil/daip/mobile/index" target="_blank" rel="noopener noreferrer" style={{color: '#01202C', textDecoration: 'underline'}}>
+                  NOTAMs (DAIP)
                 </a>
               </li>
               <li style={{marginBottom: '0px'}}>

@@ -5,6 +5,14 @@ const toHHMM = (mins) => {
   return String(Math.floor(m / 60)).padStart(2, '0') + String(m % 60).padStart(2, '0');
 };
 
+const cellFontSize = (val) => {
+  const len = (val || '').length;
+  if (len <= 7) return undefined;
+  if (len <= 10) return '0.73em';
+  if (len <= 13) return '0.61em';
+  return '0.55em';
+};
+
 function TW4JetLog() {
   const [mainRowCount, setMainRowCount] = useState(9);
   const [inputValues, setInputValues] = useState({'r0c4': '1', 'r0c6': '50', 'r0c7': '1050'});
@@ -24,15 +32,15 @@ function TW4JetLog() {
   const [splitCells, setSplitCells] = useState({});
   const [showParams, setShowParams] = useState(false);
   const [params, setParams] = useState({
-    approachTime: '10',
-    approachFuel: '50',
     startFuel: '1100',
     sttoTime: '1',
     sttoFuel: '50',
     holdTime: '15',
-    stdReserve: '200',
+    approachTime: '10',
+    approachFuel: '50',
     tngTime: '5',
     tngFuel: '25',
+    stdReserve: '200',
   });
   const [routeBadges, setRouteBadges] = useState({});
   const [pdfUrl, setPdfUrl] = useState(null);
@@ -133,6 +141,23 @@ function TW4JetLog() {
       return next;
     });
   }, [vfrMode, vfrApr, params.approachTime, params.approachFuel]);
+
+  useEffect(() => {
+    if (vfrMode) return;
+    const entries = Object.entries(routeBadges).filter(
+      ([cellId, badge]) => typeof badge === 'number' && /^r\d+c0$/.test(cellId)
+    );
+    if (!entries.length) return;
+    setInputValues(prev => {
+      const next = { ...prev };
+      for (const [cellId, badge] of entries) {
+        const row = parseInt(cellId.match(/\d+/)[0]);
+        next[`r${row}c4`] = String(badge * (parseFloat(params.approachTime) || 0));
+        next[`r${row}c6`] = String(badge * (parseFloat(params.approachFuel) || 0));
+      }
+      return next;
+    });
+  }, [vfrMode, routeBadges, params.approachTime, params.approachFuel]);
 
   // Derive a stable key from alt-row distances so the effect below re-runs only when dist changes.
   // c3 is the only column this effect reads; it never writes c3, so no infinite loop.
@@ -452,22 +477,27 @@ function TW4JetLog() {
   );
 
   const renderCell = (cellId, rowSpan, colSpan) => {
-    const vfrFontStyle = vfrMode ? {fontSize: '0.85em'} : undefined;
+    const val = inputValues[cellId] || '';
     if (splitCells[cellId]) {
       const { top, bottom } = splitCells[cellId];
+      const longest = (top || '').length >= (bottom || '').length ? top : bottom;
+      const splitFontSize = vfrMode ? '0.85em' : cellFontSize(longest);
+      const splitFontStyle = splitFontSize ? {fontSize: splitFontSize} : undefined;
       return (
-        <td id={cellId} rowSpan={rowSpan || undefined} colSpan={colSpan || undefined} style={{padding: 0, border: '1px solid black', verticalAlign: 'middle', ...vfrFontStyle}}>
+        <td id={cellId} rowSpan={rowSpan || undefined} colSpan={colSpan || undefined} style={{padding: 0, border: '1px solid black', verticalAlign: 'middle', ...splitFontStyle}}>
           <div style={{borderBottom: '1px solid #000', textAlign: 'center', padding: '1px 3px'}}>{top}</div>
           <div style={{textAlign: 'center', padding: '1px 3px'}}>{bottom}</div>
         </td>
       );
     }
+    const fontSize = vfrMode ? '0.85em' : cellFontSize(val);
+    const fontStyle = fontSize ? {fontSize} : undefined;
     return (
       <td id={cellId} {...(rowSpan && { rowSpan })} {...(colSpan && { colSpan })}>
         <input
-          value={inputValues[cellId] || ''}
+          value={val}
           onChange={(e) => handleInputChange(cellId, e.target.value)}
-          style={vfrFontStyle}
+          style={fontStyle}
         />
       </td>
     );
@@ -1046,7 +1076,7 @@ function TW4JetLog() {
   const saveLocalPreset = (name) => {
     if (!name.trim()) return;
     const trimmed = name.trim();
-    const allNames = [...localPresets, ...sharedPresets].map(p => p.name?.toLowerCase());
+    const allNames = localPresets.map(p => p.name?.toLowerCase());
     if (allNames.includes(trimmed.toLowerCase())) {
       alert(`A preset named "${trimmed}" already exists.`);
       return;
@@ -1155,8 +1185,11 @@ function TW4JetLog() {
 
   const generateFlightPlan = async () => {
     try {
-      const { PDFDocument, PDFName, PDFArray, PDFString } = await import('pdf-lib');
-      const pdfBytes = await fetch('/DD-1801.pdf').then(r => r.arrayBuffer());
+      const { PDFDocument, PDFName, PDFArray, PDFString, StandardFonts, rgb, degrees } = await import('pdf-lib');
+      const [pdfBytes, jlBytes] = await Promise.all([
+        fetch('/DD-1801.pdf').then(r => r.arrayBuffer()),
+        fetch(`/${vfrMode ? 'vfrflightlog' : 'ifrflightlog'}.pdf`).then(r => r.arrayBuffer()),
+      ]);
       const pdfDoc = await PDFDocument.load(pdfBytes, { ignoreEncryption: true });
       pdfDoc.context.trailerInfo.Encrypt = undefined;
 
@@ -1409,6 +1442,418 @@ function TW4JetLog() {
       // 19a Endurance
       fillText(212, 232, 62, 138, fuelStr);
 
+      // ── Jet Log page ─────────────────────────────────────────────────
+      const jlTemplateDoc = await PDFDocument.load(jlBytes);
+      const [jlTemplatePage] = await pdfDoc.copyPages(jlTemplateDoc, [0]);
+      pdfDoc.addPage(jlTemplatePage);
+      const jlPage = pdfDoc.getPages()[pdfDoc.getPageCount() - 1];
+      const jlFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+      // Set DEBUG_COORDS = true to overlay red dots at every text anchor for calibration.
+      // Generate the PDF, open page 2, compare dot positions to the blank form's fields,
+      // then update the coordinate constants below and set DEBUG_COORDS = false.
+      // DEBUG_COORDS = true: draws a green grid every 100 pt in VISUAL coordinates
+      // (readable right-side-up in the landscape view) plus red/blue dots at each anchor.
+      // Read coordinates off the grid, update the constants below, then set to false.
+      const DEBUG_COORDS = false;
+
+      // Page dimensions and rotation of the copied template page
+      const jlW = jlPage.getWidth();   // PDF stored width  (612 for this form)
+      const jlH = jlPage.getHeight();  // PDF stored height (792 for this form)
+      const jlRot = jlPage.getRotation().angle; // 270 for this form
+      console.log(`Jet log template: W=${jlW} H=${jlH} Rot=${jlRot}`);
+
+      // Visual landscape dimensions after applying the page rotation
+      const visW = (jlRot === 90 || jlRot === 270) ? jlH : jlW; // 792
+      const visH = (jlRot === 90 || jlRot === 270) ? jlW : jlH; // 612
+
+      // Transform from VISUAL coords (vx: 0=left, vy: 0=bottom of landscape display)
+      // to PDF user-space coords.  Derived from Rot=270 corner analysis:
+      //   visual(0,0)=bottom-left → PDF(0,792), visual(792,612)=top-right → PDF(612,0)
+      const toP = (vx, vy) => {
+        switch (jlRot) {
+          case 270: return { x: vy,        y: jlH - vx };
+          case 90:  return { x: jlW - vy,  y: vx       };
+          case 180: return { x: jlW - vx,  y: jlH - vy };
+          default:  return { x: vx,        y: vy        };
+        }
+      };
+
+      // Text rotation so characters appear readable in the landscape display.
+      // For Rot=270: normalRot=270 (baseline runs in visual +x = rightward).
+      // flippedRot=90 produces upside-down text (fuel plan section).
+      const normalRot  = jlRot;
+      const flippedRot = (jlRot + 180) % 360;
+
+      if (DEBUG_COORDS) {
+        // Green grid every 100 pt in VISUAL coordinates — labels are readable right-side-up
+        for (let gx = 100; gx < visW; gx += 100) {
+          const p1 = toP(gx, 0); const p2 = toP(gx, visH);
+          jlPage.drawLine({ start: p1, end: p2, thickness: 0.3, color: rgb(0, 0.7, 0) });
+          const lp = toP(gx + 2, 6);
+          jlPage.drawText(String(gx), { x: lp.x, y: lp.y, size: 5, font: jlFont, color: rgb(0, 0.6, 0), rotate: degrees(normalRot) });
+        }
+        for (let gy = 100; gy < visH; gy += 100) {
+          const p1 = toP(0, gy); const p2 = toP(visW, gy);
+          jlPage.drawLine({ start: p1, end: p2, thickness: 0.3, color: rgb(0, 0.7, 0) });
+          const lp = toP(6, gy + 2);
+          jlPage.drawText(String(gy), { x: lp.x, y: lp.y, size: 5, font: jlFont, color: rgb(0, 0.6, 0), rotate: degrees(normalRot) });
+        }
+        // Corner: red dot at visual bottom-left (0,0), blue at visual top-right
+        const bl = toP(5, 5);
+        jlPage.drawCircle({ x: bl.x, y: bl.y, size: 4, color: rgb(1, 0, 0) });
+        const tr = toP(visW - 5, visH - 5);
+        jlPage.drawCircle({ x: tr.x, y: tr.y, size: 4, color: rgb(0, 0.3, 1) });
+      }
+
+      const toWinAnsi = (s) => s
+        .replace(/→/g, ' ->').replace(/←/g, '<-').replace(/↑/g, '^').replace(/↓/g, 'v')
+        .replace(/[^\x00-\xFF]/g, '?');
+
+      // All coordinates in draw/drawFlipped are VISUAL coordinates:
+      //   vx: 0 = left edge of landscape page, increases rightward
+      //   vy: 0 = bottom edge, increases upward
+      // These match the green grid labels you see in the generated PDF.
+      const draw = (vx, vy, text, size = 7) => {
+        const str = toWinAnsi((text == null ? '' : String(text)).trim());
+        const { x, y } = toP(vx, vy);
+        if (str) jlPage.drawText(str, { x, y, size, font: jlFont, color: rgb(0, 0, 0), rotate: degrees(normalRot) });
+        if (DEBUG_COORDS) jlPage.drawCircle({ x, y, size: 1.5, color: rgb(1, 0, 0) });
+      };
+      // drawFreq: like draw, but splits "xxx/yyy" onto two lines in VFR mode.
+      const drawFreq = (vx, vy, text, size = 7, diff = 3) => {
+        if (vfrMode && text && text.includes('/')) {
+          const slashIdx = text.indexOf('/');
+          draw(vx, vy + diff, text.slice(0, slashIdx).trim(), size);
+          draw(vx, vy - diff, text.slice(slashIdx + 1).trim(), size);
+        } else {
+          draw(vx, vy, text, size);
+        }
+      };
+      // drawFlipped: upside-down text for sections printed inverted on the blank form.
+      // vx,vy is the visual RIGHT edge of the value (text extends visually leftward).
+      // Blue dots in debug mode.
+      const drawFlipped = (vx, vy, text, size = 10) => {
+        const str = toWinAnsi((text == null ? '' : String(text)).trim());
+        const { x, y } = toP(vx, vy);
+        if (str) jlPage.drawText(str, { x, y, size, font: jlFont, color: rgb(0, 0, 0), rotate: degrees(flippedRot) });
+        if (DEBUG_COORDS) jlPage.drawCircle({ x, y, size: 1.5, color: rgb(0, 0.3, 1) });
+      };
+
+      const iv = (id) => (inputValues[id] || '').trim();
+      const sc = (id) => splitCells[id];
+
+      // ── Coordinate constants (VISUAL landscape coords) ──────────────────
+      // vx: 0 = left edge of landscape page, increases rightward  (max ≈ 792)
+      // vy: 0 = bottom edge, increases upward                     (max ≈ 612)
+      // Read values directly off the green grid labels.
+      // IFR form layout:
+      //   Left half  (vx 0–390):  header/info, clearance block, fuel plan (bottom, upside-down)
+      //   Right half (vx 390–780): main flight log table (normal orientation)
+
+      const IFR_C = {
+        //Above table text
+        tabletopY: 583, altSelX: 710, routeHeaderX: 420,
+        // -- Left half: header rows (departure, destination, alternate) --
+        // Section y=575-475; three airport-info rows at ~31pt pitch
+        row1Y: 566, row2Y: 473, row3Y: 186, altRow2Y: 165,
+        depX: 427,     clncDelX: 510, gndContX: 595, towerX: 685,
+        destX: 435,    destApcX: 510, destTwrX: 595, destGndX: 697,
+        altX: 425,     altApcX: 535,  altTwrX: 620,  altGndX: 685,
+        altElevX: 460, altLevelX: 640,
+        altRouteX: 535, altFuelX: 685, altTimeX: 723,
+        // -- Clearance / performance block --
+        clnc1Y: 515, clnc2Y: 503, clnc3Y: 490, clncWindY: 497,
+        ttcX: 420,
+        tasClimbX: 630, lbsPhClimbX: 715,
+        climbWindX: 705, deltaTX: 697, oatX: 725,
+        // -- Main flight log table (x=410-760, y=575-25) --
+        mainFirstRowY: 445, mainRowPitch: 24,
+        routeTopX: 420,
+        identX: 480, cusX: 511, distX: 543, eteX: 570, etaX: 603, fuelX: 622, efrX: 655, gsX: 685,
+        // -- Alternate route table (y=170-25) --
+        altFirstRowY: 162, altRowPitch: 26,
+        totDistX: 543, totEteX: 573, totFuelX: 625,
+        // -- Fuel plan (UPSIDE DOWN — drawFlipped) --
+        fpStartY: 50, fpPitch: 20, fpLeftX: 250, fpRightX: 55,
+      };
+
+      const VFR_C = {
+        row1Y: 572, row2Y: 480, row3Y: 133, altRow2Y: 122,
+        depX: 90,  clncDelX: 182, gndContX: 264, towerX: 340,
+        destX: 80, destApcX: 165, destTwrX: 253, destGndX: 335,
+        altX: 95,  altApcX: 180,  altTwrX: 260,  altGndX: 355,
+        altElevX: 90, altLevelX: 260,
+        altRouteX: 175, altFuelX: 330, altTimeX: 372,
+        clnc1Y: 555, clnc2Y: 540, clnc3Y: 524, clnc4Y: 508, clncWindY: 446,
+        altSelX: 18, gsCalcX: 280, lbsPhX: 375,
+        atisX: 80, windAtAltX: 150,
+        clnc1aX: 50, clnc1bX: 225, clnc2aX: 50, clnc2bX: 225,
+        clnc3aX: 50, clnc3bX: 225, clnc4aX: 50, clnc4bX: 225,
+        mainFirstRowY: 446, mainRowPitch: 20.5,
+        routeTopX: 52,
+        identX: 114, cusX: 140, distX: 165, eteX: 188, etaX: 214, fuelX: 245, efrX: 268, notesFuelX: 295, notesUserX: 350,
+        altFirstRowY: 115, altRowPitch: 20.5,
+        totDistX: 147, totEteX: 177, totFuelX: 229,
+        fpStartY: 543, fpPitch: -20, fpLeftX: 510, fpRightX: 680, fpFontSize: 12,
+        fpYOffsetsLeft:  [0, -33, -49, -66, -97],
+        fpYOffsetsRight: [+14, -17, -33, -50],
+      };
+
+      const C = vfrMode ? VFR_C : IFR_C;
+
+      //Altitude and route header
+      const routeHeaderStr = [depInput.trim().toUpperCase(), destInput.trim().toUpperCase()].filter(Boolean).join(' -> ');
+      if (routeHeaderStr && !vfrMode) draw(C.routeHeaderX, C.tabletopY, routeHeaderStr);
+      // ── Header block ────────────────────────────────────────────────
+      const freqFont = vfrMode ? 6 : 8;
+      const superFreqFont = vfrMode ? 5 : 8;
+      draw(C.depX,     C.row1Y, infoFields.depElev);
+      drawFreq(C.clncDelX, C.row1Y, infoFields.clncDel, freqFont);
+      drawFreq(C.gndContX, C.row1Y, infoFields.gndCont, freqFont);
+      drawFreq(C.towerX,   C.row1Y, infoFields.tower, freqFont);
+
+      draw(C.destX,    C.row2Y, infoFields.destElev);
+      drawFreq(C.destApcX, C.row2Y, infoFields.destApcCont, freqFont);
+      drawFreq(C.destTwrX, C.row2Y, infoFields.destTower, freqFont);
+      drawFreq(C.destGndX, C.row2Y, infoFields.destGndCont, freqFont);
+
+      draw(C.altX,     C.row3Y, infoFields.alternate);
+      drawFreq(C.altApcX,  C.altRow2Y, infoFields.altApcCont, superFreqFont, 2);
+      drawFreq(C.altTwrX,  C.altRow2Y, infoFields.altTower, superFreqFont, 2);
+      drawFreq(C.altGndX,  C.altRow2Y, infoFields.altGndCont, superFreqFont, 2);
+
+      // ── Clearance / performance block ────────────────────────────────
+      if (vfrMode) {
+        draw(C.gsCalcX,    C.clnc1Y + 1, clncFields.vfrGsCalc);
+        draw(C.lbsPhX,     C.clnc1Y + 1, clncFields.vfrLbsPh);
+        drawFreq(C.atisX,      C.clnc1Y + 4, clncFields.vfrAtis, freqFont);
+        draw(C.windAtAltX, C.clnc2Y, clncFields.vfrWindAtAlt);
+        draw(C.clnc1aX, C.clnc1Y - 16, clncFields.vfrClnc1a, 8);
+        draw(C.clnc1bX, C.clnc1Y - 16, clncFields.vfrClnc1b, 8);
+        draw(C.clnc2aX, C.clnc2Y - 16, clncFields.vfrClnc2a, 8);
+        draw(C.clnc2bX, C.clnc2Y - 16, clncFields.vfrClnc2b, 8);
+        draw(C.clnc3aX, C.clnc3Y - 16, clncFields.vfrClnc3a, 8);
+        draw(C.clnc3bX, C.clnc3Y - 16, clncFields.vfrClnc3b, 8);
+        draw(C.clnc4aX, C.clnc4Y - 16, clncFields.vfrClnc4a, 8);
+        draw(C.clnc4bX, C.clnc4Y - 16, clncFields.vfrClnc4b, 8);
+      } else {
+        draw(C.altSelX, C.tabletopY, selectedAlt >= 18000
+            ? `FL${String(Math.round(selectedAlt / 100)).padStart(3, '0')}`
+            : `${selectedAlt.toLocaleString()}' MSL`);
+      // Climb/Cruise TAS and LBs PH
+        draw(C.tasClimbX, C.row1Y - 15, clncFields.tasClimb    ? `Climb: ${clncFields.tasClimb}`  : '');
+        draw(C.tasClimbX, C.row1Y - 22, clncFields.tasCruise    ? `Cruise: ${clncFields.tasCruise}`  : '');
+        draw(C.tasClimbX, C.row1Y - 33, clncFields.ias    ? `IAS: ${clncFields.ias}`  : '');
+        draw(C.lbsPhClimbX, C.row1Y - 15, clncFields.lbsPhClimb    ? `Climb: ${clncFields.lbsPhClimb}`  : '');
+        draw(C.lbsPhClimbX, C.row1Y - 22,clncFields.lbsPhCruise    ? `Cruise: ${clncFields.lbsPhCruise}`  : '');
+
+
+
+        draw(C.ttcX,       C.clnc1Y, clncFields.ttc    ? `TTC: ${clncFields.ttc}`  : '');
+        draw(C.ttcX,       C.clnc2Y, clncFields.fuel    ? `Fuel: ${clncFields.fuel}`  : '');
+        draw(C.ttcX,       C.clnc3Y, clncFields.dist    ? `Dist: ${clncFields.dist}`  : '');
+        draw(C.climbWindX,  C.clnc1Y,
+          clncFields.climbDir  ? `Climb: ${clncFields.climbDir}/${clncFields.climbVel}`   : '');
+        draw(C.climbWindX, C.clnc2Y,
+          clncFields.cruiseDir ? `Cruise: ${clncFields.cruiseDir}/${clncFields.cruiseVel}` : '');
+        draw(C.deltaTX,    C.clnc3Y, clncFields.deltaT ? `dT: ${clncFields.deltaT}` : '');
+        draw(C.oatX,       C.clnc3Y, clncFields.oat    ? `OAT: ${clncFields.oat}`  : '');
+      }
+
+      // ── Main route table ─────────────────────────────────────────────
+      const drawR = (vx, vy, text, size = 8) => draw(vx, vy, text, size);
+      const drawAuto = (vx, vy, text, baseSize = 8) => {
+        const len = (text || '').length;
+        const size = len > 10 ? baseSize - 3 : len > 8 ? baseSize - 2 : len >= 6 ? baseSize - 1 : baseSize;
+        drawR(vx, vy, text, Math.max(4, size));
+      };
+      for (let pairIdx = 0; pairIdx < mainRowCount; pairIdx++) {
+        const topRow   = pairIdx * 2;
+        const rowY     = C.mainFirstRowY - pairIdx * C.mainRowPitch;
+        const cellCY   = rowY - C.mainRowPitch / 2;
+        const splitOff = vfrMode ? Math.round(C.mainRowPitch * 0.2) + 1 : Math.round(C.mainRowPitch * 0.2);
+
+        const routeFrom = pairIdx === 0 ? (iv(`r${topRow}c0_a`) || 'STTO') : iv(`r${topRow}c0_a`);
+        const routeTo   = iv(`r${topRow}c0_b`);
+        const identStr  = iv(`r${topRow}c1`);
+        const identNum  = iv(`r${topRow+1}c0`);
+
+
+        // ROUTE column
+        if (vfrMode) {
+          // c0_a is FP code (flight plan only — omit from jet log); c0_b is the place name
+          const place = routeTo || (pairIdx === 0 ? 'STTO' : '');
+          if (place.length > 10) {
+            const sp = place.lastIndexOf(' ', 9);
+            const cut = sp > 0 ? sp : 10;
+            drawR(C.routeTopX, cellCY + splitOff, place.slice(0, cut));
+            drawR(C.routeTopX, cellCY - splitOff, place.slice(cut).trimStart());
+          } else {
+            drawR(C.routeTopX, cellCY, place);
+          }
+        } else {
+          if (routeTo) {
+            drawR(C.routeTopX, cellCY + splitOff, routeFrom);
+            drawR(C.routeTopX, cellCY - splitOff, routeTo);
+          } else {
+            drawR(C.routeTopX, cellCY, routeFrom);
+          }
+        }
+
+        // IDENT / TO column: two-line when both present, single-line centered otherwise
+        if (identStr || identNum) {
+          drawR(C.identX, cellCY + splitOff, identStr);
+          drawR(C.identX-3, cellCY - splitOff, identNum);
+        }
+
+        drawR(C.cusX,  cellCY, iv(`r${topRow}c2`));
+        drawR(C.distX, cellCY, iv(`r${topRow}c3`));
+
+        const eteSplit = sc(`r${topRow}c4`);
+        if (eteSplit) {
+          drawAuto(C.eteX, cellCY + splitOff, eteSplit.top);
+          drawAuto(C.eteX, cellCY - splitOff, eteSplit.bottom);
+        } else {
+          drawAuto(C.eteX, cellCY, iv(`r${topRow}c4`));
+        }
+
+        drawR(C.etaX, vfrMode ? cellCY + splitOff : cellCY, iv(`r${topRow}c5`));
+
+        const fuelSplit = sc(`r${topRow}c6`);
+        if (fuelSplit) {
+          drawAuto(C.fuelX, cellCY + splitOff, fuelSplit.top);
+          drawAuto(C.fuelX, cellCY - splitOff, fuelSplit.bottom);
+        } else {
+          drawAuto(C.fuelX, cellCY, iv(`r${topRow}c6`));
+        }
+
+        drawR(C.efrX, cellCY + splitOff, iv(`r${topRow}c7`));
+
+        if (vfrMode) {
+          drawR(C.notesFuelX, cellCY, iv(`r${topRow}c8`));
+          drawR(C.notesUserX, cellCY, iv(`r${topRow}c9`));
+        } else {
+          const gsSplit = sc(`r${topRow}c8`);
+          if (gsSplit) {
+            drawR(C.gsX, cellCY + splitOff, gsSplit.top);
+            drawR(C.gsX, cellCY - splitOff, gsSplit.bottom);
+          } else {
+            drawR(C.gsX, cellCY, iv(`r${topRow}c8`));
+          }
+        }
+      }
+
+      // Main totals row
+      const jlMainRows = Array.from({length: mainRowCount}, (_, i) => i * 2);
+      const jlTotDist = jlMainRows.reduce((s, r) => {
+        const v = parseFloat((inputValues[`r${r}c3`] || '').match(/-?\d+(\.\d+)?/)?.[0]);
+        return s + (isNaN(v) ? 0 : v);
+      }, 0);
+      const jlTotEte = jlMainRows.reduce((s, r) => s + parseEteMins(inputValues[`r${r}c4`] || ''), 0);
+      const jlTotFuel = jlMainRows.reduce((s, r) => {
+        const v = parseFloat((inputValues[`r${r}c6`] || '').match(/-?\d+(\.\d+)?/)?.[0]);
+        return s + (isNaN(v) ? 0 : v);
+      }, 0);
+      const jlTotY  = vfrMode ?  C.mainFirstRowY - 14* C.mainRowPitch : C.mainFirstRowY - 9 * C.mainRowPitch;
+      const jlTotCY = jlTotY - C.mainRowPitch / 2;
+      const eteAdjust = vfrMode ? 0:5;
+      drawR(C.routeTopX, jlTotCY, 'Total');
+      drawR(C.distX,  jlTotCY, jlTotDist > 0 ? String(Math.round(jlTotDist)) : '');
+      drawR(C.eteX-eteAdjust,   jlTotCY, jlTotEte  > 0 ? formatEteSum(jlTotEte)        : '');
+      drawR(C.fuelX,  jlTotCY, jlTotFuel > 0 ? String(Math.round(jlTotFuel)) : '');
+
+      // ── Alternate route table ─────────────────────────────────────────
+      ALT_ROWS.forEach((topRow, altIdx) => {
+        const rowY     = C.altFirstRowY - altIdx * C.altRowPitch;
+        const cellCY   = rowY - C.altRowPitch / 2;
+        const splitOff = Math.round(C.altRowPitch * 0.2);
+
+        const routeFrom = iv(`r${topRow}c0_a`);
+        const routeTo   = iv(`r${topRow}c0_b`);
+        const identStr  = iv(`r${topRow}c1`);
+        const identNum  = iv(`r${topRow+1}c0`);
+        const eteAdjust = vfrMode ? 5:0;
+        
+
+        // ROUTE column
+        if (vfrMode) {
+          const place = routeTo;
+          if (place.length > 10) {
+            const sp = place.lastIndexOf(' ', 9);
+            const cut = sp > 0 ? sp : 10;
+            drawR(C.routeTopX, cellCY + splitOff, place.slice(0, cut));
+            drawR(C.routeTopX, cellCY - splitOff, place.slice(cut).trimStart());
+          } else {
+            drawR(C.routeTopX, cellCY, place);
+          }
+        } else {
+          if (routeTo) {
+            drawR(C.routeTopX, cellCY + splitOff, routeFrom);
+            drawR(C.routeTopX, cellCY - splitOff, routeTo);
+          } else {
+            drawR(C.routeTopX, cellCY, routeFrom);
+          }
+        }
+
+        // IDENT / TO column: two-line when both present, single-line centered otherwise
+        if (identStr || identNum) {
+          drawR(C.identX, cellCY + splitOff, identStr);
+          drawR(C.identX-3, cellCY - splitOff, identNum);
+        }
+
+        drawR(C.cusX,  cellCY, iv(`r${topRow}c2`));
+        drawR(C.distX, cellCY, iv(`r${topRow}c3`));
+        drawAuto(C.eteX + eteAdjust,  cellCY, iv(`r${topRow}c4`));
+        drawR(C.etaX,  vfrMode ? cellCY + splitOff : cellCY, iv(`r${topRow}c5`));
+        drawAuto(C.fuelX, cellCY, iv(`r${topRow}c6`));
+        drawR(C.efrX,  cellCY + splitOff, iv(`r${topRow}c7`));
+        if (vfrMode) {
+          drawR(C.notesFuelX, cellCY, iv(`r${topRow}c8`));
+          drawR(C.notesUserX, cellCY, iv(`r${topRow}c9`));
+        } else {
+          drawR(C.gsX, cellCY, iv(`r${topRow}c8`));
+        }
+      });
+
+      // Alternate totals row
+      const jlAltTotDist = ALT_ROWS.reduce((s, r) => {
+        const v = parseFloat((inputValues[`r${r}c3`] || '').match(/-?\d+(\.\d+)?/)?.[0]);
+        return s + (isNaN(v) ? 0 : v);
+      }, 0);
+      const jlAltTotEte = ALT_ROWS.reduce((s, r) => s + parseEteMins(inputValues[`r${r}c4`] || ''), 0);
+      const jlAltTotFuel = ALT_ROWS.reduce((s, r) => {
+        const v = parseFloat((inputValues[`r${r}c6`] || '').match(/-?\d+(\.\d+)?/)?.[0]);
+        return s + (isNaN(v) ? 0 : v);
+      }, 0);
+      const jlAltTotY  = vfrMode ?  C.altFirstRowY - 3 * C.altRowPitch : C.altFirstRowY - 4 * C.altRowPitch;
+      const jlAltTotCY = jlAltTotY - C.altRowPitch / 2;
+      drawR(C.routeTopX, jlAltTotCY, 'Total');
+      drawR(C.distX,  jlAltTotCY, jlAltTotDist > 0 ? String(Math.round(jlAltTotDist)) : '');
+      drawR(C.eteX - eteAdjust,   jlAltTotCY, jlAltTotEte  > 0 ? formatEteSum(jlAltTotEte)         : '');
+      drawR(C.fuelX,  jlAltTotCY, jlAltTotFuel > 0 ? String(Math.round(jlAltTotFuel)) : '');
+
+      // ── Alternate header summary (elev/level on row3Y; route/fuel/time on row3Y-21) ──
+      draw(C.altElevX,  C.altRow2Y,      infoFields.altElev);
+      if (iv('altalt'))   draw(C.altLevelX, C.row3Y, iv('altalt'));
+      if (iv('altroute')) draw(C.altRouteX, C.row3Y, iv('altroute'));
+      if (fuelDisplay) draw(C.altFuelX, C.row3Y, fuelDisplay);
+      if (jlAltTotEte > 0)  draw(C.altTimeX, C.row3Y, formatEteSum(jlAltTotEte));
+
+      // ── Fuel plan (9 rows: 5 left, 4 right) ───────────────────────────
+      fuelPlan.forEach(([leftVal, rightVal], i) => {
+        const fyLeft  = C.fpStartY + (C.fpYOffsetsLeft  ? C.fpYOffsetsLeft[i]  : i * C.fpPitch);
+        const fyRight = C.fpStartY + (C.fpYOffsetsRight ? C.fpYOffsetsRight[i] : i * C.fpPitch);
+        const fpSize = C.fpFontSize || 7;
+        if (vfrMode) {
+          draw(C.fpLeftX,  fyLeft,  leftVal, fpSize);
+          if (rightVal !== null) draw(C.fpRightX, fyRight, rightVal, fpSize);
+        } else {
+          drawFlipped(C.fpLeftX,  fyLeft, leftVal);
+          if (rightVal !== null) drawFlipped(C.fpRightX, fyLeft, rightVal);
+        }
+      });
+
       // ── Save and display ─────────────────────────────────────────────
       const filled = await pdfDoc.save();
       const blob = new Blob([filled], { type: 'application/pdf' });
@@ -1458,7 +1903,7 @@ function TW4JetLog() {
     <div className="jetlog-container" onKeyDown={handleKeyNav}>
       {pdfUrl ? (
         <>
-          <div style={{fontSize: '0.68em', color: '#888', textAlign: 'center', marginBottom: '2px'}}>
+          <div style={{fontSize: '0.68em', color: '#e93333', textAlign: 'center', marginBottom: '2px'}}>
             Route may be more verbose than necessary. Make route as concise as possible.
           </div>
           <div style={{textAlign: 'center', padding: '8px 0', display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap'}}>
@@ -1483,7 +1928,7 @@ function TW4JetLog() {
         <button onClick={handleRemoveRow}>Remove Row</button>
         <button onClick={() => setShowParams(true)}>Parameters</button>
         <button onClick={() => setShowPresets(s => !s)}>Preset Routes</button>
-        <button onClick={generateFlightPlan}>Generate 1801 Flight Plan</button>
+        <button onClick={generateFlightPlan}>Generate Flight Plan + Jet Log</button>
         <button
           onClick={() => { setVfrMode(m => { const next = !m; const newAlt = next ? 3000 : 1000; setSelectedAlt(newAlt); if (next) autoFillVFRCruise(clncFields.vfrGsCalc); return next; }); }}
           style={{fontWeight: 'bold', background: vfrMode ? '#1e40af' : undefined, color: vfrMode ? 'white' : undefined}}
@@ -1828,16 +2273,16 @@ function TW4JetLog() {
           >
             <div style={{fontWeight: 'bold', fontSize: '1em', marginBottom: '16px', textAlign: 'center', letterSpacing: '0.05em'}}>PARAMETERS</div>
             {[
-              {label: 'Approach Time (min)', key: 'approachTime'},
-              {label: 'Approach Fuel (lbs)', key: 'approachFuel'},
-              {label: 'Start Fuel (lbs)',    key: 'startFuel'},
-              {label: 'STTO Time (min)',     key: 'sttoTime'},
-              {label: 'STTO Fuel (lbs)',     key: 'sttoFuel'},
+              {label: 'Start Fuel (lbs)',        key: 'startFuel'},
+              {label: 'STTO Time (min)',         key: 'sttoTime'},
+              {label: 'STTO Fuel (lbs)',         key: 'sttoFuel'},
               {label: 'Hold Time (min)',         key: 'holdTime', vfrHide: true},
+              {label: 'Approach Time (min)',     key: 'approachTime'},
+              {label: 'Approach Fuel (lbs)',     key: 'approachFuel'},
+              {label: 'T&G Time (min)',          key: 'tngTime', ifrHide: true},
+              {label: 'T&G Fuel (lbs)',          key: 'tngFuel', ifrHide: true},
               {label: 'STD Reserve Fuel (lbs)', key: 'stdReserve'},
-              {label: 'T&G Time (min)',          key: 'tngTime'},
-              {label: 'T&G Fuel (lbs)',          key: 'tngFuel'},
-            ].filter(p => !vfrMode || !p.vfrHide).map(({label, key}) => (
+            ].filter(p => (!vfrMode || !p.vfrHide) && (vfrMode || !p.ifrHide)).map(({label, key}) => (
               <div key={key} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', gap: '16px'}}>
                 <label style={{fontSize: '0.85em', whiteSpace: 'nowrap', color: '#333'}}>{label}</label>
                 <input

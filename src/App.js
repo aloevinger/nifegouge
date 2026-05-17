@@ -153,7 +153,7 @@ function App() {
               }}
               className={currentPage === 'briefs' ? 'active' : ''}
             >
-              Briefs
+              Briefs/TOLD
             </a>
             <a
               href="#courserules"

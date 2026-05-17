@@ -242,13 +242,30 @@ function TW4JetLog() {
     const row = ttcData.reduce((best, r) =>
       Math.abs(r.alt - alt) < Math.abs(best.alt - alt) ? r : best
     );
+
     const deltaTOptions = [-20, 0, 10, 20];
-    const colIdx = deltaTOptions.reduce((bestI, v, i) =>
-      Math.abs(v - dt) < Math.abs(deltaTOptions[bestI] - dt) ? i : bestI
-    , 0);
-    let ttc = row.time[colIdx];
-    let fuel = row.fuel[colIdx];
-    let dist = row.dist[colIdx];
+    const interpRow = (r) => {
+      if (dt <= deltaTOptions[0])
+        return { time: r.time[0], fuel: r.fuel[0], dist: r.dist[0] };
+      if (dt >= deltaTOptions[deltaTOptions.length - 1]) {
+        const last = deltaTOptions.length - 1;
+        return { time: r.time[last], fuel: r.fuel[last], dist: r.dist[last] };
+      }
+      let loI = 0;
+      for (let i = 0; i < deltaTOptions.length - 1; i++) {
+        if (dt >= deltaTOptions[i] && dt <= deltaTOptions[i + 1]) { loI = i; break; }
+      }
+      const hiI = loI + 1;
+      const f = (dt - deltaTOptions[loI]) / (deltaTOptions[hiI] - deltaTOptions[loI]);
+      const lerp = (arr) =>
+        arr[loI] == null || arr[hiI] == null ? null : arr[loI] + f * (arr[hiI] - arr[loI]);
+      return { time: lerp(r.time), fuel: lerp(r.fuel), dist: lerp(r.dist) };
+    };
+
+    const vals = interpRow(row);
+    let ttc  = vals.time;
+    let fuel = vals.fuel;
+    let dist = vals.dist;
 
     const depElev = parseElevation(depElevText);
     if (depElev > 4499) {
@@ -256,16 +273,21 @@ function TW4JetLog() {
       const elevRow = ttcData.reduce((best, r) =>
         Math.abs(r.alt - roundedElev) < Math.abs(best.alt - roundedElev) ? r : best
       );
-      if (ttc != null && elevRow.time[colIdx] != null) ttc = ttc - elevRow.time[colIdx];
-      if (fuel != null && elevRow.fuel[colIdx] != null) fuel = fuel - elevRow.fuel[colIdx];
-      if (dist != null && elevRow.dist[colIdx] != null) dist = dist - elevRow.dist[colIdx];
+      const depVals = interpRow(elevRow);
+      if (ttc  != null && depVals.time != null) ttc  -= depVals.time;
+      if (fuel != null && depVals.fuel != null) fuel -= depVals.fuel;
+      if (dist != null && depVals.dist != null) dist -= depVals.dist;
     }
 
-    const tasClimb = ttc != null && dist != null && ttc > 0 ? String(Math.round(60 * dist / ttc)) : '';
+    if (ttc  != null) ttc  = Math.round(ttc);
+    if (fuel != null) fuel = Math.round(fuel);
+    if (dist != null) dist = Math.round(dist);
+
+    const tasClimb   = ttc != null && dist != null && ttc > 0 ? String(Math.round(60 * dist / ttc)) : '';
     const lbsPhClimb = ttc != null && fuel != null && ttc > 0 ? String(Math.round(60 * fuel / ttc)) : '';
     setClncFields(prev => ({
       ...prev,
-      ttc: ttc != null ? String(ttc) : '',
+      ttc:  ttc  != null ? String(ttc)  : '',
       fuel: fuel != null ? String(fuel) : '',
       dist: dist != null ? String(dist) : '',
       tasClimb,

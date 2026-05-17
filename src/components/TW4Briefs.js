@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import TW4Told from './TW4Told';
 
 function TW4Briefs() {
   const [expandedItems, setExpandedItems] = useState({});
   const [currentBrief, setCurrentBrief] = useState('fam'); // 'fam' or 'forms'
   const [showUsefulLinks, setShowUsefulLinks] = useState(false);
+  const [activeView, setActiveView] = useState('brief'); // 'brief' | 'told'
   const briefTitle = currentBrief === 'fam'
     ? 'T-6B MISSION/NATOPS BRIEFING GUIDE FOR FAM, VNAV, and INAV STAGES'
     : 'T-6B MISSION/NATOPS BRIEFING GUIDE FOR FORM AND CAPSTONE STAGES';
@@ -1033,15 +1035,24 @@ function TW4Briefs() {
   return (
     <div className="page-container" style={{maxWidth: '1400px', margin: '0 auto', padding: '20px'}}>
       <h1 style={{fontSize: '16px', marginBottom: '10px', textAlign: 'center'}}>
-        {briefTitle}
+        {activeView === 'told' ? 'T-6B TAKEOFF AND LANDING DATA (TOLD) CARD' : briefTitle}
       </h1>
 
       <div className="button-row" style={{justifyContent: 'center', marginBottom: '20px'}}>
-        <button onClick={() => expandAll(activeBrief)}>Expand All</button>
-        <button onClick={collapseAll}>Collapse All</button>
-        <button onClick={() => setCurrentBrief(currentBrief === 'fam' ? 'forms' : 'fam')}>{toggleButtonText}</button>
+        {activeView === 'brief' && (
+          <>
+            <button onClick={() => expandAll(activeBrief)}>Expand All</button>
+            <button onClick={collapseAll}>Collapse All</button>
+            <button onClick={() => setCurrentBrief(currentBrief === 'fam' ? 'forms' : 'fam')}>{toggleButtonText}</button>
+          </>
+        )}
+        <button onClick={() => setActiveView(activeView === 'brief' ? 'told' : 'brief')}>
+          {activeView === 'brief' ? 'TOLD Data' : 'Back to Brief'}
+        </button>
       </div>
 
+      {activeView === 'brief' ? (
+        <>
       {/* USEFUL LINKS SECTION */}
       <div style={{marginBottom: '5px'}}>
         <h2
@@ -1217,6 +1228,10 @@ function TW4Briefs() {
       <div style={{marginTop: '30px', padding: '15px', backgroundColor: '#f0f0f0', border: '1px solid #ccc', fontSize: '11px'}}>
         <strong>Note:</strong> Student Naval Aviators (SNA) and Instructors Under Training (IUT) are expected to brief training events. SNAs and IUTs must demonstrate a thorough knowledge of all discussion items, maneuvers, and special syllabus requirements to be completed in the block. Questions to clarify information that is not understood or is unclear are permissible, but the SNA/IUT retains ultimate responsibility for ensuring adequate preparation for the brief and flight.
       </div>
+        </>
+      ) : (
+        <TW4Told />
+      )}
     </div>
   );
 }

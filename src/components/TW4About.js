@@ -55,10 +55,11 @@ function TW4About({ onNavigate }) {
         See if you can correctly answer all 106 limits in a random order!
       </p>
 
-      <h2 className="about-subtitle" style={navHeadingStyle} onClick={() => onNavigate('briefs')}>Briefs</h2>
+      <h2 className="about-subtitle" style={navHeadingStyle} onClick={() => onNavigate('briefs')}>Briefs/TOLD</h2>
       <p className="about-text">
         The Briefs page allows you to practice the NATOPS brief for both Fam and Form. Clicking on a briefing item will reveal the associated
-        expanded brief item in case you need a refresher or want to learn what is expected of you.
+        expanded brief item in case you need a refresher or want to learn what is expected of you. 
+        The TOLD card table automatically generates your TOLD card values to get you instantly ready for your brief. 
       </p>
 
       <h2 className="about-subtitle" style={navHeadingStyle} onClick={() => onNavigate('courserules')}>Course Rules</h2>

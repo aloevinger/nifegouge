@@ -4,8 +4,20 @@ function WhizWheel() {
   const [questionType, setQuestionType] = useState('Distance');
   const [tableData, setTableData] = useState([]);
   const [explanationText, setExplanationText] = useState('');
-  const [trigger, setTrigger] = useState('Distance');
+  const [noteOpen, setNoteOpen] = useState(false);
   const wheelContainerRef = useRef(null);
+  const isMounted = useRef(false);
+
+  // Auto-generate when question type changes (skip initial mount)
+  useEffect(() => {
+    if (!isMounted.current) { isMounted.current = true; return; }
+    generate(); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [questionType]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Reset note when leaving Airspeed
+  useEffect(() => {
+    if (questionType !== 'Airspeed') setNoteOpen(false);
+  }, [questionType]);
 
   // Initialize table data
   useEffect(() => {
@@ -64,7 +76,7 @@ function WhizWheel() {
   };
 
   const clearInputFields = () => {
-    setTableData(Array(10).fill(null).map(() => ({
+    setTableData(() => Array(10).fill(null).map(() => ({
       variable: '',
       value: '',
       unit: '',
@@ -175,7 +187,6 @@ function WhizWheel() {
   // Generate functions
   const generate = () => {
     clearInputFields();
-    setTrigger(questionType);
 
     switch (questionType) {
       case "Distance":
@@ -453,7 +464,7 @@ function WhizWheel() {
    // Solve functions
   const solve = (visualize = true) => {
     let solutions = null;
-    switch (trigger) {
+    switch (questionType) {
       case "Distance":
       case "Speed":
       case "Time":
@@ -1094,40 +1105,35 @@ function WhizWheel() {
   const checkWork = () => {
     const solutions = solve(false);
     if (!solutions || solutions.length === 0) return;
-    console.log(solutions)
-    // Update table data with color coding based on accuracy
     setTableData(prev => {
         const newData = [...prev];
-        
+
         solutions.forEach(([solution, rowIndex, denominator]) => {
-        if (newData[rowIndex].solved) return; // Skip already solved fields
-        
+        if (newData[rowIndex].solved) return;
+
         const userInput = newData[rowIndex].value;
-        if (!userInput) return; // Skip empty fields
-        
-        // Parse user input, handling L/H notation for wind problems
+        if (!userInput) return;
+
         let userValue = parseFloat(userInput);
         if (/[lLhH]/.test(userInput)) {
             userValue *= -1;
         }
-        
+
         if (isNaN(userValue)) return;
-        
-        // Calculate percentage error
+
         let percentError;
         if (solution === 0) {
             percentError = Math.abs(userValue) < 0.01 ? 0 : 100;
         } else {
             percentError = Math.abs(100 * (userValue - solution) / denominator);
         }
-        console.log(percentError)
-        // Set background color based on accuracy
+
         if (percentError <= 2) {
-            newData[rowIndex].bgColor = 'green';
+            newData[rowIndex].bgColor = 'bg-green';
         } else if (percentError <= 5) {
-            newData[rowIndex].bgColor = 'yellow';
+            newData[rowIndex].bgColor = 'bg-yellow';
         } else {
-            newData[rowIndex].bgColor = 'red';
+            newData[rowIndex].bgColor = 'bg-red';
         }
         });
         
@@ -1138,102 +1144,98 @@ function WhizWheel() {
   return (
     <div className="whiz-container">
       <h1>Navigation Problem Generator</h1>
-      
-      <div className="whiz-layout">
-        <div className="form-section">
-          <table>
-            <thead>
-              <tr>
-                <th>Question Type</th>
-                <th>Variable</th>
-                <th>Value</th>
-                <th>Units</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                { value: "Distance", label: "Distance" },
-                { value: "Speed", label: "Speed" },
-                { value: "Time", label: "Time" },
-                { value: "Fuel Consumption", label: "Fuel Consumption" },
-                { value: "Fuel Conversions", label: "Fuel Conversions" },
-                { value: "Airspeed", label: "Airspeed" },
-                { value: "Preflight Winds", label: "Preflight Winds" },
-                { value: "In Flight Winds", label: "In Flight Winds" },
-                { value: "Lollipop", label: "TACAN Point to Point" },
-                { value: "Time Conversion", label: "Time Conversion" }
-                ].map((type, index) => (
-                <tr key={type.value}>
-                    <td>
-                    <input
-                        type="radio"
-                        name="questionType"
-                        value={type.value}
-                        checked={questionType === type.value}
-                        onChange={(e) => setQuestionType(e.target.value)}
-                    />
-                    {" " + type.label}
-                    </td>
-                    
-                    {/* Special handling for row 4 (index 3) when explanation text exists */}
-                    {index === 3 && explanationText ? (
-                    <td colSpan="3" className="explanation-cell">
-                        {explanationText}
-                    </td>
-                    ) : (
-                    <>
-                        <td>{tableData[index]?.display ? tableData[index].variable : ''}</td>
-                        <td>
-                        <input
-                            type="text"
-                            value={tableData[index]?.value ?? ''}
-                            onChange={(e) => updateRow(index, { value: e.target.value, solved: false })}
-                            style={{ display: tableData[index]?.display ? 'inline-block' : 'none' }}
-                            className={
-                            tableData[index]?.bgColor === 'green' ? 'bg-green' :
-                            tableData[index]?.bgColor === 'yellow' ? 'bg-yellow' :
-                            tableData[index]?.bgColor === 'red' ? 'bg-red' : ''
-                            }
-                        />
-                        </td>
-                        <td>
-                        {index === 2 && tableData[index]?.display && (tableData[index].unit === 'hrs' || tableData[index].unit === 'mins' || tableData[index].unit === 'secs') ? (
-                            <select
-                            value={tableData[index]?.unit || 'mins'}
-                            onChange={(e) => updateRow(index, { unit: e.target.value })}
-                            >
-                            <option value="hrs">hrs</option>
-                            <option value="mins">mins</option>
-                            <option value="secs">secs</option>
-                            </select>
-                        ) : index === 2 && tableData[index]?.display && tableData[index].unit === 'lbs' ? (
-                            <select
-                            value={tableData[index]?.unit || 'lbs'}
-                            onChange={(e) => updateRow(index, { unit: e.target.value })}
-                            >
-                            <option value="lbs">lbs</option>
-                            <option value="gal">gal</option>
-                            </select>
-                        ) : (
-                            tableData[index]?.unit || ''
-                        )}
-                        </td>
-                    </>
-                    )}
-                </tr>
-              ))}
-            </tbody>
-          </table>
 
-          <div className="buttons">
-            <button className="button" onClick={generate}>Generate</button>
-            <button className="button" onClick={checkWork}>Check</button>
-            <button className="button" onClick={solve}>Solve</button>
-          </div>
-        </div>
-
-        <div className="Wheel-Container" ref={wheelContainerRef} id="wheel-container"></div>
+      <div className="whiz-controls">
+        <select
+          value={questionType}
+          onChange={(e) => setQuestionType(e.target.value)}
+          className="question-type-select"
+        >
+          <option value="Distance">Distance</option>
+          <option value="Speed">Speed</option>
+          <option value="Time">Time</option>
+          <option value="Fuel Consumption">Fuel Consumption</option>
+          <option value="Fuel Conversions">Fuel Conversions</option>
+          <option value="Airspeed">Airspeed</option>
+          <option value="Preflight Winds">Preflight Winds</option>
+          <option value="In Flight Winds">In Flight Winds</option>
+          <option value="Lollipop">TACAN Point to Point</option>
+          <option value="Time Conversion">Time Conversion</option>
+        </select>
+        <button className="button" onClick={generate}>Generate</button>
+        <button className="button" onClick={checkWork}>Check</button>
+        <button className="button" onClick={solve}>Solve</button>
       </div>
+
+      {(() => {
+        const visibleRows = tableData
+          .map((row, index) => ({ ...row, index }))
+          .filter(row => row.display);
+        const isTwoCol = visibleRows.length > 5;
+        const splitIdx = isTwoCol ? Math.ceil(visibleRows.length / 2) : visibleRows.length;
+        const col1 = visibleRows.slice(0, splitIdx);
+        const col2 = visibleRows.slice(splitIdx);
+
+        const renderRow = (row) => (
+          <div key={row.index} className="var-row">
+            <span className="var-label">{row.variable}</span>
+            <input
+              type="text"
+              value={row.value ?? ''}
+              onChange={(e) => updateRow(row.index, { value: e.target.value, solved: e.target.value !== '' })}
+              className={row.bgColor ?? ''}
+            />
+            <span className="var-unit">
+              {row.index === 2 && (row.unit === 'hrs' || row.unit === 'mins' || row.unit === 'secs') ? (
+                <select value={row.unit} onChange={(e) => updateRow(row.index, { unit: e.target.value })}>
+                  <option value="hrs">hrs</option>
+                  <option value="mins">mins</option>
+                  <option value="secs">secs</option>
+                </select>
+              ) : row.index === 2 && row.unit === 'lbs' ? (
+                <select value={row.unit} onChange={(e) => updateRow(row.index, { unit: e.target.value })}>
+                  <option value="lbs">lbs</option>
+                  <option value="gal">gal</option>
+                </select>
+              ) : (
+                row.unit || ''
+              )}
+            </span>
+          </div>
+        );
+
+        return (
+          <div className={`var-rows${isTwoCol ? ' var-rows-two-col' : ''}`}>
+            <div className="var-col">{col1.map(renderRow)}</div>
+            {isTwoCol && <div className="var-col">{col2.map(renderRow)}</div>}
+          </div>
+        );
+      })()}
+
+      {explanationText && (
+        <div className="explanation-text">{explanationText}</div>
+      )}
+
+      {questionType === 'Airspeed' && (
+        <div className="airspeed-notice">
+          <div className="airspeed-notice-header" onClick={() => setNoteOpen(o => !o)}>
+            <strong>Note: Estimation errors</strong>
+            <span className="airspeed-notice-toggle">{noteOpen ? '▲' : '▼'}</span>
+          </div>
+          {noteOpen && (
+            <div className="airspeed-notice-body">
+              This is a computer estimate of the airspeed hairs on the Whiz Wheel. It is more accurate for lower CAS inputs, 
+              especially between 110–350 kts, and calibrated altitudes below ~23,000 ft. Results become less reliable
+              outside these ranges due to simplified atmospheric modeling. It's hard to make those little squiggles into equations.{' '}
+              <a href="/Airspeeds.pdf" target="_blank" rel="noopener noreferrer">
+                See Airspeeds.pdf for details →
+              </a>
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="Wheel-Container" ref={wheelContainerRef} id="wheel-container"></div>
     </div>
   );
 }

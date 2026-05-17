@@ -1130,7 +1130,7 @@ function TW4Briefs() {
           {/* FAM BRIEF - PAGE 1 - Two Column Layout */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
             gap: '20px',
             marginBottom: '30px'
           }}>
@@ -1159,7 +1159,7 @@ function TW4Briefs() {
           {/* FAM BRIEF - PAGE 2 - Two Column Layout */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
             gap: '20px',
             marginBottom: '30px'
           }}>
@@ -1179,7 +1179,7 @@ function TW4Briefs() {
           {/* FORMS BRIEF - PAGE 1 - Two Column Layout */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
             gap: '20px',
             marginBottom: '30px'
           }}>
@@ -1208,7 +1208,7 @@ function TW4Briefs() {
           {/* FORMS BRIEF - PAGE 2 - Two Column Layout */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
             gap: '20px',
             marginBottom: '30px'
           }}>

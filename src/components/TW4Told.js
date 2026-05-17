@@ -304,7 +304,7 @@ function TW4Told() {
   );
 
   return (
-    <div style={{ padding: '10px 20px' }}>
+    <div style={{ padding: '10px 0', overflowX: 'auto' }}>
       <table style={S.tbl}>
         <colgroup>
           <col style={{ width: '35%' }} />

@@ -890,16 +890,21 @@ td.xcell::after {
   font-weight: 600;
 }
 
+.wheel-scale-wrapper {
+  width: 100%;
+  max-width: 600px;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
 .Wheel-Container {
   position: relative;
   width: 600px;
   height: 600px;
-  flex-shrink: 0;
   border: 2px solid #ccc;
   border-radius: 8px;
   background-color: #f9f9f9;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  margin-top: 20px;
 }
 
 .Wheel-Container img {
@@ -2062,12 +2067,6 @@ textarea.incorrect-answer {
 }
 
 @media (max-width: 650px) {
-  .Wheel-Container {
-    width: 100%;
-    max-width: 600px;
-    height: 350px;
-  }
-
   .var-label {
     min-width: 110px;
   }

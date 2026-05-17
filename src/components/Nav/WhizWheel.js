@@ -6,6 +6,7 @@ function WhizWheel() {
   const [explanationText, setExplanationText] = useState('');
   const [noteOpen, setNoteOpen] = useState(false);
   const wheelContainerRef = useRef(null);
+  const wrapperRef = useRef(null);
   const isMounted = useRef(false);
 
   // Auto-generate when question type changes (skip initial mount)
@@ -18,6 +19,22 @@ function WhizWheel() {
   useEffect(() => {
     if (questionType !== 'Airspeed') setNoteOpen(false);
   }, [questionType]);
+
+  // Scale the wheel container to fit narrow viewports
+  useEffect(() => {
+    const update = () => {
+      const wrapper = wrapperRef.current;
+      const container = wheelContainerRef.current;
+      if (!wrapper || !container) return;
+      const scale = Math.min(1, wrapper.offsetWidth / 600);
+      container.style.transform = `scale(${scale})`;
+      container.style.transformOrigin = 'top left';
+      wrapper.style.height = `${600 * scale}px`;
+    };
+    const obs = new ResizeObserver(() => requestAnimationFrame(update));
+    if (wrapperRef.current) obs.observe(wrapperRef.current);
+    return () => obs.disconnect();
+  }, []);
 
   // Initialize table data
   useEffect(() => {
@@ -1235,7 +1252,9 @@ function WhizWheel() {
         </div>
       )}
 
-      <div className="Wheel-Container" ref={wheelContainerRef} id="wheel-container"></div>
+      <div ref={wrapperRef} className="wheel-scale-wrapper">
+        <div className="Wheel-Container" ref={wheelContainerRef} id="wheel-container"></div>
+      </div>
     </div>
   );
 }

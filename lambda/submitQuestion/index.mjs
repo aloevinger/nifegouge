@@ -1,5 +1,5 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, PutCommand, ScanCommand, UpdateCommand, GetCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBDocumentClient, PutCommand, ScanCommand, UpdateCommand, GetCommand, QueryCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
 
 const dynamodb = DynamoDBDocumentClient.from(new DynamoDBClient({ region: 'us-east-2' }));
 
@@ -52,7 +52,12 @@ export const handler = async (event) => {
         if (path.includes('moderate-question') && method === 'POST') {
             return await handleModerateQuestion(event, headers);
         }
-        
+
+        // One-time cleanup: delete rejected and replaced questions
+        if (path.includes('cleanup-dead-questions') && method === 'POST') {
+            return await handleCleanupDeadQuestions(headers);
+        }
+
         return {
             statusCode: 404,
             headers,
@@ -649,11 +654,50 @@ async function handleModerateQuestion(event, headers) {
         return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({ 
+            body: JSON.stringify({
                 success: false,
                 error: 'Failed to moderate question',
                 message: error.message
             })
+        };
+    }
+}
+
+// One-time cleanup: delete all rejected and replaced questions
+async function handleCleanupDeadQuestions(headers) {
+    try {
+        const toDelete = [
+            ...await scanAll({
+                TableName: 'NIFEQuestions',
+                FilterExpression: '#status = :s',
+                ExpressionAttributeNames: { '#status': 'status' },
+                ExpressionAttributeValues: { ':s': 'rejected' }
+            }),
+            ...await scanAll({
+                TableName: 'NIFEQuestions',
+                FilterExpression: '#status = :s',
+                ExpressionAttributeNames: { '#status': 'status' },
+                ExpressionAttributeValues: { ':s': 'replaced' }
+            })
+        ];
+
+        await Promise.all(toDelete.map(item =>
+            dynamodb.send(new DeleteCommand({
+                TableName: 'NIFEQuestions',
+                Key: { questionId: item.questionId }
+            }))
+        ));
+
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({ success: true, deleted: toDelete.length })
+        };
+    } catch (error) {
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({ success: false, error: error.message })
         };
     }
 }

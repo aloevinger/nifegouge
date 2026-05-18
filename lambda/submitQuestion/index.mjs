@@ -48,10 +48,8 @@ export const handler = async (event) => {
             return await handleGetPendingQuestions(headers);
         }
         
-        // Approve/reject question (action:'cleanup' triggers dead-question deletion)
+        // Approve/reject question
         if (path.includes('moderate-question') && method === 'POST') {
-            const body = JSON.parse(event.body || '{}');
-            if (body.action === 'cleanup') return await handleCleanupDeadQuestions(headers);
             return await handleModerateQuestion(event, headers);
         }
 
@@ -442,7 +440,7 @@ async function handlePendingQuestionVote(event, headers) {
         let approved = false;
         let rejected = false;
         
-        if (netScore >= 3) {
+        if (netScore >= 5) {
             // Auto-approve the question
             approved = true;
             console.log(`Question ${body.questionId} auto-approved with net score of ${netScore}`);
@@ -522,179 +520,100 @@ async function handleGetPendingQuestions(headers) {
 async function handleModerateQuestion(event, headers) {
     try {
         const body = JSON.parse(event.body);
-        
+
         if (!body.questionId || !body.action) {
             return {
                 statusCode: 400,
                 headers,
-                body: JSON.stringify({ 
-                    success: false,
-                    error: 'Missing required fields' 
-                })
+                body: JSON.stringify({ success: false, error: 'Missing required fields' })
             };
         }
-        
-        const newStatus = body.action === 'approve' ? 'approved' : 'rejected';
-        
-        // Get the question first to check if it's an edit
-        const getCommand = new GetCommand({
+
+        const approving = body.action === 'approve';
+
+        const questionResult = await dynamodb.send(new GetCommand({
             TableName: 'NIFEQuestions',
             Key: { questionId: body.questionId }
-        });
-        
-        const questionResult = await dynamodb.send(getCommand);
+        }));
         const question = questionResult.Item;
-        
+
         if (!question) {
             return {
                 statusCode: 404,
                 headers,
-                body: JSON.stringify({ 
-                    success: false,
-                    error: 'Question not found' 
-                })
+                body: JSON.stringify({ success: false, error: 'Question not found' })
             };
         }
-        
-        // Update the question status
-        const updateCommand = new UpdateCommand({
-            TableName: 'NIFEQuestions',
-            Key: { questionId: body.questionId },
-            UpdateExpression: 'SET #status = :status, moderatedAt = :timestamp, moderatedBy = :moderator',
-            ExpressionAttributeNames: {
-                '#status': 'status'
-            },
-            ExpressionAttributeValues: {
-                ':status': newStatus,
-                ':timestamp': new Date().toISOString(),
-                ':moderator': body.moderator || 'anonymous'
-            },
-            ReturnValues: 'ALL_NEW'
-        });
-        
-        const result = await dynamodb.send(updateCommand);
-        
-        // If this was an edit approval, replace the original question
-        if (newStatus === 'approved' && question.type === 'edit' && question.originalQuestionId) {
-            // Mark the original as replaced
-            const replaceCommand = new UpdateCommand({
-                TableName: 'NIFEQuestions',
-                Key: { questionId: question.originalQuestionId },
-                UpdateExpression: 'SET #status = :status, replacedBy = :replacedBy, replacedAt = :timestamp, hasPendingEdit = :false',
-                ExpressionAttributeNames: { '#status': 'status' },
-                ExpressionAttributeValues: {
-                    ':status': 'replaced',
-                    ':replacedBy': body.questionId,
-                    ':timestamp': new Date().toISOString(),
-                    ':false': false
-                }
-            });
-            await dynamodb.send(replaceCommand);
-            console.log(`Original question ${question.originalQuestionId} replaced by approved edit ${body.questionId}`);
 
-            // Auto-reject all other pending edits for the same original (cleans up vote-diluting duplicates)
-            const siblings = await scanAll({
+        if (approving) {
+            // Mark this question approved
+            await dynamodb.send(new UpdateCommand({
                 TableName: 'NIFEQuestions',
-                FilterExpression: '#status = :pending AND originalQuestionId = :origId AND questionId <> :thisId',
+                Key: { questionId: body.questionId },
+                UpdateExpression: 'SET #status = :status, moderatedAt = :timestamp, moderatedBy = :moderator',
                 ExpressionAttributeNames: { '#status': 'status' },
                 ExpressionAttributeValues: {
-                    ':pending': 'pending',
-                    ':origId': question.originalQuestionId,
-                    ':thisId': body.questionId
+                    ':status': 'approved',
+                    ':timestamp': new Date().toISOString(),
+                    ':moderator': body.moderator || 'anonymous'
                 }
-            });
-            await Promise.all(siblings.map(sibling =>
-                dynamodb.send(new UpdateCommand({
+            }));
+
+            if (question.type === 'edit' && question.originalQuestionId) {
+                // Delete the original and all sibling pending edits
+                const siblings = await scanAll({
                     TableName: 'NIFEQuestions',
-                    Key: { questionId: sibling.questionId },
-                    UpdateExpression: 'SET #status = :rejected, moderatedAt = :timestamp, moderatedBy = :moderator',
+                    FilterExpression: '#status = :pending AND originalQuestionId = :origId AND questionId <> :thisId',
                     ExpressionAttributeNames: { '#status': 'status' },
                     ExpressionAttributeValues: {
-                        ':rejected': 'rejected',
-                        ':timestamp': new Date().toISOString(),
-                        ':moderator': 'auto-sibling-cleanup'
+                        ':pending': 'pending',
+                        ':origId': question.originalQuestionId,
+                        ':thisId': body.questionId
                     }
-                }))
-            ));
-            if (siblings.length > 0) {
-                console.log(`Auto-rejected ${siblings.length} sibling pending edits for original ${question.originalQuestionId}`);
+                });
+
+                await Promise.all([
+                    dynamodb.send(new DeleteCommand({
+                        TableName: 'NIFEQuestions',
+                        Key: { questionId: question.originalQuestionId }
+                    })),
+                    ...siblings.map(s => dynamodb.send(new DeleteCommand({
+                        TableName: 'NIFEQuestions',
+                        Key: { questionId: s.questionId }
+                    })))
+                ]);
+            }
+        } else {
+            // Reject: just delete the question
+            await dynamodb.send(new DeleteCommand({
+                TableName: 'NIFEQuestions',
+                Key: { questionId: body.questionId }
+            }));
+
+            // Clear the pending-edit flag on the original if this was an edit
+            if (question.type === 'edit' && question.originalQuestionId) {
+                await dynamodb.send(new UpdateCommand({
+                    TableName: 'NIFEQuestions',
+                    Key: { questionId: question.originalQuestionId },
+                    UpdateExpression: 'SET hasPendingEdit = :false, latestEditId = :null',
+                    ExpressionAttributeValues: { ':false': false, ':null': null }
+                }));
             }
         }
 
-        // If this was an edit rejection, clear the pending edit flag on the original
-        if (newStatus === 'rejected' && question.type === 'edit' && question.originalQuestionId) {
-            const clearEditCommand = new UpdateCommand({
-                TableName: 'NIFEQuestions',
-                Key: { questionId: question.originalQuestionId },
-                UpdateExpression: 'SET hasPendingEdit = :false, latestEditId = :null',
-                ExpressionAttributeValues: {
-                    ':false': false,
-                    ':null': null
-                }
-            });
-            await dynamodb.send(clearEditCommand);
-            console.log(`Cleared pending edit flag on original question ${question.originalQuestionId}`);
-        }
-        
         return {
             statusCode: 200,
             headers,
-            body: JSON.stringify({ 
-                success: true,
-                message: `Question ${newStatus}`,
-                question: result.Attributes
-            })
+            body: JSON.stringify({ success: true, message: approving ? 'Question approved' : 'Question rejected' })
         };
-        
+
     } catch (error) {
         console.error('Error moderating question:', error);
         return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({
-                success: false,
-                error: 'Failed to moderate question',
-                message: error.message
-            })
+            body: JSON.stringify({ success: false, error: 'Failed to moderate question', message: error.message })
         };
     }
 }
 
-// One-time cleanup: delete all rejected and replaced questions
-async function handleCleanupDeadQuestions(headers) {
-    try {
-        const toDelete = [
-            ...await scanAll({
-                TableName: 'NIFEQuestions',
-                FilterExpression: '#status = :s',
-                ExpressionAttributeNames: { '#status': 'status' },
-                ExpressionAttributeValues: { ':s': 'rejected' }
-            }),
-            ...await scanAll({
-                TableName: 'NIFEQuestions',
-                FilterExpression: '#status = :s',
-                ExpressionAttributeNames: { '#status': 'status' },
-                ExpressionAttributeValues: { ':s': 'replaced' }
-            })
-        ];
-
-        await Promise.all(toDelete.map(item =>
-            dynamodb.send(new DeleteCommand({
-                TableName: 'NIFEQuestions',
-                Key: { questionId: item.questionId }
-            }))
-        ));
-
-        return {
-            statusCode: 200,
-            headers,
-            body: JSON.stringify({ success: true, deleted: toDelete.length })
-        };
-    } catch (error) {
-        return {
-            statusCode: 500,
-            headers,
-            body: JSON.stringify({ success: false, error: error.message })
-        };
-    }
-}

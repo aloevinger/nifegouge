@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 
 function WhizWheel() {
   const [questionType, setQuestionType] = useState('Distance');
@@ -7,6 +7,8 @@ function WhizWheel() {
   const [noteOpen, setNoteOpen] = useState(false);
   const wheelContainerRef = useRef(null);
   const wrapperRef = useRef(null);
+  const varRowsWrapperRef = useRef(null);
+  const varRowsInnerRef = useRef(null);
   const isMounted = useRef(false);
 
   // Auto-generate when question type changes (skip initial mount)
@@ -35,6 +37,35 @@ function WhizWheel() {
     if (wrapperRef.current) obs.observe(wrapperRef.current);
     return () => obs.disconnect();
   }, []);
+
+  // Scale var-rows to fit narrow viewports while keeping columns side-by-side
+  const updateVarRowsScale = () => {
+    const wrapper = varRowsWrapperRef.current;
+    const inner = varRowsInnerRef.current;
+    if (!wrapper || !inner) return;
+    // scrollWidth is unaffected by CSS transforms, so it always gives the natural content width
+    const natural = inner.scrollWidth;
+    const available = wrapper.offsetWidth;
+    if (natural > available) {
+      const scale = available / natural;
+      inner.style.transform = `scale(${scale})`;
+      inner.style.transformOrigin = 'top left';
+      wrapper.style.height = `${inner.offsetHeight * scale}px`;
+    } else {
+      inner.style.transform = '';
+      wrapper.style.height = '';
+    }
+  };
+
+  useEffect(() => {
+    const obs = new ResizeObserver(() => requestAnimationFrame(updateVarRowsScale));
+    if (varRowsWrapperRef.current) obs.observe(varRowsWrapperRef.current);
+    return () => obs.disconnect();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useLayoutEffect(() => {
+    updateVarRowsScale();
+  }, [tableData]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Initialize table data
   useEffect(() => {
@@ -1222,9 +1253,11 @@ function WhizWheel() {
         );
 
         return (
-          <div className={`var-rows${isTwoCol ? ' var-rows-two-col' : ''}`}>
-            <div className="var-col">{col1.map(renderRow)}</div>
-            {isTwoCol && <div className="var-col">{col2.map(renderRow)}</div>}
+          <div ref={varRowsWrapperRef} className="var-rows-wrapper">
+            <div ref={varRowsInnerRef} className={`var-rows${isTwoCol ? ' var-rows-two-col' : ''}`}>
+              <div className="var-col">{col1.map(renderRow)}</div>
+              {isTwoCol && <div className="var-col">{col2.map(renderRow)}</div>}
+            </div>
           </div>
         );
       })()}

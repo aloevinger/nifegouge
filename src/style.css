@@ -724,6 +724,10 @@ td.xcell::after {
   background-color: #003B4F;
 }
 
+.var-rows-wrapper {
+  overflow: hidden;
+}
+
 .var-rows {
   display: flex;
   flex-direction: row;

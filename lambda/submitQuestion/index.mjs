@@ -247,7 +247,32 @@ async function handleEditQuestion(event, headers) {
                 })
             };
         }
-        
+
+        // Reject if the edit is identical to the original (question text + answer set)
+        const norm = (s) => (s || '').trim().toLowerCase();
+        const origAnswers = new Set(
+            [originalQuestion.correctAnswer, originalQuestion.incorrectAnswer1,
+             originalQuestion.incorrectAnswer2, originalQuestion.incorrectAnswer3]
+            .map(norm).filter(Boolean)
+        );
+        const editAnswers = new Set(
+            [body.correctAnswer, body.incorrectAnswer1,
+             body.incorrectAnswer2, body.incorrectAnswer3]
+            .map(norm).filter(Boolean)
+        );
+        const answersIdentical = origAnswers.size === editAnswers.size &&
+            [...origAnswers].every(a => editAnswers.has(a));
+        if (norm(originalQuestion.question) === norm(body.question) && answersIdentical) {
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({
+                    success: false,
+                    error: 'This edit is identical to the existing question. Make a meaningful change before submitting.'
+                })
+            };
+        }
+
         const timestamp = Date.now();
         const editedQuestionItem = {
             questionId: `q_${timestamp}_${Math.random().toString(36).substr(2, 9)}`,

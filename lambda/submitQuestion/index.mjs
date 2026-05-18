@@ -48,14 +48,11 @@ export const handler = async (event) => {
             return await handleGetPendingQuestions(headers);
         }
         
-        // Approve/reject question
+        // Approve/reject question (action:'cleanup' triggers dead-question deletion)
         if (path.includes('moderate-question') && method === 'POST') {
+            const body = JSON.parse(event.body || '{}');
+            if (body.action === 'cleanup') return await handleCleanupDeadQuestions(headers);
             return await handleModerateQuestion(event, headers);
-        }
-
-        // One-time cleanup: delete rejected and replaced questions
-        if (path.includes('cleanup-dead-questions') && method === 'POST') {
-            return await handleCleanupDeadQuestions(headers);
         }
 
         return {

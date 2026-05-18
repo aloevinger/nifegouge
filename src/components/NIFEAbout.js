@@ -37,19 +37,11 @@ function NIFEAbout({ onNavigate }) {
         Curated gouge documents and links submitted by students who have made it through NIFE. Covers study guides, quick-reference sheets, and other high-yield material.
       </p>
 
-      <h2 className="about-subtitle" style={navHeadingStyle} onClick={() => onNavigate('frr')}>FR&amp;R</h2>
+      <h2 className="about-subtitle" style={navHeadingStyle} onClick={() => onNavigate('nav')}>Problem Generator</h2>
       <p className="about-text">
-        Flight Rules &amp; Regulations practice tool. Test yourself on the rules and regs you'll need to know cold before your NIFE checkride.
-      </p>
-
-      <h2 className="about-subtitle" style={navHeadingStyle} onClick={() => onNavigate('nav')}>Nav</h2>
-      <p className="about-text">
-        Navigation problem generators and solvers including whiz wheel calculations, wind correction, fuel planning, and more. Work problems end-to-end or check your own work.
-      </p>
-
-      <h2 className="about-subtitle" style={navHeadingStyle} onClick={() => onNavigate('weather')}>Weather</h2>
-      <p className="about-text">
-        Weather tools and practice problems to help you interpret METARs, TAFs, and other products you'll be expected to decode in NIFE.
+        The navigation problem generator and solver including whiz wheel calculations, wind correction, fuel planning, and more. Work problems end-to-end or check your own work.
+        The FR&amp;R generator allow you to test yourself on the VFR cruising altitudes and determing which runway to land on.
+        The weather generator creates SETAI practice problems to help you for the test.
       </p>
 
       <h2 className="about-subtitle" style={navHeadingStyle} onClick={() => onNavigate('flight')}>Flight</h2>

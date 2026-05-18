@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
+import { useVarRowsScale } from '../useVarRowsScale';
 
 function WhizWheel() {
   const [questionType, setQuestionType] = useState('Distance');
@@ -7,13 +8,10 @@ function WhizWheel() {
   const [noteOpen, setNoteOpen] = useState(false);
   const wheelContainerRef = useRef(null);
   const wrapperRef = useRef(null);
-  const varRowsWrapperRef = useRef(null);
-  const varRowsInnerRef = useRef(null);
-  const isMounted = useRef(false);
+  const { wrapperRef: varRowsWrapperRef, innerRef: varRowsInnerRef, updateScale } = useVarRowsScale();
 
-  // Auto-generate when question type changes (skip initial mount)
+  // Auto-generate when question type changes, including on initial mount
   useEffect(() => {
-    if (!isMounted.current) { isMounted.current = true; return; }
     generate(); // eslint-disable-line react-hooks/exhaustive-deps
   }, [questionType]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -38,48 +36,9 @@ function WhizWheel() {
     return () => obs.disconnect();
   }, []);
 
-  // Scale var-rows to fit narrow viewports while keeping columns side-by-side
-  const updateVarRowsScale = () => {
-    const wrapper = varRowsWrapperRef.current;
-    const inner = varRowsInnerRef.current;
-    if (!wrapper || !inner) return;
-    // inner is width:100% with justify-content:center, so columns overflow symmetrically.
-    // scrollWidth only captures the right-side overflow, so full content width = 2*scrollWidth - elementWidth.
-    const available = wrapper.offsetWidth;
-    const scrollW = inner.scrollWidth;
-    if (scrollW > available) {
-      const naturalWidth = 2 * scrollW - available;
-      const scale = available / naturalWidth;
-      inner.style.transform = `scale(${scale})`;
-      inner.style.transformOrigin = 'top center';
-      wrapper.style.height = `${inner.offsetHeight * scale}px`;
-    } else {
-      inner.style.transform = '';
-      wrapper.style.height = '';
-    }
-  };
-
-  useEffect(() => {
-    const obs = new ResizeObserver(() => requestAnimationFrame(updateVarRowsScale));
-    if (varRowsWrapperRef.current) obs.observe(varRowsWrapperRef.current);
-    return () => obs.disconnect();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
   useLayoutEffect(() => {
-    updateVarRowsScale();
-  }, [tableData]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Initialize table data
-  useEffect(() => {
-    const initialData = Array(10).fill(null).map(() => ({
-      variable: '',
-      value: '',
-      unit: '',
-      solved: false,
-      display: false
-    }));
-    setTableData(initialData);
-  }, []);
+    updateScale();
+  }, [tableData, updateScale]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Helper functions
   const randBetween = (min, max) => {

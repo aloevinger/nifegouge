@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 
 const toHHMM = (mins) => {
   const m = Math.max(0, Math.round(mins));
@@ -52,6 +52,7 @@ function TW4JetLog() {
   const [showPresets, setShowPresets] = useState(false);
   const [presetName, setPresetName] = useState('');
   const [jetlogScale, setJetlogScale] = useState(1);
+  const containerRef = useRef(null);
 
   // Alternate table rows use r200+ namespace so main table can grow freely
   const ALT_ROWS = [200, 202, 204, 206];
@@ -188,10 +189,14 @@ function TW4JetLog() {
   }, [vfrMode, clncFields.vfrGsCalc, clncFields.vfrLbsPh, vfrApr, altDistKey]);
 
   useEffect(() => {
-    const update = () => setJetlogScale(Math.min(1, window.innerWidth / 640));
+    const update = () => {
+      const el = containerRef.current;
+      if (el) setJetlogScale(Math.min(1, el.offsetWidth / 640));
+    };
     update();
-    window.addEventListener('resize', update);
-    return () => window.removeEventListener('resize', update);
+    const obs = new ResizeObserver(() => requestAnimationFrame(update));
+    if (containerRef.current) obs.observe(containerRef.current);
+    return () => obs.disconnect();
   }, []);
 
   useEffect(() => {
@@ -1922,11 +1927,11 @@ function TW4JetLog() {
   };
 
   return (
-    <div className="jetlog-container" onKeyDown={handleKeyNav}>
+    <div className="jetlog-container" ref={containerRef} onKeyDown={handleKeyNav}>
       {pdfUrl ? (
         <>
-          <div style={{fontSize: '0.68em', color: '#e93333', textAlign: 'center', marginBottom: '2px'}}>
-            Route may be more verbose than necessary. Make route as concise as possible.
+          <div style={{fontSize: '0.75em', color: '#e93333', textAlign: 'center', marginBottom: '2px', fontWeight: 'bold'}}>
+            ROUTE MAY BE MORE VERBOSE THAN NECESSARY. MAKE ROUTE AS CONCISE AS POSSIBLE!
           </div>
           <div style={{textAlign: 'center', padding: '8px 0', display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap'}}>
             <button onClick={() => setPdfUrl(prev => { URL.revokeObjectURL(prev); return null; })}>← Return to Jet Log</button>

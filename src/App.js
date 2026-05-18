@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import './style.css';
-import FRR from './components/FRR';
-import Weather from './components/Weather';
 import Questions from './components/Questions';
 import Nav from './components/Nav';
 import Flight from './components/Flight.js';
@@ -22,11 +20,6 @@ function App() {
 
   const handleModeToggle = (newMode) => {
     setMode(newMode);
-    setCurrentPage('about');
-  };
-
-  const handleLandingSelection = (selectedMode) => {
-    setMode(selectedMode);
     setCurrentPage('about');
   };
 
@@ -82,16 +75,6 @@ function App() {
                 Docs
               </a>
               <a
-                href="#frr"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setCurrentPage('frr');
-                }}
-                className={currentPage === 'frr' ? 'active' : ''}
-              >
-                FR&R
-              </a>
-              <a
                 href="#nav"
                 onClick={(e) => {
                   e.preventDefault();
@@ -99,17 +82,7 @@ function App() {
                 }}
                 className={currentPage === 'nav' ? 'active' : ''}
               >
-                Nav
-              </a>
-              <a
-                href="#weather"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setCurrentPage('weather');
-                }}
-                className={currentPage === 'weather' ? 'active' : ''}
-              >
-                Weather
+                Problem Generator
               </a>
               <a
                 href="#flight"
@@ -191,15 +164,13 @@ function App() {
       </div>}
 
       {/* Page Content */}
-      <div>
-        {currentPage === 'landing' && <LandingPage onSelectMode={handleLandingSelection} />}
+      <>
+        {currentPage === 'landing' && <LandingPage onSelectMode={handleModeToggle} />}
         {currentPage === 'about' && mode === 'NIFE' && <NIFEAbout onNavigate={setCurrentPage} />}
         {currentPage === 'about' && mode === 'TW4 Primary' && <TW4About onNavigate={setCurrentPage} />}
         {currentPage === 'questions' && mode === 'NIFE' && <Questions />}
         {currentPage === 'docs' && mode === 'NIFE' && <Docs />}
-        {currentPage === 'frr' && mode === 'NIFE' && <FRR />}
         {currentPage === 'nav' && mode === 'NIFE' && <Nav />}
-        {currentPage === 'weather' && mode === 'NIFE' && <Weather />}
         {currentPage === 'flight' && mode === 'NIFE' && <Flight />}
         {currentPage === 'cockpit' && mode === 'TW4 Primary' && <TW4Cockpit />}
         {currentPage === 'limits' && mode === 'TW4 Primary' && <TW4Limits />}
@@ -207,7 +178,7 @@ function App() {
         {currentPage === 'courserules' && mode === 'TW4 Primary' && <CourseRules />}
         {currentPage === 'systems' && mode === 'TW4 Primary' && <Systems />}
         {currentPage === 'jetlog' && mode === 'TW4 Primary' && <TW4JetLog />}
-      </div>
+      </>
     </div>
   );
 }

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
+import { useVarRowsScale } from './useVarRowsScale';
 
 function Weather() {
   const [depPressure, setDepPressure] = useState('');
@@ -6,21 +7,24 @@ function Weather() {
   const [arrivalElev, setArrivalElev] = useState('');
   const [arrivalPressure, setArrivalPressure] = useState('');
   const [situation, setSituation] = useState('');
-  
-  // User inputs
+
   const [errorInput, setErrorInput] = useState('');
   const [trueAltInput, setTrueAltInput] = useState('');
   const [absAltInput, setAbsAltInput] = useState('');
   const [indAltInput, setIndAltInput] = useState('');
-  
-  // Validation states
+
   const [errorClass, setErrorClass] = useState('');
   const [trueAltClass, setTrueAltClass] = useState('');
   const [absAltClass, setAbsAltClass] = useState('');
   const [indAltClass, setIndAltClass] = useState('');
 
+  const { wrapperRef: varRowsWrapperRef, innerRef: varRowsInnerRef, updateScale } = useVarRowsScale();
+
+  useLayoutEffect(() => {
+    updateScale();
+  }, [depPressure, updateScale]);
+
   const generate = () => {
-    // Clear previous inputs and validation
     setErrorInput('');
     setTrueAltInput('');
     setAbsAltInput('');
@@ -30,42 +34,31 @@ function Weather() {
     setAbsAltClass('');
     setIndAltClass('');
     setSituation('');
-    
-    // Generate random values
-    const depPres = (Math.random() * 2.16 + 28.84).toFixed(2);
-    const assAlt = Math.floor(Math.random() * 70) * 100 + 3000;
-    const fieldEle = Math.floor(Math.random() * 20) * 100 + 100;
-    const arrPres = (Math.random() * 2.16 + 28.84).toFixed(2);
-    
-    setDepPressure(depPres);
-    setAssignedAlt(assAlt);
-    setArrivalElev(fieldEle);
-    setArrivalPressure(arrPres);
+
+    setDepPressure((Math.random() * 2.16 + 28.84).toFixed(2));
+    setAssignedAlt(Math.floor(Math.random() * 70) * 100 + 3000);
+    setArrivalElev(Math.floor(Math.random() * 20) * 100 + 100);
+    setArrivalPressure((Math.random() * 2.16 + 28.84).toFixed(2));
   };
 
   const solve = () => {
-    // Clear validation classes
     setErrorClass('');
     setTrueAltClass('');
     setAbsAltClass('');
     setIndAltClass('');
-    
+
     const depPres = parseFloat(depPressure);
     const assAlt = parseFloat(assignedAlt);
     const fieldEle = parseFloat(arrivalElev);
     const arrPres = parseFloat(arrivalPressure);
-    
-    // Calculate situation
-    const situationText = arrPres <= depPres ? "H → L" : "L → H";
-    setSituation(situationText);
-    
-    // Calculate values
+
+    setSituation(arrPres <= depPres ? "H → L" : "L → H");
+
     const error = Math.abs((depPres - arrPres) * 1000);
     const trueAlt = (arrPres - (depPres - assAlt / 1000)) * 1000;
     const absolute = trueAlt - fieldEle;
     const indiAlt = (depPres - (arrPres - fieldEle / 1000)) * 1000;
-    
-    // Set the calculated values
+
     setErrorInput(Math.round(error).toString());
     setTrueAltInput(Math.round(trueAlt).toString());
     setAbsAltInput(Math.round(absolute).toString());
@@ -77,136 +70,114 @@ function Weather() {
     const assAlt = parseFloat(assignedAlt);
     const fieldEle = parseFloat(arrivalElev);
     const arrPres = parseFloat(arrivalPressure);
-    
-    // Calculate correct values
+
     const error = Math.abs((depPres - arrPres) * 1000);
     const trueAlt = (arrPres - (depPres - assAlt / 1000)) * 1000;
     const absolute = trueAlt - fieldEle;
     const indiAlt = (depPres - (arrPres - fieldEle / 1000)) * 1000;
-    
+
     const correctAnswers = [error, trueAlt, absolute, indiAlt];
     const userAnswers = [
       parseFloat(errorInput) || 0,
       parseFloat(trueAltInput) || 0,
       parseFloat(absAltInput) || 0,
-      parseFloat(indAltInput) || 0
+      parseFloat(indAltInput) || 0,
     ];
     const setClasses = [setErrorClass, setTrueAltClass, setAbsAltClass, setIndAltClass];
-    
+
     for (let i = 0; i < 4; i++) {
       const pError = Math.abs(100 * (userAnswers[i] - correctAnswers[i]) / correctAnswers[i]);
-      if (pError < 2) {
-        setClasses[i]('bg-green');
-      } else if (pError < 5) {
-        setClasses[i]('bg-yellow');
-      } else {
-        setClasses[i]('bg-red');
-      }
+      setClasses[i](pError < 2 ? 'bg-green' : pError < 5 ? 'bg-yellow' : 'bg-red');
     }
   };
 
-  // Generate initial problem on mount
-  useEffect(() => {
-    generate();
-  }, []);
+  useEffect(() => { generate(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <>      
-      <div className="setai-container">
-        <h1>SETAI Problem Generator</h1>
-        
-        <table className="setai-table">
-          <thead>
-            <tr>
-              <th>Variable</th>
-              <th>Value</th>
-              <th>Units</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Departure Pressure</td>
-              <td style={{ textAlign: 'center' }}>{depPressure}</td>
-              <td>inHg</td>
-            </tr>
-            <tr>
-              <td>Assigned Altitude</td>
-              <td style={{ textAlign: 'center' }}>{assignedAlt}</td>
-              <td>ft</td>
-            </tr>
-            <tr>
-              <td>Arrival Field Elevation</td>
-              <td style={{ textAlign: 'center' }}>{arrivalElev}</td>
-              <td>ft</td>
-            </tr>
-            <tr>
-              <td>Arrival Pressure</td>
-              <td style={{ textAlign: 'center' }}>{arrivalPressure}</td>
-              <td>inHg</td>
-            </tr>
-            <tr>
-              <td><b>S</b>ituation</td>
-              <td style={{ textAlign: 'center' }}>{situation}</td>
-              <td>-</td>
-            </tr>
-            <tr>
-              <td><b>E</b>rror</td>
-              <td>
-                <input
-                  type="text"
-                  value={errorInput}
-                  onChange={(e) => setErrorInput(e.target.value)}
-                  className={errorClass}
-                />
-              </td>
-              <td>ft</td>
-            </tr>
-            <tr>
-              <td><b>T</b>rue Altitude</td>
-              <td>
-                <input
-                  type="text"
-                  value={trueAltInput}
-                  onChange={(e) => setTrueAltInput(e.target.value)}
-                  className={trueAltClass}
-                />
-              </td>
-              <td>ft</td>
-            </tr>
-            <tr>
-              <td><b>A</b>bsolute Altitude</td>
-              <td>
-                <input
-                  type="text"
-                  value={absAltInput}
-                  onChange={(e) => setAbsAltInput(e.target.value)}
-                  className={absAltClass}
-                />
-              </td>
-              <td>ft</td>
-            </tr>
-            <tr>
-              <td><b>I</b>ndicated Altitude</td>
-              <td>
-                <input
-                  type="text"
-                  value={indAltInput}
-                  onChange={(e) => setIndAltInput(e.target.value)}
-                  className={indAltClass}
-                />
-              </td>
-              <td>ft</td>
-            </tr>
-          </tbody>
-        </table>
-        
-        <div className="button-row">
-          <button onClick={generate}>Generate</button>
-          <button onClick={checkWork}>Check</button>
-          <button onClick={solve}>Solve</button>
+    <div className="whiz-container">
+      <h1>SETAI Problem Generator</h1>
+
+      <div className="whiz-controls">
+        <button className="button" onClick={generate}>Generate</button>
+        <button className="button" onClick={checkWork}>Check</button>
+        <button className="button" onClick={solve}>Solve</button>
+      </div>
+
+      <div ref={varRowsWrapperRef} className="var-rows-wrapper">
+        <div ref={varRowsInnerRef} className="var-rows var-rows-two-col">
+          <div className="var-col">
+            <div className="var-row">
+              <span className="var-label">Departure Pressure</span>
+              <span style={{ minWidth: '100px' }}>{depPressure}</span>
+              <span className="var-unit">inHg</span>
+            </div>
+            <div className="var-row">
+              <span className="var-label">Assigned Altitude</span>
+              <span style={{ minWidth: '100px' }}>{assignedAlt}</span>
+              <span className="var-unit">ft</span>
+            </div>
+            <div className="var-row">
+              <span className="var-label">Arrival Field Elev</span>
+              <span style={{ minWidth: '100px' }}>{arrivalElev}</span>
+              <span className="var-unit">ft</span>
+            </div>
+            <div className="var-row">
+              <span className="var-label">Arrival Pressure</span>
+              <span style={{ minWidth: '100px' }}>{arrivalPressure}</span>
+              <span className="var-unit">inHg</span>
+            </div>
+          </div>
+
+          <div className="var-col">
+            <div className="var-row">
+              <span className="var-label"><b>S</b>ituation</span>
+              <span style={{ minWidth: '100px' }}>{situation}</span>
+              <span className="var-unit"></span>
+            </div>
+            <div className="var-row">
+              <span className="var-label"><b>E</b>rror</span>
+              <input
+                type="text"
+                value={errorInput}
+                onChange={(e) => setErrorInput(e.target.value)}
+                className={errorClass}
+              />
+              <span className="var-unit">ft</span>
+            </div>
+            <div className="var-row">
+              <span className="var-label"><b>T</b>rue Altitude</span>
+              <input
+                type="text"
+                value={trueAltInput}
+                onChange={(e) => setTrueAltInput(e.target.value)}
+                className={trueAltClass}
+              />
+              <span className="var-unit">ft</span>
+            </div>
+            <div className="var-row">
+              <span className="var-label"><b>A</b>bsolute Altitude</span>
+              <input
+                type="text"
+                value={absAltInput}
+                onChange={(e) => setAbsAltInput(e.target.value)}
+                className={absAltClass}
+              />
+              <span className="var-unit">ft</span>
+            </div>
+            <div className="var-row">
+              <span className="var-label"><b>I</b>ndicated Altitude</span>
+              <input
+                type="text"
+                value={indAltInput}
+                onChange={(e) => setIndAltInput(e.target.value)}
+                className={indAltClass}
+              />
+              <span className="var-unit">ft</span>
+            </div>
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

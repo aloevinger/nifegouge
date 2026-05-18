@@ -708,6 +708,25 @@ td.xcell::after {
   margin: 0;
 }
 
+.frr-complex-label {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  margin-right: 40px;
+}
+
+.frr-complex-label input[type="checkbox"] {
+  margin: -15px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+  .whiz-controls {
+    justify-content: flex-start;
+  }
+}
+
 .question-type-select {
   padding: 13px 30px 13px 10px;
   min-width: 150px;

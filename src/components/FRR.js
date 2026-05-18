@@ -284,9 +284,19 @@ function FRR() {
 
   return (
     <div className="whiz-container">
-      <h1>FR&R Problem Generator</h1>
+      <h1>FR&R</h1>
 
       <div className="whiz-controls">
+        {questionType === 'runway' && (
+          <label className="frr-complex-label">
+            <input
+              type="checkbox"
+              checked={complexMode}
+              onChange={(e) => setComplexMode(e.target.checked)}
+            />
+            Complex
+          </label>
+        )}
         <select
           value={questionType}
           onChange={(e) => setQuestionType(e.target.value)}
@@ -299,14 +309,6 @@ function FRR() {
         {questionType === 'vfr' && <button className="button" onClick={solve}>Solve</button>}
         {questionType === 'runway' && (
           <>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
-              <input
-                type="checkbox"
-                checked={complexMode}
-                onChange={(e) => setComplexMode(e.target.checked)}
-              />
-              Complex
-            </label>
             <button className="button" onClick={visualizeRunway}>Visualize</button>
             <button className="button" onClick={insertCompass}>Compass</button>
           </>

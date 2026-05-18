@@ -1152,7 +1152,7 @@ function WhizWheel() {
 
   return (
     <div className="whiz-container">
-      <h1>Navigation Problem Generator</h1>
+      <h1>Navigation</h1>
 
       <div className="whiz-controls">
         <select

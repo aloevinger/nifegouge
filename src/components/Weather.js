@@ -95,7 +95,7 @@ function Weather() {
 
   return (
     <div className="whiz-container">
-      <h1>SETAI Problem Generator</h1>
+      <h1>SETAI</h1>
 
       <div className="whiz-controls">
         <button className="button" onClick={generate}>Generate</button>

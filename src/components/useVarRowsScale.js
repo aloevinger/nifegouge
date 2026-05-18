@@ -13,7 +13,7 @@ export function useVarRowsScale() {
     // inner uses justify-content:center so columns overflow symmetrically.
     // scrollWidth captures only right-side overflow; full content width = 2*scrollW - available.
     if (scrollW > available) {
-      const naturalWidth = 2 * scrollW - available;
+      const naturalWidth = 2 * scrollW - available + 2; // +2 for sub-pixel rounding safety
       const scale = available / naturalWidth;
       inner.style.transform = `scale(${scale})`;
       inner.style.transformOrigin = 'top center';

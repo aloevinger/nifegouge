@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useCallback, useLayoutEffect, useRef } from 'react';
 import { useVarRowsScale } from './useVarRowsScale';
 
 function FRR() {
@@ -39,6 +39,25 @@ function FRR() {
   const [flagDirectionG, setFlagDirectionG] = useState(null);
 
   const { wrapperRef: varRowsWrapperRef, innerRef: varRowsInnerRef, updateScale } = useVarRowsScale();
+
+  const wheelWrapperRef = useRef(null);
+  const wheelContainerRef = useRef(null);
+
+  useEffect(() => {
+    const wrapper = wheelWrapperRef.current;
+    const container = wheelContainerRef.current;
+    if (!wrapper || !container) return;
+    const applyScale = () => {
+      const scale = Math.min(1, wrapper.offsetWidth / 500);
+      container.style.transform = scale < 1 ? `scale(${scale})` : '';
+      container.style.transformOrigin = 'top left';
+      wrapper.style.height = `${500 * scale}px`;
+    };
+    applyScale();
+    const obs = new ResizeObserver(() => requestAnimationFrame(applyScale));
+    obs.observe(wrapper);
+    return () => obs.disconnect();
+  }, []);
 
   useLayoutEffect(() => {
     updateScale();
@@ -268,16 +287,6 @@ function FRR() {
       <h1>FR&R Problem Generator</h1>
 
       <div className="whiz-controls">
-        {questionType === 'runway' && (
-          <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
-            <input
-              type="checkbox"
-              checked={complexMode}
-              onChange={(e) => setComplexMode(e.target.checked)}
-            />
-            Complex
-          </label>
-        )}
         <select
           value={questionType}
           onChange={(e) => setQuestionType(e.target.value)}
@@ -290,6 +299,14 @@ function FRR() {
         {questionType === 'vfr' && <button className="button" onClick={solve}>Solve</button>}
         {questionType === 'runway' && (
           <>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={complexMode}
+                onChange={(e) => setComplexMode(e.target.checked)}
+              />
+              Complex
+            </label>
             <button className="button" onClick={visualizeRunway}>Visualize</button>
             <button className="button" onClick={insertCompass}>Compass</button>
           </>
@@ -392,7 +409,8 @@ function FRR() {
         </div>
       )}
 
-      <div className="Wheel-Container" id="wheel-container" style={{ position: 'relative', width: '500px', height: '500px', marginTop: '24px' }}>
+      <div ref={wheelWrapperRef} style={{ width: '100%', maxWidth: '500px', overflow: 'hidden', marginTop: '24px' }}>
+      <div ref={wheelContainerRef} className="Wheel-Container" id="wheel-container" style={{ position: 'relative', width: '500px', height: '500px' }}>
         {questionType === 'vfr' && altitudeLines.length > 0 && altitudeLines.map((line, index) => (
           <React.Fragment key={index}>
             <div style={{
@@ -446,6 +464,7 @@ function FRR() {
             )}
           </>
         )}
+      </div>
       </div>
     </div>
   );

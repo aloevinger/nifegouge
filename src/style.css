@@ -708,6 +708,7 @@ td.xcell::after {
   margin: 0;
 }
 
+
 .frr-complex-label {
   display: flex;
   align-items: center;
@@ -719,12 +720,6 @@ td.xcell::after {
 .frr-complex-label input[type="checkbox"] {
   margin: -15px;
   flex-shrink: 0;
-}
-
-@media (max-width: 600px) {
-  .whiz-controls {
-    justify-content: flex-start;
-  }
 }
 
 .question-type-select {

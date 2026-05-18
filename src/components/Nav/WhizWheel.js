@@ -43,13 +43,15 @@ function WhizWheel() {
     const wrapper = varRowsWrapperRef.current;
     const inner = varRowsInnerRef.current;
     if (!wrapper || !inner) return;
-    // scrollWidth is unaffected by CSS transforms, so it always gives the natural content width
-    const natural = inner.scrollWidth;
+    // inner is width:100% with justify-content:center, so columns overflow symmetrically.
+    // scrollWidth only captures the right-side overflow, so full content width = 2*scrollWidth - elementWidth.
     const available = wrapper.offsetWidth;
-    if (natural > available) {
-      const scale = available / natural;
+    const scrollW = inner.scrollWidth;
+    if (scrollW > available) {
+      const naturalWidth = 2 * scrollW - available;
+      const scale = available / naturalWidth;
       inner.style.transform = `scale(${scale})`;
-      inner.style.transformOrigin = 'top left';
+      inner.style.transformOrigin = 'top center';
       wrapper.style.height = `${inner.offsetHeight * scale}px`;
     } else {
       inner.style.transform = '';

@@ -71,55 +71,52 @@ export const handler = async (event) => {
     }
 };
 
+// Helper: paginated scan
+async function scanAll(params) {
+    const items = [];
+    let lastKey;
+    do {
+        const result = await dynamodb.send(new ScanCommand({
+            ...params,
+            ExclusiveStartKey: lastKey
+        }));
+        items.push(...(result.Items || []));
+        lastKey = result.LastEvaluatedKey;
+    } while (lastKey);
+    return items;
+}
+
 // Get all approved questions
 async function handleGetQuestions(headers) {
     try {
-        const scanCommand = new ScanCommand({
+        const questions = await scanAll({
             TableName: 'NIFEQuestions',
             FilterExpression: '#status = :status',
-            ExpressionAttributeNames: {
-                '#status': 'status'
-            },
-            ExpressionAttributeValues: {
-                ':status': 'approved'
-            }
+            ExpressionAttributeNames: { '#status': 'status' },
+            ExpressionAttributeValues: { ':status': 'approved' }
         });
-        
-        const result = await dynamodb.send(scanCommand);
-        const questions = result.Items || [];
-        
-        // Sort by creation date (newest first) or by score
+
         questions.sort((a, b) => {
-            // First sort by net votes
             const aVotes = (a.upvotes || 0) - (a.downvotes || 0);
             const bVotes = (b.upvotes || 0) - (b.downvotes || 0);
             if (aVotes !== bVotes) return bVotes - aVotes;
-            
-            // Then by date
             return new Date(b.createdAt) - new Date(a.createdAt);
         });
-        
+
         console.log(`Found ${questions.length} approved questions`);
-        
+
         return {
             statusCode: 200,
             headers,
-            body: JSON.stringify({ 
-                success: true,
-                questions: questions
-            })
+            body: JSON.stringify({ success: true, questions })
         };
-        
+
     } catch (error) {
         console.error('Error fetching questions:', error);
         return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({ 
-                success: false,
-                error: 'Failed to fetch questions',
-                message: error.message
-            })
+            body: JSON.stringify({ success: false, error: 'Failed to fetch questions', message: error.message })
         };
     }
 }
@@ -198,34 +195,55 @@ async function handleSubmitQuestion(event, headers) {
 async function handleEditQuestion(event, headers) {
     try {
         const body = JSON.parse(event.body);
-        
+
         if (!body.originalQuestionId || !body.topic || !body.question || !body.correctAnswer) {
             return {
                 statusCode: 400,
                 headers,
-                body: JSON.stringify({ 
+                body: JSON.stringify({
                     success: false,
-                    error: 'Missing required fields' 
+                    error: 'Missing required fields'
                 })
             };
         }
-        
+
+        // Block duplicate pending edits for the same original question
+        const existingPending = await scanAll({
+            TableName: 'NIFEQuestions',
+            FilterExpression: '#status = :pending AND originalQuestionId = :origId',
+            ExpressionAttributeNames: { '#status': 'status' },
+            ExpressionAttributeValues: {
+                ':pending': 'pending',
+                ':origId': body.originalQuestionId
+            }
+        });
+        if (existingPending.length > 0) {
+            return {
+                statusCode: 409,
+                headers,
+                body: JSON.stringify({
+                    success: false,
+                    error: 'An edit is already pending review for this question. Check back after the community votes on it.'
+                })
+            };
+        }
+
         // Get the original question to preserve its history
         const getCommand = new GetCommand({
             TableName: 'NIFEQuestions',
             Key: { questionId: body.originalQuestionId }
         });
-        
+
         const originalResult = await dynamodb.send(getCommand);
         const originalQuestion = originalResult.Item;
-        
+
         if (!originalQuestion) {
             return {
                 statusCode: 404,
                 headers,
-                body: JSON.stringify({ 
+                body: JSON.stringify({
                     success: false,
-                    error: 'Original question not found' 
+                    error: 'Original question not found'
                 })
             };
         }
@@ -442,54 +460,33 @@ async function handlePendingQuestionVote(event, headers) {
 // Get pending questions for moderation
 async function handleGetPendingQuestions(headers) {
     try {
-        const scanCommand = new ScanCommand({
+        const questions = await scanAll({
             TableName: 'NIFEQuestions',
             FilterExpression: '#status = :status',
-            ExpressionAttributeNames: {
-                '#status': 'status'
-            },
-            ExpressionAttributeValues: {
-                ':status': 'pending'
-            }
+            ExpressionAttributeNames: { '#status': 'status' },
+            ExpressionAttributeValues: { ':status': 'pending' }
         });
-        
-        const result = await dynamodb.send(scanCommand);
-        const questions = result.Items || [];
-        
-        // Add type field if missing (for backward compatibility)
+
         questions.forEach(q => {
-            if (!q.type) {
-                q.type = q.originalQuestionId ? 'edit' : 'new';
-            }
-            // Ensure vote counts exist
+            if (!q.type) q.type = q.originalQuestionId ? 'edit' : 'new';
             q.approveCount = q.approveCount || 0;
             q.rejectCount = q.rejectCount || 0;
         });
-        
-        // Sort by submission date (oldest first for FIFO processing)
-        questions.sort((a, b) => 
-            new Date(a.submittedAt) - new Date(b.submittedAt)
-        );
-        
+
+        questions.sort((a, b) => new Date(a.submittedAt) - new Date(b.submittedAt));
+
         return {
             statusCode: 200,
             headers,
-            body: JSON.stringify({ 
-                success: true,
-                questions: questions
-            })
+            body: JSON.stringify({ success: true, questions })
         };
-        
+
     } catch (error) {
         console.error('Error fetching pending questions:', error);
         return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({ 
-                success: false,
-                error: 'Failed to fetch pending questions',
-                message: error.message
-            })
+            body: JSON.stringify({ success: false, error: 'Failed to fetch pending questions', message: error.message })
         };
     }
 }
@@ -557,9 +554,7 @@ async function handleModerateQuestion(event, headers) {
                 TableName: 'NIFEQuestions',
                 Key: { questionId: question.originalQuestionId },
                 UpdateExpression: 'SET #status = :status, replacedBy = :replacedBy, replacedAt = :timestamp, hasPendingEdit = :false',
-                ExpressionAttributeNames: {
-                    '#status': 'status'
-                },
+                ExpressionAttributeNames: { '#status': 'status' },
                 ExpressionAttributeValues: {
                     ':status': 'replaced',
                     ':replacedBy': body.questionId,
@@ -567,11 +562,38 @@ async function handleModerateQuestion(event, headers) {
                     ':false': false
                 }
             });
-            
             await dynamodb.send(replaceCommand);
             console.log(`Original question ${question.originalQuestionId} replaced by approved edit ${body.questionId}`);
+
+            // Auto-reject all other pending edits for the same original (cleans up vote-diluting duplicates)
+            const siblings = await scanAll({
+                TableName: 'NIFEQuestions',
+                FilterExpression: '#status = :pending AND originalQuestionId = :origId AND questionId <> :thisId',
+                ExpressionAttributeNames: { '#status': 'status' },
+                ExpressionAttributeValues: {
+                    ':pending': 'pending',
+                    ':origId': question.originalQuestionId,
+                    ':thisId': body.questionId
+                }
+            });
+            await Promise.all(siblings.map(sibling =>
+                dynamodb.send(new UpdateCommand({
+                    TableName: 'NIFEQuestions',
+                    Key: { questionId: sibling.questionId },
+                    UpdateExpression: 'SET #status = :rejected, moderatedAt = :timestamp, moderatedBy = :moderator',
+                    ExpressionAttributeNames: { '#status': 'status' },
+                    ExpressionAttributeValues: {
+                        ':rejected': 'rejected',
+                        ':timestamp': new Date().toISOString(),
+                        ':moderator': 'auto-sibling-cleanup'
+                    }
+                }))
+            ));
+            if (siblings.length > 0) {
+                console.log(`Auto-rejected ${siblings.length} sibling pending edits for original ${question.originalQuestionId}`);
+            }
         }
-        
+
         // If this was an edit rejection, clear the pending edit flag on the original
         if (newStatus === 'rejected' && question.type === 'edit' && question.originalQuestionId) {
             const clearEditCommand = new UpdateCommand({
@@ -583,7 +605,6 @@ async function handleModerateQuestion(event, headers) {
                     ':null': null
                 }
             });
-            
             await dynamodb.send(clearEditCommand);
             console.log(`Cleared pending edit flag on original question ${question.originalQuestionId}`);
         }

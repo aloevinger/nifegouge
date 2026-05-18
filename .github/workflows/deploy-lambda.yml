@@ -1,0 +1,53 @@
+name: Deploy Lambda Functions
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'lambda/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+
+      - name: Deploy submitDoc
+        run: |
+          cd lambda/submitDoc
+          npm ci
+          zip -r function.zip .
+          aws lambda update-function-code \
+            --function-name submitDoc \
+            --zip-file fileb://function.zip
+
+      - name: Deploy submitQuestion
+        run: |
+          cd lambda/submitQuestion
+          zip -r function.zip .
+          aws lambda update-function-code \
+            --function-name submitQuestion \
+            --zip-file fileb://function.zip
+
+      - name: Deploy getLeaderboard
+        run: |
+          cd lambda/getLeaderboard
+          zip -r function.zip .
+          aws lambda update-function-code \
+            --function-name getLeaderboard \
+            --zip-file fileb://function.zip
+
+      - name: Deploy submitScore
+        run: |
+          cd lambda/submitScore
+          zip -r function.zip .
+          aws lambda update-function-code \
+            --function-name submitScore \
+            --zip-file fileb://function.zip
